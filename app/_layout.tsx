@@ -1,71 +1,28 @@
-import '~/global.css';
-
-import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
-import { Appearance, Platform, View } from 'react-native';
-import { NAV_THEME } from '~/lib/constants';
-import { useColorScheme } from '~/lib/useColorScheme';
-import { PortalHost } from '@rn-primitives/portal';
-import { ThemeToggle } from '~/components/ThemeToggle';
-import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
+import { Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const LIGHT_THEME: Theme = {
-  ...DefaultTheme,
-  colors: NAV_THEME.light,
-};
-const DARK_THEME: Theme = {
-  ...DarkTheme,
-  colors: NAV_THEME.dark,
-};
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-const usePlatformSpecificSetup = Platform.select({
-  web: useSetWebBackgroundClassName,
-  android: useSetAndroidNavigationBar,
-  default: noop,
-});
-
-export default function RootLayout() {
-  usePlatformSpecificSetup();
-  const { isDarkColorScheme } = useColorScheme();
-
+const Layout = () => {
   return (
-    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      <Stack>
-        <Stack.Screen
-          name='index'
-          options={{
-            title: 'Starter Base',
-            headerRight: () => <ThemeToggle />,
-          }}
-        />
-      </Stack>
-      <PortalHost />
-    </ThemeProvider>
+    <Stack screenOptions={{headerShadowVisible: false}}>
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerTitle: () => ( // we will make the lightning emoji the main logo for now
+            <Image
+              source={{
+                uri: 'https://em-content.zobj.net/thumbs/120/apple/354/high-voltage_26a1.png',
+              }}
+              style={{ width: 30, height: 30, borderRadius: 20 }}
+            />
+          ),
+          headerRight: () => <Ionicons name= "settings-outline" size={24} color = "Black" />
+        }}
+      />
+      <Stack.Screen name="details" options={{headerTitle: 'Details', headerBackTitle:'Back'}}/>
+    </Stack>
   );
-}
+};
 
-const useIsomorphicLayoutEffect =
-  Platform.OS === 'web' && typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
+export default Layout;
 
-function useSetWebBackgroundClassName() {
-  useIsomorphicLayoutEffect(() => {
-    // Adds the background color to the html element to prevent white background on overscroll.
-    document.documentElement.classList.add('bg-background');
-  }, []);
-}
-
-function useSetAndroidNavigationBar() {
-  React.useLayoutEffect(() => {
-    setAndroidNavigationBar(Appearance.getColorScheme() ?? 'light');
-  }, []);
-}
-
-function noop() {}

@@ -3,10 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
+    "jsx": "react-native",
+    "types": ["react-native", "expo"],
     "paths": {
-      "~/*": [
-        "*"
-      ]
+      "~/*": ["*"]
     }
   },
   "include": [
