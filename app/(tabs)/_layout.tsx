@@ -1,4 +1,5 @@
-// this IS THE APP TSX FROM REACTIIVE VIDEO
+// this IS THE APP TSX FROM REACTIIVE VIDEO 
+// this is where i implemented the bottom sheet to get it to work
 import {
   createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
