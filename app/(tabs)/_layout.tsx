@@ -1,36 +1,64 @@
-// layout for tabs
-// layout for tabs
+// this IS THE APP TSX FROM REACTIIVE VIDEO
 import {
   createMaterialTopTabNavigator,
-  MaterialTopTabNavigationOptions,
-  MaterialTopTabNavigationEventMap,
 } from "@react-navigation/material-top-tabs";
-import {
-  ParamListBase,
-  TabNavigationState,
-} from "@react-navigation/native";
 import { withLayoutContext } from "expo-router";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import BottomSheet, { BottomSheetRefProps } from "../../components/BottomSheet";
+import { useCallback, useRef } from "react";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
-export const MaterialTopTabs = withLayoutContext<
-  MaterialTopTabNavigationOptions,
-  typeof Navigator,
-  TabNavigationState<ParamListBase>, // 👈 State comes 3rd
-  MaterialTopTabNavigationEventMap   // 👈 Event map comes 4th
->(Navigator);
+export const MaterialTopTabs = withLayoutContext(Navigator);
+const ref = useRef<BottomSheetRefProps>(null)
+const onPress = useCallback(()=>{
+  const isActive = ref?.current?.isActive();
+  if (isActive) {
+    ref?.current?.scrollTo(0);
+  } else{
+     ref?.current?.scrollTo(-200);
+  }
+
+},[]);
 
 const Layout = () => {
   return (
-    <MaterialTopTabs screenOptions={{tabBarActiveTintColor: '#000000',
-      tabBarIndicatorStyle: {backgroundColor: '#000000', height: 3},
-      tabBarLabelStyle: {fontSize:14,fontWeight:'bold',textTransform:'capitalize'}
-    }}>
-      <MaterialTopTabs.Screen name="index" options={{ title: "Home" }} />
-      <MaterialTopTabs.Screen name="profile" options={{ title: "Profile" }} />
-      <MaterialTopTabs.Screen name="workouts" options={{title: "Workouts"}} />
-    </MaterialTopTabs>
+    
+    <View style={styles.container}>
+      <MaterialTopTabs
+        screenOptions={{
+          tabBarActiveTintColor: "#000",
+          tabBarIndicatorStyle: { backgroundColor: "#000", height: 3 },
+          tabBarLabelStyle: { fontSize: 14, fontWeight: "bold", textTransform: "capitalize" },
+        }}
+      >
+        <MaterialTopTabs.Screen name="index" options={{ title: "Home" }} />
+        <MaterialTopTabs.Screen name="profile" options={{ title: "Profile" }} />
+        <MaterialTopTabs.Screen name="workouts" options={{ title: "Workouts" }} />
+      </MaterialTopTabs>
+
+      {/* Always render BottomSheet here so it overlays everything */}
+      <TouchableOpacity style={styles.button} onPress={onPress} />
+      <BottomSheet ref={ref} >
+        <View style= {{flex: 1, backgroundColor: 'orange'}} />
+      </BottomSheet>
+    </View>
   );
 };
 
-export default Layout
+export default Layout;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    
+  },
+  button: {
+    height: 60,
+    aspectRatio: 1,
+    backgroundColor: 'white',
+    opacity: 0.6,
+
+  }
+
+});

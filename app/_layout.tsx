@@ -1,9 +1,12 @@
 import { Stack } from 'expo-router';
 import { Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StyleSheet } from 'react-native';
 
 const Layout = () => {
   return (
+    <GestureHandlerRootView>
     <Stack screenOptions={{headerShadowVisible: false}}>
       <Stack.Screen
         name="(tabs)"
@@ -21,6 +24,7 @@ const Layout = () => {
       />
       <Stack.Screen name="details" options={{headerTitle: 'Details', headerBackTitle:'Back'}}/>
     </Stack>
+    </GestureHandlerRootView>
   );
 };
 
