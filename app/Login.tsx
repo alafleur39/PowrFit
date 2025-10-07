@@ -1,180 +1,205 @@
-// app .js for this video follow along (https://www.youtube.com/watch?v=lA_73_-n-V4)
-//Create a simple login screen
-// implement user authentication logic tomorrow after laundry and packing 
-import React, { useState } from "react";
-import {SafeAreaView,View,Text,StyleSheet,Image,TextInput, TouchableOpacity} from 'react-native'
+import { useState } from "react";
+import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Button, HelperText, TextInput } from "react-native-paper";
+import { useAuth } from "../src/auth/AuthProvider";
 
-export default function example() 
-{
-const [form, setForm] = useState({ // i guess  Usestate is how we update things
-      email:'',
-      password:'',
-}); // below is the ui for the sign in screen
-return (
-    <SafeAreaView style={{flex: 1,backgroundColor: 'white'}}>
-        <View style={Styles.container}>
-          <View style={Styles.header}>
-            <Image
-              source={{uri: 'https://em-content.zobj.net/thumbs/120/apple/354/high-voltage_26a1.png'}} // i tried to implement the lighting emoji icon  above the sign form
-              style= {Styles.headerImg}
-               alt= 'logo'
-            />
-            
-            <Text style={Styles.title}>Sign into Powrfit</Text>
-            <Text style ={Styles.subtitle}>This is where fitness journeys starts.</Text>
-           </View>
+type FormState = {
+  email: string;
+  password: string;
+};
 
+export default function Login() {
+  const [form, setForm] = useState<FormState>({ email: "", password: "" });
+  const [submittingAction, setSubmittingAction] = useState<"signIn" | "signUp" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { signIn, signUp } = useAuth();
 
-           <View style= {Styles.form}>
-            <View style={Styles.input}><text style={Styles.inputLabel}>Email address</text></View>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              style ={Styles.inputControl}
-              placeholder="john@example.com"
-              placeholderTextColor= "#6b7280"
-              value = {form.email}
-              onChangeText = {email => setForm({...form, email})}
-            />
-           </View>
-             <View style={Styles.input}><text style={Styles.inputLabel}>Password</text></View>
-            <TextInput
-              style ={Styles.inputControl}
-              placeholder="*************"
-              placeholderTextColor= "#6b7280"
-              value = {form.password}
-              onChangeText = {password => setForm({...form, password})}
-            />
-           </View>
-          <View style={Styles.formAction}>
-            <TouchableOpacity
-                onPress={() => {
-                    // handle onPress
-                    Alert.alert('Successfully logged in')
-                }}>
-                <View style={Styles.btn}>
-                <Text style={Styles.btnText}> Sign In</Text>
-                </View>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-          style={{marginTop: 'auto'}}
-          onPress={() =>{
-            // handle onPress
-          }}>
-           <text style={Styles.formFooter}>Don't have an account? {' '}
-            <text style={{textDecorationLine: 'underline'}}>Sign Up</text>
-            </text>
-          </TouchableOpacity>
+  const updateField = (key: keyof FormState) => (value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const emailRegex = /\S+@\S+\.\S+/;
+
+  const mapFirebaseError = (code: string | undefined): string => {
+    switch (code) {
+      case "auth/email-already-in-use":
+        return "That email is already registered. Try signing in instead.";
+      case "auth/invalid-credential":
+      case "auth/wrong-password":
+        return "Incorrect email or password. Please try again.";
+      case "auth/user-not-found":
+        return "We couldn’t find an account with that email.";
+      case "auth/weak-password":
+        return "Choose a stronger password (at least 6 characters).";
+      case "auth/invalid-email":
+        return "Enter a valid email address.";
+      default:
+        return "Something went wrong. Please try again.";
+    }
+  };
+
+  const handleAuth = async (action: "signIn" | "signUp") => {
+    const email = form.email.trim();
+    const password = form.password;
+
+    if (!email || !password) {
+      setError("Enter both email and password to continue.");
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+
+    setError(null);
+    setSubmittingAction(action);
+
+    try {
+      if (action === "signIn") {
+        await signIn(email, password);
+      } else {
+        await signUp(email, password);
+      }
+      console.log(
+        `[Auth] ${action === "signIn" ? "Sign in" : "Sign up"} success → navigating to profile`
+      );
+      router.replace("/(tabs)/profile");
+    } catch (err) {
+      const message =
+        typeof err === "object" && err !== null && "code" in err
+          ? mapFirebaseError((err as { code?: string }).code)
+          : "Something went wrong. Please try again.";
+      setError(message);
+    } finally {
+      setSubmittingAction(null);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image
+            source={{ uri: "https://em-content.zobj.net/thumbs/120/apple/354/high-voltage_26a1.png" }}
+            style={styles.headerImg}
+          />
+          <Text style={styles.title}>Sign into PowrFit</Text>
+          <Text style={styles.subtitle}>This is where fitness journeys start.</Text>
+        </View>
+
+        <View style={styles.form}>
+          <TextInput
+            label="Email address"
+            value={form.email}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoCorrect={false}
+            onChangeText={updateField("email")}
+            mode="outlined"
+            style={styles.paperInput}
+            inputMode="email"
+            disabled={submittingAction !== null}
+          />
+
+          <TextInput
+            label="Password"
+            value={form.password}
+            onChangeText={updateField("password")}
+            secureTextEntry
+            mode="outlined"
+            style={styles.paperInput}
+            disabled={submittingAction !== null}
+          />
+
+          <HelperText type="error" visible={Boolean(error)}>
+            {error}
+          </HelperText>
+
+          <Button
+            mode="contained"
+            onPress={() => handleAuth("signIn")}
+            loading={submittingAction === "signIn"}
+            disabled={submittingAction !== null}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+          >
+            Sign In
+          </Button>
+          <Button
+            mode="outlined"
+            onPress={() => handleAuth("signUp")}
+            loading={submittingAction === "signUp"}
+            disabled={submittingAction !== null}
+            style={styles.secondaryButton}
+            contentStyle={styles.buttonContent}
+            textColor="#075eec"
+          >
+            Create Account
+          </Button>
+        </View>
+
+        <Text style={styles.footerNote}>
+          Creating an account will sync your workouts and progress securely with PowrFit.
+        </Text>
+      </View>
     </SafeAreaView>
-
-);
+  );
 }
 
-
-const Styles = StyleSheet.create({
-     container: {
-        padding: 24,
-        flex: 1,
-     },
-     header:
-     {
-        marginVertical: 36,
-
-     },
-     headerImg:
-     {
-        width: 80,
-        height: 80,
-        alignSelf: 'center',
-        marginBottom: 36,
-
-     },
-     title: 
-     {
-        fontSize: 27,
-        fontWeight: '700',
-        color: 'black',
-        marginBottom: 6,
-        textAlign: 'center',
-     },
-     subtitle:
-     {
-        fontSize: 15,
-        fontWeight:'500',
-        color:'#929292',
-        textAlign: 'center'
-     },
-     input: {
-        marginBottom:16,
-     },
-     inputLabel: 
-     {
-       fontSize:17,
-       fontWeight: '600',
-       color: '#222',
-       marginBottom: 8
-     },
-     inputControl: 
-     {
-       height: 44,
-       backgroundColor: '#fff',
-       paddingHorizontal: 16,
-       borderRadius: 12,
-       fontSize: 15,
-       fontWeight:'500',
-       color: '#222',
-     },
-     form: 
-     {
-      marginBottom: 24,
-      flex: 1,
-     },
-     formAction: 
-     {
-       marginVertical: 24,
-     },
-     formFooter: 
-     {
-       fontSize: 17,
-       fontWeight: '600',
-       color:'#222',
-       textAlign: 'center',
-       letterSpacing: 0.15,
-
-     },
-     btn:
-     {
-        backgroundColor: '#075eec',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#075eec',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-
-     },
-     btnText:
-     {
-        fontSize:18,
-        fontWeight: '600',
-        color: '#fff'
-     }
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  container: {
+    flex: 1,
+    padding: 24,
+  },
+  header: {
+    marginVertical: 36,
+    alignItems: "center",
+    gap: 16,
+  },
+  headerImg: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  title: {
+    fontSize: 27,
+    fontWeight: "700",
+    color: "#111827",
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#6b7280",
+    textAlign: "center",
+  },
+  form: {
+    flex: 1,
+    gap: 16,
+  },
+  paperInput: {
+    backgroundColor: "white",
+  },
+  button: {
+    marginTop: 8,
+    borderRadius: 12,
+  },
+  secondaryButton: {
+    borderRadius: 12,
+  },
+  buttonContent: {
+    paddingVertical: 6,
+  },
+  footerNote: {
+    marginTop: "auto",
+    fontSize: 16,
+    textAlign: "center",
+    color: "#6b7280",
+  },
 });

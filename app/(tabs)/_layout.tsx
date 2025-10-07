@@ -1,12 +1,15 @@
 // this IS THE APP TSX FROM REACTIIVE VIDEO 
 // this is where i implemented the bottom sheet to get it to work
+import { useCallback, useRef } from "react";
+import { Redirect } from "expo-router";
+import { ActivityIndicator } from "react-native-paper";
 import {
   createMaterialTopTabNavigator,
 } from "@react-navigation/material-top-tabs";
 import { withLayoutContext } from "expo-router";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import BottomSheet, { BottomSheetRefProps } from "../../components/BottomSheet";
-import { useCallback, useRef } from "react";
+import { useAuth } from "../../src/auth/AuthProvider";
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -23,6 +26,20 @@ const onPress = useCallback(()=>{
 },[]);
 
 const Layout = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loading]}>
+        <ActivityIndicator animating color="#2563EB" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return <Redirect href="/Login" />;
+  }
+
   return (
     
     <View style={styles.container}>
@@ -53,6 +70,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     
+  },
+  loading: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F5F5F5",
   },
   button: {
     height: 60,
