@@ -16,6 +16,7 @@ export default function Login() {
   const router = useRouter();
   const { signIn, signUp } = useAuth();
 
+  // Keep input state in sync as the user types.
   const updateField = (key: keyof FormState) => (value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -44,6 +45,7 @@ export default function Login() {
     const email = form.email.trim();
     const password = form.password;
 
+    // Quick checks that stop empty or invalid submissions.
     if (!email || !password) {
       setError("Enter both email and password to continue.");
       return;
@@ -58,6 +60,7 @@ export default function Login() {
     setSubmittingAction(action);
 
     try {
+      // Use the shared auth helpers so the provider updates everywhere.
       if (action === "signIn") {
         await signIn(email, password);
       } else {
@@ -68,6 +71,7 @@ export default function Login() {
       );
       router.replace("/(tabs)/profile");
     } catch (err) {
+      // Show a friendly error message the user can understand.
       const message =
         typeof err === "object" && err !== null && "code" in err
           ? mapFirebaseError((err as { code?: string }).code)
@@ -91,6 +95,7 @@ export default function Login() {
         </View>
 
         <View style={styles.form}>
+          {/* Collect the email with keyboard tweaks that make typing easier. */}
           <TextInput
             label="Email address"
             value={form.email}
@@ -118,6 +123,7 @@ export default function Login() {
             {error}
           </HelperText>
 
+          {/* Present both paths so users can log in or make a fresh account. */}
           <Button
             mode="contained"
             onPress={() => handleAuth("signIn")}

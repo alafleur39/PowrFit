@@ -29,6 +29,7 @@ const Layout = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
+    // Show a calm spinner while we figure out who is signed in.
     return (
       <View style={[styles.container, styles.loading]}>
         <ActivityIndicator animating color="#2563EB" />
@@ -37,6 +38,7 @@ const Layout = () => {
   }
 
   if (!user) {
+    // Kick guests back to the login screen so tabs stay protected.
     return <Redirect href="/Login" />;
   }
 

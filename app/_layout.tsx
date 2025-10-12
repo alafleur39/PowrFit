@@ -9,6 +9,7 @@ function RootNavigator() {
   const { loading } = useAuth();
 
   if (loading) {
+    // Keep the UI clean while Firebase restores any saved session.
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator animating color="#2563EB" size="large" />
@@ -41,6 +42,7 @@ export default function Layout() {
     <GestureHandlerRootView style={styles.container}>
       <PaperProvider>
         <AuthProvider>
+          {/* Every screen in the app can now read auth state and Paper theme. */}
           <RootNavigator />
         </AuthProvider>
       </PaperProvider>

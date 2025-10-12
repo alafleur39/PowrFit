@@ -56,6 +56,7 @@ export default function Profile() {
     let isMounted = true;
 
     const hydrateProgress = async () => {
+      // Stop early if we are already pointing at the live backend later on.
       if (!USE_MOCK_DATA) {
         setIsProgressLoading(false);
         return;
@@ -71,6 +72,7 @@ export default function Profile() {
       setIsProgressLoading(true);
 
       try {
+        // Load the last numbers we saved locally so the screen feels instant.
         const cachedJson = await AsyncStorage.getItem(PROGRESS_CACHE_KEY);
         const cachedProgress: MockUserProgress | null = cachedJson
           ? JSON.parse(cachedJson)
@@ -182,6 +184,7 @@ export default function Profile() {
     resolvedProgress.stats.weeklyGoal
   );
 
+  // Let the settings icon double as a sign-out button for now.
   const handleSignOut = async () => {
     try {
       await signOut();

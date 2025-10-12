@@ -16,6 +16,8 @@ import {
 } from "firebase/auth";
 import { auth } from "../../firebase/config";
 
+// This context lets the whole app read the current Firebase user
+// and call simple helpers for sign in, sign up, and sign out.
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
@@ -31,6 +33,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Keep listening for account changes so we always know who is signed in.
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
       setUser(nextUser);
       setLoading(false);
@@ -73,6 +76,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
+    // Helpful error so hooks are only used inside the provider tree.
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
