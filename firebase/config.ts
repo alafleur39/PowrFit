@@ -3,10 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, initializeAuth, type Auth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import dotenv from "dotenv"; // load environment from .env file
+dotenv.config(); // this  is important
 
 // Firebase app configuration (replace placeholder values with your real project keys).
 const firebaseConfig = {
-  apiKey: "AIzaSyAZ-8t6tb3wq7zR52ZghKYipxkXntzBhp4",
+  apiKey: process.env.apiKey,
   authDomain: "powrfit-5038a.firebaseapp.com",
   projectId: "powrfit-5038a",
   storageBucket: "powrfit-5038a.firebasestorage.app",

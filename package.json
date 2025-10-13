@@ -26,6 +26,7 @@
     "@rn-primitives/tooltip": "~1.2.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dotenv": "^17.2.3",
     "expo": "^53.0.20",
     "expo-auth-session": "~6.2.1",
     "expo-linking": "~7.1.5",
