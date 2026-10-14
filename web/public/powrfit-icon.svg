@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PowrFit lightning mark">
+  <defs>
+    <radialGradient id="glow" cx="38%" cy="22%" r="76%">
+      <stop offset="0%" stop-color="#d9ff2d" stop-opacity="0.34"/>
+      <stop offset="52%" stop-color="#0fd9a7" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#05080d"/>
+    </radialGradient>
+    <filter id="boltGlow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#d9ff2d" flood-opacity="0.42"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#05080d"/>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#glow)" stroke="#d9ff2d" stroke-opacity="0.16" stroke-width="4"/>
+  <path
+    filter="url(#boltGlow)"
+    d="M308.6 52.5 92.2 306.1c-12.4 14.5-2.1 36.9 17 36.9h113.5L195.4 462c-4.8 21 22 34.6 36.2 18.4l204.8-252.2c11.9-14.7 1.5-36.6-17.4-36.6H310.4l34.5-118.5c6-20.7-22.3-36.9-36.3-20.6Z"
+    fill="#d9ff2d"
+  />
+  <path
+    d="M293.1 112 146.8 284.1h131.4L256 381.4l107.7-132.7H244.8L293.1 112Z"
+    fill="#ffffff"
+    opacity="0.28"
+  />
+</svg>
