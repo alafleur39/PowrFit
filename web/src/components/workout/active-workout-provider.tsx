@@ -43,6 +43,7 @@ import {
   discardReceipt as discardReceiptIn,
   markConfirmed,
   markFailed,
+  hasUnsyncedWork,
   markRetrying,
   type Receipt,
 } from "@/lib/workout/receipts";
@@ -69,6 +70,10 @@ type ActiveWorkoutContextValue = {
   retryReceipt: (id: string) => void;
   discardReceipt: (id: string) => void;
   setUnit: (unit: WeightUnit) => void;
+  /** True while a draft or an unconfirmed save exists on this device. */
+  hasUnsyncedWork: boolean;
+  /** Deletes this user's draft and receipts from the device (sign-out). */
+  clearDevice: () => void;
 };
 
 const ActiveWorkoutContext = createContext<ActiveWorkoutContextValue | null>(null);
@@ -247,6 +252,11 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
     [uid, update]
   );
 
+  const clearDevice = useCallback(() => {
+    persistDraft(null);
+    persistReceipts([]);
+  }, [persistDraft, persistReceipts]);
+
   const value = useMemo<ActiveWorkoutContextValue>(
     () => ({
       ready: uid !== null && loadedUid === uid,
@@ -262,6 +272,8 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
       retryReceipt,
       discardReceipt,
       setUnit,
+      hasUnsyncedWork: hasUnsyncedWork(draft !== null, receipts),
+      clearDevice,
     }),
     [
       uid,
@@ -278,6 +290,7 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
       retryReceipt,
       discardReceipt,
       setUnit,
+      clearDevice,
     ]
   );
 

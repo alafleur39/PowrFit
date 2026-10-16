@@ -2,7 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogOut, Settings, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
+
+import type { WeightUnit } from "@/lib/strength";
+import { cn } from "@/lib/utils";
 
 type AccountDrawerProps = {
   open: boolean;
@@ -10,6 +13,8 @@ type AccountDrawerProps = {
   onSignOut: () => void;
   accountName: string;
   accountEmail: string;
+  unit: WeightUnit;
+  onUnitChange: (unit: WeightUnit) => void;
 };
 
 // Slide-out account drawer (POWRFIT_NAV_SPEC §5/§7). Opened by the avatar
@@ -21,6 +26,8 @@ export function AccountDrawer({
   onSignOut,
   accountName,
   accountEmail,
+  unit,
+  onUnitChange,
 }: AccountDrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
@@ -122,15 +129,33 @@ export function AccountDrawer({
               </button>
             </div>
 
-            <nav aria-label="Account" className="mt-6 flex flex-col gap-1">
-              <button
-                type="button"
-                className="flex h-12 items-center gap-3 rounded-xl px-3 text-left font-medium text-foreground transition-colors hover:bg-surface-active"
-              >
-                <Settings className="size-5 text-muted-foreground" aria-hidden />
-                Settings
-              </button>
-            </nav>
+            <section aria-labelledby="unit-label" className="mt-6">
+              <h2 id="unit-label" className="px-1 text-sm font-semibold text-foreground">
+                Weight unit
+              </h2>
+              <p className="px-1 text-xs text-muted-foreground">
+                Used for new sets and every total. Sets keep the unit they were entered in.
+              </p>
+              <div role="radiogroup" aria-labelledby="unit-label" className="mt-2 grid grid-cols-2 gap-1 rounded-xl bg-background p-1">
+                {(["lb", "kg"] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    role="radio"
+                    aria-checked={unit === option}
+                    onClick={() => onUnitChange(option)}
+                    className={cn(
+                      "h-11 rounded-lg text-sm font-bold transition-colors",
+                      unit === option
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </section>
 
             <button
               type="button"

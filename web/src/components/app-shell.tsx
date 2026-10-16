@@ -12,7 +12,9 @@ import { BottomTabBar } from "@/components/shell/bottom-tab-bar";
 import { Fab } from "@/components/shell/fab";
 import { Sidebar } from "@/components/shell/sidebar";
 import { StatsRail } from "@/components/shell/stats-rail";
+import { Button } from "@/components/ui/button";
 import { ActiveWorkoutStrip } from "@/components/workout/active-workout-strip";
+import { Dialog } from "@/components/workout/dialog";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 
 // The navigation shell (POWRFIT_NAV_SPEC §5). X/Twitter layout: a left sidebar
@@ -21,7 +23,8 @@ import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, signOut } = useAuth();
-  const { draft } = useActiveWorkout();
+  const { draft, unit, setUnit, hasUnsyncedWork, clearDevice } = useActiveWorkout();
+  const [signOutWarning, setSignOutWarning] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const accountName = user?.displayName ?? "PowrFit Athlete";
@@ -33,11 +36,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     router.push("/log");
   }, [router]);
 
-  const handleSignOut = useCallback(async () => {
+  const finishSignOut = useCallback(async () => {
     setDrawerOpen(false);
+    setSignOutWarning(false);
     await signOut();
     router.replace("/login");
   }, [router, signOut]);
+
+  // Unsynced work is per user and stays on the device, but warn first so a
+  // shared device isn't left holding someone's workout by surprise (P2-14).
+  const handleSignOut = useCallback(() => {
+    if (hasUnsyncedWork) {
+      setDrawerOpen(false);
+      setSignOutWarning(true);
+    } else {
+      void finishSignOut();
+    }
+  }, [hasUnsyncedWork, finishSignOut]);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -87,7 +102,45 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onSignOut={handleSignOut}
         accountName={accountName}
         accountEmail={accountEmail}
+        unit={unit}
+        onUnitChange={setUnit}
       />
+
+      <Dialog
+        open={signOutWarning}
+        title="Workout not synced yet"
+        onClose={() => setSignOutWarning(false)}
+        footer={
+          <div className="flex flex-col gap-2">
+            <Button className="h-12 text-base font-bold" onClick={() => void finishSignOut()}>
+              Keep on this device and sign out
+            </Button>
+            <Button
+              variant="destructive"
+              className="h-12 text-base"
+              onClick={() => {
+                clearDevice();
+                void finishSignOut();
+              }}
+            >
+              Discard and sign out
+            </Button>
+            <Button
+              variant="ghost"
+              className="h-12 text-base text-foreground hover:bg-surface hover:text-foreground"
+              onClick={() => setSignOutWarning(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-muted-foreground">
+          This device has a workout in progress or a finished workout that hasn&apos;t reached
+          your account yet. If you keep it, it comes back when you sign in here again and is
+          never shown to anyone else. If you discard it, it&apos;s gone for good.
+        </p>
+      </Dialog>
     </div>
   );
 }
