@@ -24,7 +24,9 @@ async function finish(page: Page) {
   const dialog = page.getByRole("dialog", { name: "Finish workout?" });
   await expect(dialog.getByText(/unticked sets will be discarded/)).toBeVisible();
   await dialog.getByRole("button", { name: "Finish and save" }).click();
-  await expect(page).toHaveURL(/\/workouts\/history\/[0-9a-f-]{36}$/);
+  // The summary appears in place (no network needed), then History reopens it.
+  await expect(page).toHaveURL(/\/log$/);
+  await expect(page.getByText("Workout saved")).toBeVisible();
 }
 
 async function expectSummary(page: Page) {
@@ -45,7 +47,6 @@ test("a workout can be started, logged, finished and reopened with matching tota
   await signUp(page, testEmail("core"));
   await logPushDay(page);
   await finish(page);
-  const summaryUrl = page.url();
   await expectSummary(page);
 
   // History lists it with the same totals, and reopening shows the same summary.
@@ -54,7 +55,7 @@ test("a workout can be started, logged, finished and reopened with matching tota
   await expect(row).toContainText("3 sets · 2,515 lb");
   await expect(row).toContainText("Synced");
   await row.click();
-  await expect(page).toHaveURL(summaryUrl);
+  await expect(page).toHaveURL(/\/workouts\/history\/[0-9a-f-]{36}$/);
   await expectSummary(page);
 
   // Home's week stats and last-workout card agree.

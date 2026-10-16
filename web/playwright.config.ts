@@ -28,7 +28,7 @@ export default defineConfig({
       command: "npm run emulators",
       url: "http://127.0.0.1:9099",
       reuseExistingServer: true,
-      timeout: 120_000,
+      timeout: 180_000,
       // SIGINT lets the Firebase CLI stop its Java emulator; SIGTERM left it
       // running and holding port 8080.
       gracefulShutdown: { signal: "SIGINT", timeout: 10_000 },
@@ -37,7 +37,7 @@ export default defineConfig({
       command: `npm run dev:emulators -- -p ${PORT}`,
       url: `http://localhost:${PORT}/login`,
       reuseExistingServer: true,
-      timeout: 120_000,
+      timeout: 180_000,
     },
   ],
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AlertTriangle, Loader2, Plus } from "lucide-react";
 
 import { ScreenHeader } from "@/components/shell/placeholder";
@@ -12,6 +12,7 @@ import { ExerciseCard } from "@/components/workout/exercise-card";
 import { ExercisePicker } from "@/components/workout/exercise-picker";
 import { useNow } from "@/components/workout/use-now";
 import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
+import { WorkoutSummary } from "@/components/workout/workout-summary";
 import {
   PRESET_ROUTINES,
   addExercise,
@@ -31,6 +32,9 @@ import { formatElapsed, formatWeight } from "@/lib/workout/format";
 // The live workout logger (design spec §6.5, Phase 2 P2-08 to P2-10).
 export default function LogPage() {
   const { ready, draft, restoreProblem, storageProblem } = useActiveWorkout();
+  // Shown in place after Finish rather than navigating away: navigating
+  // would need the network, and finishing often happens offline.
+  const [finishedId, setFinishedId] = useState<string | null>(null);
 
   if (!ready) {
     return (
@@ -54,7 +58,23 @@ export default function LogPage() {
           app until you finish.
         </Notice>
       )}
-      {draft ? <Logger draft={draft} /> : <StartPanel />}
+      {draft ? (
+        <Logger draft={draft} onFinished={setFinishedId} />
+      ) : finishedId ? (
+        <WorkoutSummary
+          logId={finishedId}
+          top={
+            <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:px-6">
+              <p className="text-sm font-semibold text-success">Workout saved</p>
+              <Link href="/home" className="inline-flex h-11 items-center px-2 text-sm font-semibold text-accent">
+                Done
+              </Link>
+            </div>
+          }
+        />
+      ) : (
+        <StartPanel />
+      )}
     </div>
   );
 }
@@ -120,8 +140,13 @@ function useLastSets(draft: WorkoutDraft) {
   }, [items, draft.id, draft.exercises]);
 }
 
-function Logger({ draft }: { draft: WorkoutDraft }) {
-  const router = useRouter();
+function Logger({
+  draft,
+  onFinished,
+}: {
+  draft: WorkoutDraft;
+  onFinished: (id: string) => void;
+}) {
   const { update, discard, finish, unit } = useActiveWorkout();
   const now = useNow();
   const lastSets = useLastSets(draft);
@@ -135,7 +160,8 @@ function Logger({ draft }: { draft: WorkoutDraft }) {
   const confirmFinish = () => {
     const id = finish();
     setFinishOpen(false);
-    router.push(`/workouts/history/${id}`);
+    onFinished(id);
+    window.scrollTo({ top: 0 });
   };
 
   return (
