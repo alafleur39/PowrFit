@@ -1,9 +1,60 @@
 rules_version = '2';
 
+// PowrFit Firestore rules (Phase 2, P2-06). Every path is listed explicitly:
+// rules are OR-ed together, so a catch-all like users/{uid}/{document=**}
+// would let any write skip the validation below. Anything not matched here
+// is denied. Tested in tests/rules with the emulator (npm run test:rules).
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Mirrors decodeWorkoutLog in src/lib/workout/workout-codec.ts. Rules
+    // can't loop over lists, so individual sets are checked by the app.
+    function isValidWorkoutLog(logId) {
+      let data = request.resource.data;
+      let totals = data.totals;
+      return data.keys().hasAll(['id', 'schemaVersion', 'startedAt', 'endedAt', 'updatedAt',
+                                 'exercises', 'exerciseIds', 'totals'])
+        && data.keys().hasOnly(['id', 'schemaVersion', 'routineId', 'routineName', 'startedAt',
+                                'endedAt', 'updatedAt', 'exercises', 'exerciseIds', 'totals'])
+        && data.id == logId
+        && data.schemaVersion == 1
+        && data.startedAt is string && data.startedAt.size() <= 40
+        && data.endedAt is string && data.endedAt.size() <= 40
+        && data.updatedAt is string && data.updatedAt.size() <= 40
+        && (!('routineId' in data) || (data.routineId is string && data.routineId.size() <= 100))
+        && (!('routineName' in data) || (data.routineName is string && data.routineName.size() <= 100))
+        && data.exercises is list && data.exercises.size() >= 1 && data.exercises.size() <= 30
+        && data.exerciseIds is list && data.exerciseIds.size() >= 1 && data.exerciseIds.size() <= 30
+        && totals is map
+        && totals.keys().hasOnly(['sets', 'reps', 'volume', 'unit'])
+        && totals.sets is int && totals.sets >= 0
+        && totals.reps is int && totals.reps >= 0
+        && totals.volume is number && totals.volume >= 0
+        && totals.unit in ['kg', 'lb'];
+    }
+
+    // Finished workouts. A retry rewrites the same document (same id).
+    match /users/{userId}/workoutLogs/{logId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidWorkoutLog(logId);
+    }
+
+    // The kg/lb preference.
+    match /users/{userId}/settings/preferences {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['weightUnit'])
+        && request.resource.data.weightUnit in ['kg', 'lb'];
+    }
+
+    // Phase 0 mock data, retired in P2-15: owners can still read it, nobody
+    // can write it.
+    match /users/{userId}/{legacy}/{docId} {
+      allow read: if isOwner(userId)
+        && legacy in ['dashboard', 'goals', 'upcomingSessions', 'workoutSessions'];
     }
   }
 }
