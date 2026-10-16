@@ -52,7 +52,7 @@ export default function LoginPage() {
   // Already signed in? Straight to the app.
   useEffect(() => {
     if (!loading && user) {
-      router.replace("/profile");
+      router.replace("/home");
     }
   }, [loading, user, router]);
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
       } else {
         await signUp(trimmedEmail, password);
       }
-      router.replace("/profile");
+      router.replace("/home");
     } catch (err) {
       const message =
         typeof err === "object" && err !== null && "code" in err

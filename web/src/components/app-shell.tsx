@@ -23,11 +23,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const accountName = user?.displayName ?? "PowrFit Athlete";
   const accountEmail = user?.email ?? "";
 
-  // The FAB and the sidebar CTA both fire this one action. The real
-  // Log-workout flow is out of scope for this pass (spec §8) — stubbed for now.
+  // The FAB and the sidebar CTA both open the logger, which resumes any
+  // workout in progress.
   const handleLogWorkout = useCallback(() => {
-    console.info("Log workout — flow not wired yet (POWRFIT_NAV_SPEC §8).");
-  }, []);
+    router.push("/log");
+  }, [router]);
 
   const handleSignOut = useCallback(async () => {
     setDrawerOpen(false);
