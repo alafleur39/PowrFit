@@ -12,9 +12,11 @@ export function ServiceWorkerRegistration() {
       return;
     }
 
-    navigator.serviceWorker.register("/sw.js").catch((error) => {
-      console.warn("PowrFit service worker registration failed.", error);
-    });
+    navigator.serviceWorker
+      .register("/sw.js", { scope: "/", updateViaCache: "none" })
+      .catch((error) => {
+        console.warn("PowrFit service worker registration failed.", error);
+      });
   }, []);
 
   return null;
