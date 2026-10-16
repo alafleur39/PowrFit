@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
+import { ActiveWorkoutProvider } from "@/components/workout/active-workout-provider";
 
 // Client-side guard for everything inside the (app) route group — the web
 // equivalent of the Expo tabs layout's Redirect-to-Login pattern.
@@ -28,5 +29,9 @@ export default function ProtectedLayout({ children }: PropsWithChildren) {
     );
   }
 
-  return <AppShell>{children}</AppShell>;
+  return (
+    <ActiveWorkoutProvider>
+      <AppShell>{children}</AppShell>
+    </ActiveWorkoutProvider>
+  );
 }

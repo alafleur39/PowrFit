@@ -5,12 +5,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/auth-provider";
+import { cn } from "@/lib/utils";
 import { PowrFitLogo } from "@/components/powrfit-logo";
 import { AccountDrawer } from "@/components/shell/account-drawer";
 import { BottomTabBar } from "@/components/shell/bottom-tab-bar";
 import { Fab } from "@/components/shell/fab";
 import { Sidebar } from "@/components/shell/sidebar";
 import { StatsRail } from "@/components/shell/stats-rail";
+import { ActiveWorkoutStrip } from "@/components/workout/active-workout-strip";
+import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 
 // The navigation shell (POWRFIT_NAV_SPEC §5). X/Twitter layout: a left sidebar
 // + right stats rail flank a centered, width-capped content column on desktop;
@@ -18,6 +21,7 @@ import { StatsRail } from "@/components/shell/stats-rail";
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { draft } = useActiveWorkout();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const accountName = user?.displayName ?? "PowrFit Athlete";
@@ -45,7 +49,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           accountEmail={accountEmail}
         />
 
-        <main className="min-h-dvh w-full min-w-0 flex-1 pb-24 md:border-x md:border-border md:pb-0">
+        <main
+          className={cn(
+            "min-h-dvh w-full min-w-0 flex-1 md:border-x md:border-border",
+            draft ? "pb-40 md:pb-24" : "pb-24 md:pb-0"
+          )}
+        >
           <header className="sticky top-0 z-20 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center pt-[env(safe-area-inset-top)] justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-xl md:hidden">
             <button
               type="button"
@@ -67,7 +76,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <StatsRail />
       </div>
 
-      <Fab onClick={handleLogWorkout} />
+      {/* While a workout is open, the strip replaces the FAB as the way back in. */}
+      {!draft && <Fab onClick={handleLogWorkout} />}
+      <ActiveWorkoutStrip />
       <BottomTabBar />
 
       <AccountDrawer
