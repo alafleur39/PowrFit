@@ -2,7 +2,7 @@
 //
 // Pure TypeScript: nothing in src/lib/strength may import Firebase, React or
 // browser-only APIs, so the logger, repositories and the future AI agent can
-// all share it. Timestamps are ISO 8601 strings, matching training-data.ts;
+// all share it. Timestamps are ISO 8601 strings;
 // repositories convert to and from Firestore types at the boundary.
 
 // Enum-like values are `as const` arrays so the catalog (P1-07) and tests can
