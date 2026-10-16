@@ -1,8 +1,9 @@
 // Built-in exercise catalog and search (P1-07).
 //
-// The list was approved under decision D7 on 2026-10-16. Ids are permanent:
-// logs and routines store them, so rename an exercise's `name` if needed but
-// never change its `id`. Search runs entirely on the device so the picker
+// The list was approved under decision D7 on 2026-10-16; machine preacher
+// curl and dumbbell calf raise were added the same day for the preset
+// routines (P1-10). Ids are permanent: logs and routines store them, so
+// rename an exercise's `name` if needed but never change its `id`. Search runs entirely on the device so the picker
 // works offline.
 
 import type { Equipment, Exercise, MuscleGroup } from "./types";
@@ -39,6 +40,7 @@ export const EXERCISES: readonly Exercise[] = [
   { id: "dumbbell-curl", name: "Dumbbell curl", primaryMuscle: "biceps", secondaryMuscles: ["forearms"], equipment: "dumbbell", mechanic: "isolation" },
   { id: "hammer-curl", name: "Hammer curl", primaryMuscle: "biceps", secondaryMuscles: ["forearms"], equipment: "dumbbell", mechanic: "isolation" },
   { id: "cable-curl", name: "Cable curl", primaryMuscle: "biceps", secondaryMuscles: ["forearms"], equipment: "cable", mechanic: "isolation" },
+  { id: "machine-preacher-curl", name: "Machine preacher curl", primaryMuscle: "biceps", secondaryMuscles: ["forearms"], equipment: "machine", mechanic: "isolation" },
 
   // Triceps
   { id: "triceps-pushdown", name: "Triceps pushdown", primaryMuscle: "triceps", secondaryMuscles: [], equipment: "cable", mechanic: "isolation" },
@@ -78,6 +80,7 @@ export const EXERCISES: readonly Exercise[] = [
   // Calves
   { id: "standing-calf-raise", name: "Standing calf raise", primaryMuscle: "calves", secondaryMuscles: [], equipment: "machine", mechanic: "isolation" },
   { id: "seated-calf-raise", name: "Seated calf raise", primaryMuscle: "calves", secondaryMuscles: [], equipment: "machine", mechanic: "isolation" },
+  { id: "dumbbell-calf-raise", name: "Dumbbell calf raise", primaryMuscle: "calves", secondaryMuscles: [], equipment: "dumbbell", mechanic: "isolation" },
 
   // Full body
   { id: "kettlebell-swing", name: "Kettlebell swing", primaryMuscle: "full-body", secondaryMuscles: ["glutes", "hamstrings", "core"], equipment: "kettlebell", mechanic: "compound" },

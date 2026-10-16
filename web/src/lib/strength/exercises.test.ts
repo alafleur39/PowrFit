@@ -11,8 +11,8 @@ import {
 const names = (list: { name: string }[]) => list.map((exercise) => exercise.name);
 
 describe("EXERCISES catalog", () => {
-  it("has the 52 exercises approved under D7", () => {
-    expect(EXERCISES).toHaveLength(52);
+  it("has the 52 exercises approved under D7, plus 2 added for presets", () => {
+    expect(EXERCISES).toHaveLength(54);
   });
 
   it("has unique, kebab-case ids", () => {
@@ -95,7 +95,11 @@ describe("searchExercises", () => {
 
   it("filters by primary muscle", () => {
     const calves = searchExercises("", { muscle: "calves" });
-    expect(names(calves)).toEqual(["Seated calf raise", "Standing calf raise"]);
+    expect(names(calves)).toEqual([
+      "Dumbbell calf raise",
+      "Seated calf raise",
+      "Standing calf raise",
+    ]);
   });
 
   it("filters by equipment", () => {
