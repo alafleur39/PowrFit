@@ -3,10 +3,15 @@
 [build]
   base = "web"
   command = "npm run build"
-  publish = ".next"
+  publish = "web/.next"
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Declared explicitly: CLI deploys from the repo root don't auto-detect it,
+# and without it the server function and static files are never rebuilt.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 # Keep the service worker fresh so each deploy takes over after one reload
 # (mirrors web/next.config.ts).
