@@ -17,11 +17,14 @@ export type SegmentedTab = {
 export function SegmentedTabs({
   tabs,
   ariaLabel,
+  defaultTabId,
 }: {
   tabs: SegmentedTab[];
   ariaLabel: string;
+  /** Tab to open first; defaults to the first tab. */
+  defaultTabId?: string;
 }) {
-  const [activeId, setActiveId] = useState(tabs[0]?.id);
+  const [activeId, setActiveId] = useState(defaultTabId ?? tabs[0]?.id);
   const baseId = useId();
   const active = tabs.find((tab) => tab.id === activeId) ?? tabs[0];
 
