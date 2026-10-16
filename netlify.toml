@@ -1,0 +1,9 @@
+# Netlify build for the PowrFit web app in web/. The retired Expo app at the
+# repo root is not deployed. Netlify's Next.js runtime is added automatically.
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
