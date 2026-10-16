@@ -13,7 +13,8 @@
     "test:rules": "firebase emulators:exec --only firestore --project demo-powrfit \"vitest run --config vitest.rules.config.mts\"",
     "emulators": "firebase emulators:start --only auth,firestore --project demo-powrfit",
     "dev:emulators": "NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-powrfit next dev",
-    "verify": "npm run lint && npm run typecheck && npm test && npm run test:rules && npm run build"
+    "verify": "npm run lint && npm run typecheck && npm test && npm run test:rules && npm run build",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "5.0.2",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

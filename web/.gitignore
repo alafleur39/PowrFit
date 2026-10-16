@@ -47,3 +47,8 @@ next-env.d.ts
 # firebase emulators
 firestore-debug.log
 firebase-debug.log
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
