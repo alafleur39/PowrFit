@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit --incremental false",
     "test:rules": "firebase emulators:exec --only firestore --project demo-powrfit \"vitest run --config vitest.rules.config.mts\"",
     "emulators": "firebase emulators:start --only auth,firestore --project demo-powrfit",
-    "dev:emulators": "NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-powrfit next dev"
+    "dev:emulators": "NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-powrfit next dev",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run test:rules && npm run build"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",
