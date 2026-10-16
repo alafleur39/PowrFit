@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- PowrFit app icon: original yellow bolt on black. Kept inside the
+       maskable safe zone (centre 80% circle) so one design serves both. -->
+  <rect width="512" height="512" fill="#0A0A0A"/>
+  <path d="M296 72 136 280h108l-28 160 160-216H268z" fill="#FFD60A" stroke="#FFD60A" stroke-width="12" stroke-linejoin="round"/>
+</svg>

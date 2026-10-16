@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         />
 
         <main className="min-h-dvh w-full min-w-0 flex-1 pb-24 md:border-x md:border-border md:pb-0">
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-xl md:hidden">
+          <header className="sticky top-0 z-20 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center pt-[env(safe-area-inset-top)] justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-xl md:hidden">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
