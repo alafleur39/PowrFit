@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit --incremental false",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-powrfit \"vitest run --config vitest.rules.config.mts\""
+    "test:rules": "firebase emulators:exec --only firestore --project demo-powrfit \"vitest run --config vitest.rules.config.mts\"",
+    "emulators": "firebase emulators:start --only auth,firestore --project demo-powrfit",
+    "dev:emulators": "NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-powrfit next dev"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",

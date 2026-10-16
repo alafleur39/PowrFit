@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // The login page's hero photo is served from Unsplash.
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com", pathname: "/**" }],
+  },
   // Browsers must always re-check the service worker so a new deploy takes
   // over after one reload (Next PWA guide; P1-09). Mirrored in netlify.toml.
   async headers() {

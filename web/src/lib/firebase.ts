@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 import {
+  connectFirestoreEmulator,
   getFirestore,
   initializeFirestore,
   memoryLocalCache,
@@ -69,4 +70,16 @@ function createFirestore(): Firestore {
 }
 
 export const db = createFirestore();
+
+// Local development and browser tests only: talk to the Firebase emulators
+// (npm run emulators) instead of the real project. Off unless explicitly set.
+if (
+  process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true" &&
+  typeof window !== "undefined" &&
+  !(globalThis as { __powrfitEmulators?: boolean }).__powrfitEmulators
+) {
+  (globalThis as { __powrfitEmulators?: boolean }).__powrfitEmulators = true;
+  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
 export default app;
