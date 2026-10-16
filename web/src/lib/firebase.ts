@@ -1,6 +1,13 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  initializeFirestore,
+  memoryLocalCache,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from "firebase/firestore";
 
 const requiredEnv = (key: string, value: string | undefined) => {
   if (!value) {
@@ -42,5 +49,24 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Firestore keeps a persistent cache in IndexedDB in the browser, so writes
+// made offline are queued on the device, survive reloads and sync when the
+// connection returns (Phase 2 plan, section B). If IndexedDB can't be opened
+// (some private-browsing modes) the SDK falls back to its memory cache. The
+// server render has no IndexedDB, so it uses the memory cache.
+function createFirestore(): Firestore {
+  try {
+    return initializeFirestore(app, {
+      localCache:
+        typeof window === "undefined"
+          ? memoryLocalCache()
+          : persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    });
+  } catch {
+    // Already initialised (for example after a hot reload).
+    return getFirestore(app);
+  }
+}
+
+export const db = createFirestore();
 export default app;
