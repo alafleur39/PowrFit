@@ -11,7 +11,7 @@
 export const WEIGHT_UNITS = ["kg", "lb"] as const;
 export type WeightUnit = (typeof WEIGHT_UNITS)[number];
 
-// Draft taxonomy — confirm or change under decision D7 before P1-07 ships.
+// Approved under decision D7 on 2026-10-16.
 export const MUSCLE_GROUPS = [
   "chest",
   "back",
@@ -28,7 +28,7 @@ export const MUSCLE_GROUPS = [
 ] as const;
 export type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
 
-// Draft taxonomy — confirm or change under decision D7 before P1-07 ships.
+// Approved under decision D7 on 2026-10-16.
 export const EQUIPMENT = [
   "barbell",
   "dumbbell",
