@@ -4,70 +4,55 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  PowrFit design tokens — ported 1:1 from the Expo app's global.css (shadcn
-  neutral base). Values kept in HSL for continuity with the native app. A bold
-  "energy" accent for the gym brand can be layered in during the design phase.
+  PowrFit design tokens (POWRFIT_NAV_SPEC §2, web design spec §4). The app is
+  dark-only: "lights out" black surfaces with electric-yellow accents. Yellow
+  is for actions and achievements only; text on yellow is near-black.
 */
 :root {
+  color-scheme: dark;
   --radius: 0.625rem;
 
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(240 10% 3.9%);
+  /* Brand tokens */
+  --bg: #0a0a0a;
+  --surface: #161616;
+  --surface-active: #1a1a0e;
+  --surface-raised: #1f1f1f;
+  --hairline: #262626;
+  --brand: #ffd60a;
+  --on-brand: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-secondary: #8e8e93;
+  --success: #30d158;
+  --danger: #ff453a;
 
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(240 10% 3.9%);
+  /* shadcn variables, pointed at the brand tokens */
+  --background: var(--bg);
+  --foreground: var(--text-primary);
 
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(240 10% 3.9%);
+  --card: var(--surface);
+  --card-foreground: var(--text-primary);
 
-  --primary: hsl(240 5.9% 10%);
-  --primary-foreground: hsl(0 0% 98%);
+  --popover: var(--surface-raised);
+  --popover-foreground: var(--text-primary);
 
-  --secondary: hsl(240 4.8% 95.9%);
-  --secondary-foreground: hsl(240 5.9% 10%);
+  --primary: var(--brand);
+  --primary-foreground: var(--on-brand);
 
-  --muted: hsl(240 4.8% 95.9%);
-  --muted-foreground: hsl(240 3.8% 46.1%);
+  --secondary: var(--surface-raised);
+  --secondary-foreground: var(--text-primary);
 
-  --accent: hsl(240 4.8% 95.9%);
-  --accent-foreground: hsl(240 5.9% 10%);
+  --muted: var(--surface);
+  --muted-foreground: var(--text-secondary);
 
-  --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(0 0% 98%);
+  --accent: var(--brand);
+  --accent-foreground: var(--on-brand);
 
-  --border: hsl(240 5.9% 90%);
-  --input: hsl(240 5.9% 90%);
-  --ring: hsl(240 5.9% 10%);
-}
+  --destructive: var(--danger);
+  --destructive-foreground: var(--text-primary);
 
-.dark {
-  --background: hsl(240 10% 3.9%);
-  --foreground: hsl(0 0% 98%);
-
-  --card: hsl(240 10% 3.9%);
-  --card-foreground: hsl(0 0% 98%);
-
-  --popover: hsl(240 10% 3.9%);
-  --popover-foreground: hsl(0 0% 98%);
-
-  --primary: hsl(0 0% 98%);
-  --primary-foreground: hsl(240 5.9% 10%);
-
-  --secondary: hsl(240 3.7% 15.9%);
-  --secondary-foreground: hsl(0 0% 98%);
-
-  --muted: hsl(240 3.7% 15.9%);
-  --muted-foreground: hsl(240 5% 64.9%);
-
-  --accent: hsl(240 3.7% 15.9%);
-  --accent-foreground: hsl(0 0% 98%);
-
-  --destructive: hsl(0 72% 51%);
-  --destructive-foreground: hsl(0 0% 98%);
-
-  --border: hsl(240 3.7% 15.9%);
-  --input: hsl(240 3.7% 15.9%);
-  --ring: hsl(240 4.9% 83.9%);
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --ring: var(--brand);
 }
 
 @theme inline {
@@ -95,6 +80,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-active: var(--surface-active);
+  --color-surface-raised: var(--surface-raised);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -107,4 +97,23 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Brand utilities used by the shell and login (P2-01). */
+@utility brand-glow {
+  box-shadow: 0 0 24px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+@utility glass-card {
+  background-color: color-mix(in srgb, var(--surface) 88%, transparent);
+  border-color: var(--hairline);
+  backdrop-filter: blur(16px);
+}
+
+@utility energy-grid {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--brand) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--brand) 6%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
