@@ -66,20 +66,23 @@ export function SegmentedTabs({
         })}
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={active?.id}
-          id={`${baseId}-panel-${active?.id}`}
-          role="tabpanel"
-          aria-labelledby={`${baseId}-tab-${active?.id}`}
-          initial={{ opacity: 0, x: 8 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -8 }}
-          transition={{ duration: 0.18 }}
-        >
-          {active?.content}
-        </motion.div>
-      </AnimatePresence>
+      {/* Clip the 8px slide so it never makes the page scroll sideways. */}
+      <div className="overflow-x-clip">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active?.id}
+            id={`${baseId}-panel-${active?.id}`}
+            role="tabpanel"
+            aria-labelledby={`${baseId}-tab-${active?.id}`}
+            initial={{ opacity: 0, x: 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -8 }}
+            transition={{ duration: 0.18 }}
+          >
+            {active?.content}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

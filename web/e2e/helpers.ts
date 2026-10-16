@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { expect, type Page } from "@playwright/test";
 
 // Talks to the local Firebase emulators (demo-powrfit) over their REST APIs.
@@ -65,7 +67,7 @@ export async function signIn(page: Page, email: string): Promise<void> {
   await page.goto("/login");
   await page.getByLabel("Email address").fill(email);
   await page.getByLabel("Password").fill(TEST_PASSWORD);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.getByRole("button", { name: /^sign in$/i }).click();
   await expect(page).toHaveURL(/\/home$/);
 }
 
@@ -83,4 +85,16 @@ export async function logSet(
   await card.getByLabel(`Set ${n} reps`).fill(reps);
   await card.getByRole("button", { name: `Set ${n} not done` }).click();
   await expect(card.getByRole("button", { name: `Set ${n} done` })).toBeVisible();
+}
+
+/** Puts the project's real rules (web/firestore.rules) back on the emulator. */
+export async function restoreFirestoreRules(): Promise<void> {
+  await setFirestoreRules(readFileSync("firestore.rules", "utf8"));
+}
+
+/** Opens the account menu from the mobile top bar or the desktop sidebar. */
+export async function openAccountMenu(page: Page, isMobile: boolean): Promise<void> {
+  if (isMobile) await page.getByRole("button", { name: "Open account menu" }).click();
+  else await page.getByRole("button", { name: /@powrfit\.test/ }).click();
+  await expect(page.getByRole("dialog", { name: "Account" })).toBeVisible();
 }
