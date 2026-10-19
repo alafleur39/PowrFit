@@ -76,6 +76,20 @@ describe("workoutLogs access", () => {
     await assertFails(bob().collection("users/alice/workoutLogs").get());
   });
 
+  // The Tea-app shape of leak: one query for everyone's data. A signed-in
+  // stranger (anyone can make an account) must not be able to run it.
+  it("stops anyone from querying all users' workouts or routines at once", async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("users/alice/workoutLogs/w1").set(valid);
+      await ctx.firestore().doc("users/alice/routines/r1").set({ name: "x" });
+    });
+    for (const db of [bob(), alice(), guest()]) {
+      await assertFails(db.collectionGroup("workoutLogs").get());
+      await assertFails(db.collectionGroup("routines").get());
+      await assertFails(db.collection("users").get());
+    }
+  });
+
   it("stops signed-out access", async () => {
     await assertFails(guest().doc("users/alice/workoutLogs/w1").get());
     await assertFails(guest().doc("users/alice/workoutLogs/w1").set(valid));
