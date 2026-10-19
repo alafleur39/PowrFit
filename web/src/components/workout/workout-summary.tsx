@@ -144,6 +144,11 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         {log.exercises.map((exercise, index) => (
           <li key={`${exercise.exerciseId}-${index}`} className="rounded-2xl border border-border bg-surface p-4">
             <h2 className="font-bold">{exercise.exerciseName}</h2>
+            {exercise.note && (
+              <p className="mt-1 whitespace-pre-line break-words text-sm text-muted-foreground italic">
+                {exercise.note}
+              </p>
+            )}
             <RecordLine
               record={logRecords.find((record) => record.exerciseId === exercise.exerciseId)}
               unit={unit}

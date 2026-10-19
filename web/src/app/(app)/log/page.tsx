@@ -24,6 +24,7 @@ import {
   draftTotals,
   lastSetsForExercise,
   removeExercise,
+  setExerciseNote,
   removeSet,
   toggleSetDone,
   updateSet,
@@ -227,6 +228,9 @@ function Logger({
             }
             onAddSet={() => update((current, time) => addSet(current, exercise.key, time))}
             onRemove={() => update((current, time) => removeExercise(current, exercise.key, time))}
+            onNoteChange={(note) =>
+              update((current, time) => setExerciseNote(current, exercise.key, note, time))
+            }
           />
         ))}
 

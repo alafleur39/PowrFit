@@ -6,6 +6,7 @@
 // invalid (an exercise with no sets left); logProblems says what to fix and
 // cleanEditedLog drops the empty exercises and recomputes what's derived.
 
+import { EXERCISE_NOTE_LIMIT } from "./draft";
 import { workoutTotals } from "./totals";
 import type { LoggedExercise, LoggedSet, WorkoutLog } from "./types";
 
@@ -46,6 +47,27 @@ export function editLogSet(
             sets: item.sets.map((set, j): LoggedSet => (j === setIndex ? { ...set, ...patch } : set)),
           }
     )
+  );
+}
+
+/** Sets an exercise's note (D27); "" removes it. */
+export function editLogNote(
+  log: WorkoutLog,
+  exerciseIndex: number,
+  note: string,
+  now: string
+): WorkoutLog {
+  assertExercise(log, exerciseIndex);
+  return touched(
+    log,
+    now,
+    log.exercises.map((item, i) => {
+      if (i !== exerciseIndex) return item;
+      const next = { ...item };
+      if (note === "") delete next.note;
+      else next.note = note.slice(0, EXERCISE_NOTE_LIMIT);
+      return next;
+    })
   );
 }
 
@@ -93,12 +115,21 @@ export function logProblems(log: WorkoutLog): string[] {
 }
 
 /**
- * The log as it will be saved: exercises with no sets are dropped and the
- * exercise ids and totals are recomputed. Totals keep the unit they were
+ * The log as it will be saved: exercises with no sets are dropped, notes
+ * are trimmed (an empty one is removed), and the exercise ids and totals
+ * are recomputed. Totals keep the unit they were
  * saved in.
  */
 export function cleanEditedLog(log: WorkoutLog): WorkoutLog {
-  const exercises = log.exercises.filter((exercise) => exercise.sets.length > 0);
+  const exercises = log.exercises
+    .filter((exercise) => exercise.sets.length > 0)
+    .map((exercise) => {
+      const next = { ...exercise };
+      const note = exercise.note?.trim();
+      if (note) next.note = note;
+      else delete next.note;
+      return next;
+    });
   return {
     ...log,
     exercises,

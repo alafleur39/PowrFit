@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   cleanEditedLog,
+  editLogNote,
   editLogSet,
   logProblems,
   removeLogExercise,
@@ -55,6 +56,15 @@ describe("editing a finished workout", () => {
     const fewerExercises = removeLogExercise(log, 1, T2);
     expect(fewerExercises.exercises.map((e) => e.exerciseId)).toEqual(["barbell-row"]);
     expect(fewerExercises.updatedAt).toBe(T2);
+  });
+
+  it("edits, trims and clears an exercise note (D27)", () => {
+    const noted = editLogNote(log, 1, "  Grip gave out ", T2);
+    expect(noted.exercises[1].note).toBe("  Grip gave out ");
+    expect(noted.updatedAt).toBe(T2);
+    expect(cleanEditedLog(noted).exercises[1].note).toBe("Grip gave out");
+    expect("note" in cleanEditedLog(editLogNote(noted, 1, "  ", T2)).exercises[1]).toBe(false);
+    expect("note" in editLogNote(noted, 1, "", T2).exercises[1]).toBe(false);
   });
 
   it("rejects out-of-range indexes", () => {

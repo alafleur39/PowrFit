@@ -34,6 +34,8 @@ export type DraftExercise = {
   targetReps?: string;
   /** Rest after each set, from the routine; DEFAULT_REST_SEC when absent. */
   restSec?: number;
+  /** Free text for this exercise (P5-02, D27); saved with the workout. */
+  note?: string;
   sets: DraftSet[];
 };
 
@@ -101,6 +103,24 @@ export function createDraft(options: {
     exercises,
     nextKey: exercises.length,
   };
+}
+
+/** Longest exercise note (D27), the same as a routine's notes. */
+export const EXERCISE_NOTE_LIMIT = 300;
+
+/** Sets an exercise's note; text past the limit is cut, and "" removes it. */
+export function setExerciseNote(
+  draft: WorkoutDraft,
+  key: string,
+  note: string,
+  now: string
+): WorkoutDraft {
+  return updateExercise(draft, key, now, (exercise) => {
+    const next = { ...exercise };
+    if (note === "") delete next.note;
+    else next.note = note.slice(0, EXERCISE_NOTE_LIMIT);
+    return next;
+  });
 }
 
 function updateExercise(
@@ -282,6 +302,7 @@ function doneLoggedExercises(draft: WorkoutDraft): LoggedExercise[] {
     .map((exercise) => ({
       exerciseId: exercise.exerciseId,
       exerciseName: exercise.exerciseName,
+      ...(exercise.note?.trim() && { note: exercise.note.trim() }),
       sets: exercise.sets
         .filter((set) => set.done && canCompleteSet(set))
         .map(

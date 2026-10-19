@@ -12,6 +12,8 @@ import {
   removeExercise,
   removeSet,
   setDraftUnit,
+  setExerciseNote,
+  EXERCISE_NOTE_LIMIT,
   toggleSetDone,
   updateSet,
   workoutTotals,
@@ -204,6 +206,18 @@ describe("finishDraft", () => {
     expect("routineName" in log).toBe(false);
   });
 
+  it("saves trimmed exercise notes and leaves out blank ones (D27)", () => {
+    let draft = addExercise(emptyDraft(), "pull-up", T1);
+    draft = addExercise(draft, "dip", T1);
+    draft = logSet(draft, "e0", 0, 0, 10);
+    draft = logSet(draft, "e1", 0, 0, 8);
+    draft = setExerciseNote(draft, "e0", "  Slow negatives ", T1);
+    draft = setExerciseNote(draft, "e1", "   ", T1);
+    const [pullUp, dip] = finishDraft(draft, T2).exercises;
+    expect(pullUp.note).toBe("Slow negatives");
+    expect("note" in dip).toBe(false);
+  });
+
   it("refuses a workout with no done sets", () => {
     const draft = addExercise(emptyDraft(), "pull-up", T1);
     expect(() => finishDraft(draft, T2)).toThrow(RangeError);
@@ -222,5 +236,17 @@ describe("finishDraft", () => {
     draft = addSet(draft, "e0", T1);
     draft = toggleSetDone(draft, "e0", 1, T1);
     expect(finishDraft(draft, T2).totals).toEqual(draftTotals(draft, "kg"));
+  });
+});
+
+describe("setExerciseNote", () => {
+  it("sets, caps and clears a note", () => {
+    let draft = addExercise(emptyDraft(), "pull-up", T1);
+    draft = setExerciseNote(draft, "e0", "x".repeat(EXERCISE_NOTE_LIMIT + 5), T1);
+    expect(draft.exercises[0].note).toHaveLength(EXERCISE_NOTE_LIMIT);
+    draft = setExerciseNote(draft, "e0", "", T2);
+    expect("note" in draft.exercises[0]).toBe(false);
+    expect(draft.updatedAt).toBe(T2);
+    expect(() => setExerciseNote(draft, "nope", "x", T2)).toThrow(RangeError);
   });
 });

@@ -10,6 +10,7 @@ import {
   type WeightUnit,
 } from "@/lib/strength";
 import { formatSetsLine } from "@/lib/workout/format";
+import { ExerciseNote } from "./exercise-note";
 import { SetRow } from "./set-row";
 
 /**
@@ -42,6 +43,7 @@ export function ExerciseCard({
   onRemoveSet,
   onAddSet,
   onRemove,
+  onNoteChange,
 }: {
   exercise: DraftExercise;
   lastSets: readonly LoggedSet[] | undefined;
@@ -53,6 +55,7 @@ export function ExerciseCard({
   onRemoveSet: (index: number) => void;
   onAddSet: () => void;
   onRemove: () => void;
+  onNoteChange: (note: string) => void;
 }) {
   const record = recordIndex(exercise, bestKg);
   return (
@@ -112,6 +115,8 @@ export function ExerciseCard({
         <Plus className="size-4" aria-hidden />
         Add set
       </button>
+
+      <ExerciseNote exerciseName={exercise.exerciseName} note={exercise.note} onChange={onNoteChange} />
     </section>
   );
 }

@@ -6,6 +6,7 @@ import { ArrowLeft, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   cleanEditedLog,
+  editLogNote,
   editLogSet,
   logProblems,
   removeLogExercise,
@@ -15,6 +16,7 @@ import {
 import { formatDate, parseRepsInput, parseWeightInput } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
 import { Dialog } from "./dialog";
+import { ExerciseNote } from "./exercise-note";
 import { NumberField } from "./set-row";
 
 const nowIso = () => new Date().toISOString();
@@ -146,6 +148,11 @@ export function WorkoutEditor({
                     })}
                   </ol>
                 )}
+                <ExerciseNote
+                  exerciseName={name}
+                  note={exercise.note}
+                  onChange={(note) => change((l, now) => editLogNote(l, exerciseIndex, note, now))}
+                />
               </li>
             );
           })}
