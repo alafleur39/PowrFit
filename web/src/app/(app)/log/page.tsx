@@ -12,12 +12,13 @@ import { ExerciseCard } from "@/components/workout/exercise-card";
 import { ExercisePicker } from "@/components/workout/exercise-picker";
 import { useNow } from "@/components/workout/use-now";
 import { useRoutines } from "@/components/workout/use-routines";
-import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
+import { useHistoryLogs } from "@/components/workout/use-records";
 import { WorkoutSummary } from "@/components/workout/workout-summary";
 import {
   PRESET_ROUTINES,
   addExercise,
   addSet,
+  bestWeightsKg,
   draftSetCounts,
   draftTotals,
   lastSetsForExercise,
@@ -143,19 +144,18 @@ function StartPanel() {
   );
 }
 
-function useLastSets(draft: WorkoutDraft) {
-  const { items } = useRecentWorkouts(50);
+/** Last time's sets and the best weight so far for each exercise in the draft. */
+function useHistoryHints(draft: WorkoutDraft) {
+  const { logs: all } = useHistoryLogs();
   return useMemo(() => {
-    const logs: WorkoutLog[] = items.flatMap((item) =>
-      "log" in item && item.log.id !== draft.id ? [item.log] : []
-    );
-    const result = new Map<string, WorkoutLog["exercises"][number]["sets"]>();
+    const logs = all.filter((log) => log.id !== draft.id);
+    const lastSets = new Map<string, WorkoutLog["exercises"][number]["sets"]>();
     for (const exercise of draft.exercises) {
       const last = lastSetsForExercise(logs, exercise.exerciseId);
-      if (last) result.set(exercise.exerciseId, last.sets);
+      if (last) lastSets.set(exercise.exerciseId, last.sets);
     }
-    return result;
-  }, [items, draft.id, draft.exercises]);
+    return { lastSets, bestKg: bestWeightsKg(logs) };
+  }, [all, draft.id, draft.exercises]);
 }
 
 function Logger({
@@ -167,7 +167,7 @@ function Logger({
 }) {
   const { update, discard, finish, unit } = useActiveWorkout();
   const now = useNow();
-  const lastSets = useLastSets(draft);
+  const { lastSets, bestKg } = useHistoryHints(draft);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [finishOpen, setFinishOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
@@ -213,6 +213,7 @@ function Logger({
             exercise={exercise}
             unit={unit}
             lastSets={lastSets.get(exercise.exerciseId)}
+            bestKg={bestKg.get(exercise.exerciseId)}
             onChangeSet={(index, patch) =>
               update((current, time) => updateSet(current, exercise.key, index, patch, time))
             }

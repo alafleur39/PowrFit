@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, Trophy, X } from "lucide-react";
 
 import { canCompleteSet, type DraftSet } from "@/lib/strength";
 import { cn } from "@/lib/utils";
@@ -67,6 +67,7 @@ export function SetRow({
   index,
   set,
   targetReps,
+  record = false,
   onChange,
   onToggle,
   onRemove,
@@ -74,6 +75,8 @@ export function SetRow({
   index: number;
   set: DraftSet;
   targetReps?: string;
+  /** This set is a new personal record (P4-03). */
+  record?: boolean;
   onChange: (patch: { weight?: number | null; reps?: number | null }) => void;
   onToggle: () => void;
   onRemove: () => void;
@@ -88,9 +91,17 @@ export function SetRow({
         set.done && "bg-surface-active"
       )}
     >
-      <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
-        {number}
-      </span>
+      {record ? (
+        <span className="flex flex-col items-center leading-none" title="New personal record">
+          <Trophy className="size-4 text-accent" aria-hidden />
+          <span className="mt-0.5 text-[10px] font-bold text-accent">PR</span>
+          <span className="sr-only">Set {number} is a new personal record</span>
+        </span>
+      ) : (
+        <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
+          {number}
+        </span>
+      )}
       <NumberField
         value={set.weight}
         parse={parseWeightInput}

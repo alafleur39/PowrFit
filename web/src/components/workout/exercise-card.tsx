@@ -2,13 +2,40 @@
 
 import { Plus, Trash2 } from "lucide-react";
 
-import type { DraftExercise, LoggedSet, WeightUnit } from "@/lib/strength";
+import {
+  beatsBest,
+  convertWeight,
+  type DraftExercise,
+  type LoggedSet,
+  type WeightUnit,
+} from "@/lib/strength";
 import { formatSetsLine } from "@/lib/workout/format";
 import { SetRow } from "./set-row";
+
+/**
+ * The set to mark as a PR (D22): the heaviest finished set, if it beats the
+ * best from earlier workouts. -1 when there isn't one.
+ */
+function recordIndex(exercise: DraftExercise, bestKg: number | undefined): number {
+  let index = -1;
+  let heaviest = -1;
+  exercise.sets.forEach((set, i) => {
+    if (!set.done || set.weight === null) return;
+    const kg = convertWeight(set.weight, set.unit, "kg");
+    if (kg > heaviest) {
+      heaviest = kg;
+      index = i;
+    }
+  });
+  if (index === -1) return -1;
+  const set = exercise.sets[index];
+  return beatsBest({ weight: set.weight ?? 0, unit: set.unit }, bestKg) ? index : -1;
+}
 
 export function ExerciseCard({
   exercise,
   lastSets,
+  bestKg,
   unit,
   onChangeSet,
   onToggleSet,
@@ -18,6 +45,8 @@ export function ExerciseCard({
 }: {
   exercise: DraftExercise;
   lastSets: readonly LoggedSet[] | undefined;
+  /** Heaviest earlier set of this exercise in kg; undefined if never done. */
+  bestKg?: number;
   unit: WeightUnit;
   onChangeSet: (index: number, patch: { weight?: number | null; reps?: number | null }) => void;
   onToggleSet: (index: number) => void;
@@ -25,6 +54,7 @@ export function ExerciseCard({
   onAddSet: () => void;
   onRemove: () => void;
 }) {
+  const record = recordIndex(exercise, bestKg);
   return (
     <section
       aria-label={exercise.exerciseName}
@@ -66,6 +96,7 @@ export function ExerciseCard({
             index={index}
             set={set}
             targetReps={exercise.targetReps}
+            record={index === record}
             onChange={(patch) => onChangeSet(index, patch)}
             onToggle={() => onToggleSet(index)}
             onRemove={() => onRemoveSet(index)}

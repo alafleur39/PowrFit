@@ -6,10 +6,12 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
+import { PrBadge } from "./pr-badge";
 import { SaveAsRoutine } from "./save-as-routine";
 import { SyncBadge } from "./sync-badge";
+import { useRecords } from "./use-records";
 import { useWorkout } from "./use-workout-logs";
-import { workoutTotals } from "@/lib/strength";
+import { workoutTotals, type PersonalRecord, type WeightUnit } from "@/lib/strength";
 import { formatDate, formatDuration, formatSetsLine, formatWeight } from "@/lib/workout/format";
 
 // Workout summary (design spec §6.6). Totals are recomputed with
@@ -19,6 +21,7 @@ import { formatDate, formatDuration, formatSetsLine, formatWeight } from "@/lib/
 export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode }) {
   const { unit } = useActiveWorkout();
   const { item, loading, error } = useWorkout(logId);
+  const { records } = useRecords();
 
   const back = top ?? (
     <Link
@@ -64,6 +67,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
 
   const { log } = item;
   const totals = workoutTotals(log.exercises, unit);
+  const logRecords = records.get(log.id) ?? [];
 
   return (
     <div className="pb-10">
@@ -71,7 +75,12 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
       <header className="px-4 pb-4 sm:px-6">
         <p className="text-sm text-muted-foreground">{formatDate(log.endedAt)}</p>
         <h1 className="mt-1 text-2xl font-bold">{log.routineName ?? "Workout"}</h1>
-        <SyncBadge status={item.status} className="mt-2" />
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <SyncBadge status={item.status} />
+          {logRecords.length > 0 && (
+            <PrBadge label={`${logRecords.length} new ${logRecords.length === 1 ? "PR" : "PRs"}`} />
+          )}
+        </div>
       </header>
 
       {item.status === "failed" && (
@@ -100,6 +109,10 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         {log.exercises.map((exercise, index) => (
           <li key={`${exercise.exerciseId}-${index}`} className="rounded-2xl border border-border bg-surface p-4">
             <h2 className="font-bold">{exercise.exerciseName}</h2>
+            <RecordLine
+              record={logRecords.find((record) => record.exerciseId === exercise.exerciseId)}
+              unit={unit}
+            />
             <p className="text-xs text-muted-foreground">{unit} × reps</p>
             <ol className="mt-2 flex flex-col gap-1 text-sm">
               {exercise.sets.map((set, setIndex) => (
@@ -113,5 +126,15 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         ))}
       </ol>
     </div>
+  );
+}
+
+function RecordLine({ record, unit }: { record?: PersonalRecord; unit: WeightUnit }) {
+  if (!record) return null;
+  return (
+    <p className="mt-1 flex items-center gap-2 text-sm">
+      <PrBadge label="PR" />
+      <span className="font-mono tabular-nums">{formatSetsLine([{ ...record, done: true }], unit)}</span>
+    </p>
   );
 }

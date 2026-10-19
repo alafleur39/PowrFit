@@ -6,3 +6,4 @@ export * from "./exercises";
 export * from "./presets";
 export * from "./draft";
 export * from "./routines";
+export * from "./records";

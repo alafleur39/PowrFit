@@ -10,7 +10,9 @@ import { workoutTotals } from "@/lib/strength";
 import { formatDate, formatWeight } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
+import { PrBadge } from "./pr-badge";
 import { SyncBadge } from "./sync-badge";
+import { useRecords } from "./use-records";
 import { useRecentWorkouts } from "./use-workout-logs";
 
 const PAGE = 20;
@@ -22,6 +24,7 @@ export function HistoryList() {
   const [count, setCount] = useState(PAGE);
   const { unit } = useActiveWorkout();
   const { items, loading, error } = useRecentWorkouts(count);
+  const { records } = useRecords();
 
   if (loading && items.length === 0) {
     return (
@@ -60,6 +63,7 @@ export function HistoryList() {
             );
           }
           const totals = workoutTotals(item.log.exercises, unit);
+          const prs = records.get(item.id)?.length ?? 0;
           return (
             <li key={item.id} className="rounded-2xl border border-border bg-surface">
               <Link
@@ -72,7 +76,10 @@ export function HistoryList() {
                   <p className="text-sm text-muted-foreground">
                     {totals.sets} sets · <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
                   </p>
-                  <SyncBadge status={item.status} className="mt-1" />
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <SyncBadge status={item.status} />
+                    {prs > 0 && <PrBadge label={`${prs} ${prs === 1 ? "PR" : "PRs"}`} />}
+                  </div>
                 </div>
                 <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
               </Link>
