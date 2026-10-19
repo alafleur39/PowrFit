@@ -1,8 +1,8 @@
 import { ScreenHeader } from "@/components/shell/placeholder";
 import { WorkoutsTabs } from "@/components/workout/workouts-tabs";
 
-// Workouts: preset routines to start, and workout history (P2-11). "My
-// plans" returns with the routine editor (deferred to a later phase).
+// Workouts: routines to start (the user's own and the presets, P4-02) and
+// workout history (P2-11).
 export default async function WorkoutsPage({
   searchParams,
 }: {

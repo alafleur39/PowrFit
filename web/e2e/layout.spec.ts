@@ -1,6 +1,13 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { logSet, resetEmulators, signUp, testEmail } from "./helpers";
+import {
+  expectLabelledControls,
+  expectNoSidewaysScroll,
+  logSet,
+  resetEmulators,
+  signUp,
+  testEmail,
+} from "./helpers";
 
 // Phase 2 gate 8: core screens fit 375px-class phones and 1440px desktops
 // without sideways scrolling, and their controls are labelled and tappable.
@@ -8,32 +15,6 @@ import { logSet, resetEmulators, signUp, testEmail } from "./helpers";
 test.beforeEach(async () => {
   await resetEmulators();
 });
-
-async function expectNoSidewaysScroll(page: Page, label: string) {
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
-  );
-  expect(overflow, `${label} scrolls sideways by ${overflow}px`).toBeLessThanOrEqual(0);
-}
-
-async function expectLabelledControls(page: Page, label: string) {
-  const unlabelled = await page.evaluate(() =>
-    Array.from(document.querySelectorAll("button, a[href], input, select"))
-      .filter((element) => {
-        const el = element as HTMLElement;
-        if (el.offsetParent === null && getComputedStyle(el).position !== "fixed") return false;
-        const name =
-          el.getAttribute("aria-label") ||
-          el.getAttribute("aria-labelledby") ||
-          el.textContent?.trim() ||
-          (el as HTMLInputElement).labels?.[0]?.textContent?.trim() ||
-          el.getAttribute("title");
-        return !name;
-      })
-      .map((el) => el.outerHTML.slice(0, 120))
-  );
-  expect(unlabelled, `${label} has unlabelled controls`).toEqual([]);
-}
 
 test("core screens fit the screen and label their controls", async ({ page }) => {
   await signUp(page, testEmail("layout"));

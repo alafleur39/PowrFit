@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
+import { SaveAsRoutine } from "./save-as-routine";
 import { SyncBadge } from "./sync-badge";
 import { useWorkout } from "./use-workout-logs";
 import { workoutTotals } from "@/lib/strength";
@@ -92,6 +93,8 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
           </div>
         ))}
       </dl>
+
+      <SaveAsRoutine log={log} />
 
       <ol className="mx-4 mt-4 flex flex-col gap-3 sm:mx-6">
         {log.exercises.map((exercise, index) => (

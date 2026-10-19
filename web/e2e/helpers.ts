@@ -54,21 +54,32 @@ export function testEmail(label: string): string {
 
 export const TEST_PASSWORD = "emulator-only-7Kq2";
 
-/** Creates an account through the login page and waits for Home. */
-export async function signUp(page: Page, email: string): Promise<void> {
+/**
+ * Fills the login form and submits it, then waits for Home. Typing before
+ * React hydrates the page can be wiped when it takes over the inputs; the
+ * form then says a field is empty, so fill it in and submit again.
+ */
+async function submitLogin(page: Page, email: string, button: RegExp): Promise<void> {
   await page.goto("/login");
-  await page.getByLabel("Email address").fill(email);
-  await page.getByLabel("Password").fill(TEST_PASSWORD);
-  await page.getByRole("button", { name: "Create Account" }).click();
+  const emptyField = page.getByText("Enter both email and password to continue.");
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.getByLabel("Email address").fill(email);
+    await page.getByLabel("Password").fill(TEST_PASSWORD);
+    await page.getByRole("button", { name: button }).click();
+    const home = page.getByRole("heading", { name: "Home" });
+    await expect(emptyField.or(home).first()).toBeVisible({ timeout: 15_000 });
+    if (!(await emptyField.isVisible())) break;
+  }
   await expect(page).toHaveURL(/\/home$/);
 }
 
+/** Creates an account through the login page and waits for Home. */
+export async function signUp(page: Page, email: string): Promise<void> {
+  await submitLogin(page, email, /^create account$/i);
+}
+
 export async function signIn(page: Page, email: string): Promise<void> {
-  await page.goto("/login");
-  await page.getByLabel("Email address").fill(email);
-  await page.getByLabel("Password").fill(TEST_PASSWORD);
-  await page.getByRole("button", { name: /^sign in$/i }).click();
-  await expect(page).toHaveURL(/\/home$/);
+  await submitLogin(page, email, /^sign in$/i);
 }
 
 /** Fills set `index` (0-based) of the exercise card named `exercise` and ticks it. */
@@ -97,4 +108,32 @@ export async function openAccountMenu(page: Page, isMobile: boolean): Promise<vo
   if (isMobile) await page.getByRole("button", { name: "Open account menu" }).click();
   else await page.getByRole("button", { name: /@powrfit\.test/ }).click();
   await expect(page.getByRole("dialog", { name: "Account" })).toBeVisible();
+}
+
+/** Fails if the page is wider than the screen. */
+export async function expectNoSidewaysScroll(page: Page, label: string) {
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+  );
+  expect(overflow, `${label} scrolls sideways by ${overflow}px`).toBeLessThanOrEqual(0);
+}
+
+/** Fails if a visible button, link, input or select has no accessible name. */
+export async function expectLabelledControls(page: Page, label: string) {
+  const unlabelled = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("button, a[href], input, select"))
+      .filter((element) => {
+        const el = element as HTMLElement;
+        if (el.offsetParent === null && getComputedStyle(el).position !== "fixed") return false;
+        const name =
+          el.getAttribute("aria-label") ||
+          el.getAttribute("aria-labelledby") ||
+          el.textContent?.trim() ||
+          (el as HTMLInputElement).labels?.[0]?.textContent?.trim() ||
+          el.getAttribute("title");
+        return !name;
+      })
+      .map((el) => el.outerHTML.slice(0, 120))
+  );
+  expect(unlabelled, `${label} has unlabelled controls`).toEqual([]);
 }

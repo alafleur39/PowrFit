@@ -23,7 +23,9 @@ test("a second user on the same device sees none of the first user's data", asyn
   await page.getByRole("dialog").getByRole("button", { name: "Finish and save" }).click();
   await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 20_000 });
   await page.goto("/home");
-  await page.getByRole("button", { name: /^Start (Push|Pull|Leg) day$/ }).click();
+  // Wait for history to load: Home suggests the preset after the last one.
+  await expect(page.getByText("Up next")).toBeVisible();
+  await page.getByRole("button", { name: "Start Pull day" }).click();
   await logSet(page, "Barbell row", 0, "95", "8");
 
   // Signing out with a workout in progress warns first; keep it on the device.

@@ -11,6 +11,7 @@ import { Dialog } from "@/components/workout/dialog";
 import { ExerciseCard } from "@/components/workout/exercise-card";
 import { ExercisePicker } from "@/components/workout/exercise-picker";
 import { useNow } from "@/components/workout/use-now";
+import { useRoutines } from "@/components/workout/use-routines";
 import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
 import { WorkoutSummary } from "@/components/workout/workout-summary";
 import {
@@ -24,6 +25,7 @@ import {
   removeSet,
   toggleSetDone,
   updateSet,
+  type Routine,
   type WorkoutDraft,
   type WorkoutLog,
 } from "@/lib/strength";
@@ -91,26 +93,42 @@ function Notice({ children }: { children: React.ReactNode }) {
   );
 }
 
+function RoutineButton({ routine }: { routine: Routine }) {
+  const { start } = useActiveWorkout();
+  return (
+    <button
+      type="button"
+      onClick={() => start(routine)}
+      className="rounded-2xl border border-border bg-surface p-4 text-left transition-colors hover:border-accent/60"
+    >
+      <span className="block text-lg font-bold text-foreground">{routine.name}</span>
+      <span className="mt-1 block text-sm text-muted-foreground">
+        {routine.exercises.length} exercises
+        {routine.notes ? ` · ${routine.notes}` : ""}
+      </span>
+    </button>
+  );
+}
+
 function StartPanel() {
   const { start } = useActiveWorkout();
+  const { routines } = useRoutines();
 
   return (
     <div>
-      <ScreenHeader title="Start a workout" subtitle="Pick a preset or build one as you go." />
+      <ScreenHeader title="Start a workout" subtitle="Pick a routine or build one as you go." />
       <div className="flex flex-col gap-3 px-4 sm:px-6">
+        {routines.length > 0 && (
+          <h2 className="text-sm font-semibold text-muted-foreground">My routines</h2>
+        )}
+        {routines.map(({ routine }) => (
+          <RoutineButton key={routine.id} routine={routine} />
+        ))}
+        {routines.length > 0 && (
+          <h2 className="mt-2 text-sm font-semibold text-muted-foreground">Presets</h2>
+        )}
         {PRESET_ROUTINES.map((routine) => (
-          <button
-            key={routine.id}
-            type="button"
-            onClick={() => start(routine)}
-            className="rounded-2xl border border-border bg-surface p-4 text-left transition-colors hover:border-accent/60"
-          >
-            <span className="block text-lg font-bold text-foreground">{routine.name}</span>
-            <span className="mt-1 block text-sm text-muted-foreground">
-              {routine.exercises.length} exercises
-              {routine.notes ? ` · ${routine.notes}` : ""}
-            </span>
-          </button>
+          <RoutineButton key={routine.id} routine={routine} />
         ))}
         <Button
           variant="outline"
