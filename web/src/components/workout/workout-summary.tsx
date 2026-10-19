@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { ArrowLeft, Loader2, Pencil } from "lucide-react";
 
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
@@ -11,6 +11,7 @@ import { SaveAsRoutine } from "./save-as-routine";
 import { SyncBadge } from "./sync-badge";
 import { useRecords } from "./use-records";
 import { useWorkout } from "./use-workout-logs";
+import { WorkoutEditor } from "./workout-editor";
 import { workoutTotals, type PersonalRecord, type WeightUnit } from "@/lib/strength";
 import { formatDate, formatDuration, formatSetsLine, formatWeight } from "@/lib/workout/format";
 
@@ -22,6 +23,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
   const { unit } = useActiveWorkout();
   const { item, loading, error } = useWorkout(logId);
   const { records } = useRecords();
+  const [mode, setMode] = useState<"view" | "edit" | "deleted">("view");
 
   const back = top ?? (
     <Link
@@ -32,6 +34,17 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
       History
     </Link>
   );
+
+  if (mode === "deleted") {
+    return (
+      <div>
+        {back}
+        <p role="status" className="px-4 py-16 text-center text-sm text-muted-foreground sm:px-6">
+          Workout deleted.
+        </p>
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -66,6 +79,16 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
   }
 
   const { log } = item;
+  if (mode === "edit") {
+    return (
+      <WorkoutEditor
+        initial={log}
+        onClose={() => setMode("view")}
+        onDeleted={() => setMode("deleted")}
+      />
+    );
+  }
+
   const totals = workoutTotals(log.exercises, unit);
   const logRecords = records.get(log.id) ?? [];
 
@@ -73,8 +96,20 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
     <div className="pb-10">
       {back}
       <header className="px-4 pb-4 sm:px-6">
-        <p className="text-sm text-muted-foreground">{formatDate(log.endedAt)}</p>
-        <h1 className="mt-1 text-2xl font-bold">{log.routineName ?? "Workout"}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm text-muted-foreground">{formatDate(log.endedAt)}</p>
+            <h1 className="mt-1 text-2xl font-bold">{log.routineName ?? "Workout"}</h1>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMode("edit")}
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold text-foreground hover:bg-surface"
+          >
+            <Pencil className="size-4" aria-hidden />
+            Edit
+          </button>
+        </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <SyncBadge status={item.status} />
           {logRecords.length > 0 && (

@@ -6,6 +6,7 @@
 
 import {
   collection,
+  deleteDoc,
   doc,
   limit,
   onSnapshot,
@@ -37,6 +38,14 @@ const logsCollection = (uid: string) => collection(db, "users", uid, "workoutLog
  */
 export function saveWorkoutLog(uid: string, log: WorkoutLog): Promise<void> {
   return setDoc(doc(logsCollection(uid), log.id), encodeWorkoutLog(log));
+}
+
+/**
+ * Deletes a workout (P4-05). Offline it disappears from the cache at once and
+ * the delete is sent when the connection returns.
+ */
+export function deleteWorkoutLog(uid: string, id: string): Promise<void> {
+  return deleteDoc(doc(logsCollection(uid), id));
 }
 
 function toEntry(snapshot: DocumentSnapshot): LogEntry {

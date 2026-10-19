@@ -14,7 +14,7 @@ const show = (value: number | null) => (value === null ? "" : String(value));
  * only sending valid numbers to the draft. Invalid text is flagged, not
  * silently replaced.
  */
-function NumberField({
+export function NumberField({
   value,
   parse,
   onValue,

@@ -45,7 +45,11 @@ test("ticking a set starts a rest timer that survives a reload", async ({ page }
   // Taking time off runs it down to the end.
   await logSet(page, "Barbell bench press", 1, "135", "5");
   const takeOff = timer.getByRole("button", { name: "Take 15 seconds off the rest" });
-  for (let i = 0; i < 7 && (await takeOff.isVisible()); i++) await takeOff.click();
+  for (let i = 0; i < 7 && (await takeOff.isVisible()); i++) {
+    // The click that ends the rest removes the button, so it can vanish
+    // between the visibility check and the click.
+    await takeOff.click({ timeout: 2_000 }).catch(() => undefined);
+  }
   await expect(timer.getByRole("status")).toHaveText("Rest over. Next set!");
   await timer.getByRole("button", { name: "Dismiss" }).click();
   await expect(timer).toHaveCount(0);

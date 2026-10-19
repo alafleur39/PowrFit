@@ -28,7 +28,14 @@ export function addPending(receipts: Receipt[], log: WorkoutLog): Receipt[] {
   return [...others, { status: "pending", log }];
 }
 
-export function markConfirmed(receipts: Receipt[], id: string): Receipt[] {
+/**
+ * Removes the receipt once the version that was sent is confirmed. An edit
+ * saved while that write was in flight has a newer updatedAt and stays, so
+ * it can be sent next (P4-05).
+ */
+export function markConfirmed(receipts: Receipt[], id: string, updatedAt: string): Receipt[] {
+  const receipt = receipts.find((item) => item.log.id === id);
+  if (!receipt || receipt.log.updatedAt !== updatedAt) return receipts;
   return replace(receipts, id, null);
 }
 

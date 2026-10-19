@@ -1,7 +1,8 @@
 "use client";
 
 // Owns the one in-progress workout and the receipts of finished workouts the
-// server hasn't confirmed yet (P2-07, P2-10, P2-14). Both are written to
+// server hasn't confirmed yet (P2-07, P2-10, P2-14). Edits to past workouts
+// go through the same receipts (P4-05). Both are written to
 // localStorage on every change, so a reload, a killed app or lost signal
 // never loses work. Lives in the (app) layout, so it survives navigation.
 
@@ -24,6 +25,7 @@ import {
   type Routine,
   type WeightUnit,
   type WorkoutDraft,
+  type WorkoutLog,
 } from "@/lib/strength";
 import {
   draftKey,
@@ -48,7 +50,7 @@ import {
   type Receipt,
 } from "@/lib/workout/receipts";
 import { classifyError, errorCode } from "@/lib/workout/sync-status";
-import { saveWorkoutLog } from "@/lib/workout/workout-repo";
+import { deleteWorkoutLog, saveWorkoutLog } from "@/lib/workout/workout-repo";
 
 type DraftChange = (draft: WorkoutDraft, now: string) => WorkoutDraft;
 
@@ -69,6 +71,10 @@ type ActiveWorkoutContextValue = {
   finish: () => string;
   retryReceipt: (id: string) => void;
   discardReceipt: (id: string) => void;
+  /** Saves an edited past workout; works offline like finishing one. */
+  saveEdit: (log: WorkoutLog) => void;
+  /** Deletes a past workout from the account and this device. */
+  deleteWorkout: (id: string) => void;
   setUnit: (unit: WeightUnit) => void;
   /** True while a draft or an unconfirmed save exists on this device. */
   hasUnsyncedWork: boolean;
@@ -124,22 +130,35 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
     [uid]
   );
 
-  /** Sends a receipt's workout. Safe to repeat: the id never changes. */
+  /**
+   * Sends a receipt's workout. Safe to repeat: the id never changes. An edit
+   * saved while an earlier version is in flight is sent when that one ends.
+   */
   const send = useCallback(
-    (receipt: Receipt) => {
-      if (!uid || inFlight.current.has(receipt.log.id)) return;
-      const id = receipt.log.id;
-      inFlight.current.add(id);
-      saveWorkoutLog(uid, receipt.log)
-        .then(() => persistReceipts(markConfirmed(receiptsRef.current, id)))
-        .catch((error: unknown) => {
-          const code = errorCode(error) ?? "unknown";
-          // Retryable errors stay pending; the next load or Retry resends.
-          if (classifyError(code) === "fatal") {
-            persistReceipts(markFailed(receiptsRef.current, id, code));
-          }
-        })
-        .finally(() => inFlight.current.delete(id));
+    (first: Receipt) => {
+      if (!uid) return;
+      const go = (receipt: Receipt) => {
+        const id = receipt.log.id;
+        if (inFlight.current.has(id)) return;
+        inFlight.current.add(id);
+        saveWorkoutLog(uid, receipt.log)
+          .then(() => persistReceipts(markConfirmed(receiptsRef.current, id, receipt.log.updatedAt)))
+          .catch((error: unknown) => {
+            const code = errorCode(error) ?? "unknown";
+            // Retryable errors stay pending; the next load or Retry resends.
+            if (classifyError(code) === "fatal") {
+              persistReceipts(markFailed(receiptsRef.current, id, code));
+            }
+          })
+          .finally(() => {
+            inFlight.current.delete(id);
+            const latest = receiptsRef.current.find((item) => item.log.id === id);
+            if (latest?.status === "pending" && latest.log.updatedAt !== receipt.log.updatedAt) {
+              go(latest);
+            }
+          });
+      };
+      go(first);
     },
     [uid, persistReceipts]
   );
@@ -242,6 +261,26 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
     [persistReceipts]
   );
 
+  const saveEdit = useCallback(
+    (log: WorkoutLog) => {
+      persistReceipts(addPending(receiptsRef.current, log));
+      send({ status: "pending", log });
+    },
+    [persistReceipts, send]
+  );
+
+  const deleteWorkout = useCallback(
+    (id: string) => {
+      // Drop the receipt first so an unconfirmed copy can't bring it back.
+      persistReceipts(discardReceiptIn(receiptsRef.current, id));
+      if (!uid) return;
+      deleteWorkoutLog(uid, id).catch((error: unknown) =>
+        console.error("Deleting the workout failed", error)
+      );
+    },
+    [uid, persistReceipts]
+  );
+
   const setUnit = useCallback(
     (next: WeightUnit) => {
       setUnitState(next);
@@ -271,6 +310,8 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
       finish,
       retryReceipt,
       discardReceipt,
+      saveEdit,
+      deleteWorkout,
       setUnit,
       hasUnsyncedWork: hasUnsyncedWork(draft !== null, receipts),
       clearDevice,
@@ -289,6 +330,8 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
       finish,
       retryReceipt,
       discardReceipt,
+      saveEdit,
+      deleteWorkout,
       setUnit,
       clearDevice,
     ]

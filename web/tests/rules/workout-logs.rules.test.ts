@@ -81,6 +81,27 @@ describe("workoutLogs access", () => {
     await assertFails(guest().doc("users/alice/workoutLogs/w1").set(valid));
   });
 
+  it("lets the owner edit and delete their workout (P4-05)", async () => {
+    await assertSucceeds(aliceLog().set(valid));
+    const edited = encodeWorkoutLog({
+      ...log,
+      updatedAt: "2026-10-19T09:00:00.000Z",
+      exercises: [{ ...log.exercises[0], sets: [{ reps: 5, weight: 145, unit: "lb", done: true }] }],
+      totals: { sets: 1, reps: 5, volume: 725, unit: "lb" },
+    });
+    await assertSucceeds(aliceLog().set(edited));
+    await assertFails(aliceLog().set({ ...edited, exercises: [] }));
+    await assertSucceeds(aliceLog().delete());
+  });
+
+  it("stops other users and signed-out visitors from deleting it", async () => {
+    await env.withSecurityRulesDisabled((ctx) =>
+      ctx.firestore().doc("users/alice/workoutLogs/w1").set(valid)
+    );
+    await assertFails(bob().doc("users/alice/workoutLogs/w1").delete());
+    await assertFails(guest().doc("users/alice/workoutLogs/w1").delete());
+  });
+
   it("lets the owner list their workouts newest first", async () => {
     await assertSucceeds(aliceLog().set(valid));
     await assertSucceeds(

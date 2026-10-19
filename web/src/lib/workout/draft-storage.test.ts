@@ -106,7 +106,14 @@ describe("receipt transitions", () => {
   it("goes pending → confirmed (removed)", () => {
     const pending = addPending([], log);
     expect(pending).toEqual([{ status: "pending", log }]);
-    expect(markConfirmed(pending, "w1")).toEqual([]);
+    expect(markConfirmed(pending, "w1", log.updatedAt)).toEqual([]);
+  });
+
+  it("keeps an edit saved while the earlier version was being confirmed", () => {
+    const edited = { ...log, updatedAt: "2026-10-20T09:00:00.000Z" };
+    const pending = addPending(addPending([], log), edited);
+    expect(markConfirmed(pending, "w1", log.updatedAt)).toBe(pending);
+    expect(markConfirmed(pending, "w1", edited.updatedAt)).toEqual([]);
   });
 
   it("goes pending → failed → retry → pending", () => {
