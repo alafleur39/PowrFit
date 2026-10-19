@@ -54,7 +54,7 @@ function StartButton({ routine, disabled }: { routine: Routine; disabled: boolea
         start(routine);
         router.push("/log");
       }}
-      className="h-10 rounded-full bg-accent px-4 text-sm font-bold text-accent-foreground disabled:opacity-40"
+      className="h-11 rounded-full bg-accent px-4 text-sm font-bold text-accent-foreground disabled:opacity-40"
     >
       Start
     </button>
@@ -64,7 +64,7 @@ function StartButton({ routine, disabled }: { routine: Routine; disabled: boolea
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
 const iconButton =
-  "flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground hover:bg-surface-raised hover:text-foreground";
+  "flex size-11 items-center justify-center rounded-full border border-border text-muted-foreground hover:bg-surface-raised hover:text-foreground";
 
 // Workouts → Routines (P4-02): the user's own routines, then the built-in
 // presets, which can be copied into "My routines" to edit.
@@ -100,7 +100,7 @@ export function RoutineList() {
           </h2>
           <Link
             href="/workouts/routines/new"
-            className="flex h-10 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface"
+            className="flex h-11 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface"
           >
             <Plus className="size-4" aria-hidden />
             New routine

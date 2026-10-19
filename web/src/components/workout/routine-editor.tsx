@@ -30,7 +30,7 @@ const REST_OPTIONS = [30, 45, 60, 90, 120, 150, 180, 240, 300];
 const field =
   "w-full rounded-lg border border-input bg-background px-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none";
 const iconButton =
-  "flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-surface-raised hover:text-foreground disabled:opacity-30";
+  "flex size-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface-raised hover:text-foreground disabled:opacity-30";
 
 const nowIso = () => new Date().toISOString();
 

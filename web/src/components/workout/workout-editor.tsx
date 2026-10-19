@@ -88,7 +88,7 @@ export function WorkoutEditor({
                     type="button"
                     aria-label={`Remove ${name}`}
                     onClick={() => change((l, now) => removeLogExercise(l, exerciseIndex, now))}
-                    className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-surface-raised hover:text-danger"
+                    className="flex size-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface-raised hover:text-danger"
                   >
                     <Trash2 className="size-4" aria-hidden />
                   </button>
@@ -104,7 +104,7 @@ export function WorkoutEditor({
                       return (
                         <li
                           key={setIndex}
-                          className="grid grid-cols-[2rem_1fr_1fr_2.25rem] items-center gap-2"
+                          className="grid grid-cols-[2rem_1fr_1fr_2.75rem] items-center gap-2"
                         >
                           <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
                             {number}
@@ -137,7 +137,7 @@ export function WorkoutEditor({
                             type="button"
                             aria-label={`Remove ${name} set ${number}`}
                             onClick={() => change((l, now) => removeLogSet(l, exerciseIndex, setIndex, now))}
-                            className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
+                            className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
                           >
                             <X className="size-4" aria-hidden />
                           </button>
