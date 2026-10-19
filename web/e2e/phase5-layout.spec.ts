@@ -1,10 +1,18 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { logSet, resetEmulators, signUp, testEmail } from "./helpers";
+import {
+  expectLabelledControls,
+  expectNoSidewaysScroll,
+  logSet,
+  resetEmulators,
+  signUp,
+  testEmail,
+} from "./helpers";
 
 // P5-06: polish found by the P4-08 sweep. Every control a tester touches is
 // at least 44px (WCAG), counts read "1 set", and numbers aren't cut off at
-// 375px.
+// 375px. P5-07: every Phase 5 screen fits, labels its controls and has 44px
+// buttons. Set SCREENSHOT_DIR to save a screenshot of each for review.
 
 test.beforeEach(async () => {
   await resetEmulators();
@@ -57,4 +65,52 @@ test("polish: tap targets, wording and fit", async ({ page, isMobile }) => {
     await expectNotCutOff(volume, "Home volume");
   }
   await expect(page.getByRole("region", { name: "Last workout" })).toContainText("1 set ·");
+});
+
+async function check(page: Page, screen: string, buttons: string[] = []) {
+  await expectNoSidewaysScroll(page, screen);
+  await expectLabelledControls(page, screen);
+  for (const name of buttons) await expect44(button(page, name), `${screen}: ${name}`);
+  const dir = process.env.SCREENSHOT_DIR;
+  if (dir) {
+    const name = `${test.info().project.name}-p5-${screen.toLowerCase().replace(/\W+/g, "-")}.png`;
+    await page.screenshot({ path: `${dir}/${name}` });
+  }
+}
+
+test("every Phase 5 screen fits and is usable", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByLabel("Email address").fill("someone@powrfit.test");
+  await button(page, "Forgot password?").click();
+  await expect(page.getByRole("status")).toBeVisible();
+  await check(page, "Login after reset request", ["Forgot password?"]);
+
+  await page.goto("/privacy");
+  await check(page, "Privacy");
+
+  await signUp(page, testEmail("phase5-layout"));
+  await page.goto("/workouts?tab=explore");
+  await expect(page.getByRole("list", { name: "Exercises" })).toBeVisible();
+  await check(page, "Explore", ["Chest"]);
+  await page.getByRole("list", { name: "Exercises" }).getByRole("button").first().click();
+  await check(page, "Exercise detail", ["All exercises"]);
+
+  await page.goto("/workouts");
+  await page.getByRole("button", { name: "Start Push day" }).click();
+  await logSet(page, "Barbell bench press", 0, "135", "5");
+  await page.getByRole("button", { name: "Add a note to Barbell bench press" }).click();
+  await page.getByLabel("Note for Barbell bench press").fill("Felt strong, add 5 next time");
+  await check(page, "Logger with note", ["Add a note to Incline dumbbell press"]);
+  await button(page, "Finish").click();
+  await page.getByRole("dialog").getByRole("button", { name: "Finish and save" }).click();
+  await expect(page.getByText("Felt strong, add 5 next time")).toBeVisible();
+  await check(page, "Summary with note", ["Edit"]);
+  await button(page, "Edit").click();
+  await check(page, "Edit with note", ["Save changes"]);
+  await button(page, "Cancel").click();
+
+  await page.goto("/profile");
+  await check(page, "Profile", ["Delete account"]);
+  await button(page, "Delete account").click();
+  await check(page, "Delete account dialog", ["Keep it", "Delete forever"]);
 });

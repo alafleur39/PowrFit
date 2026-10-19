@@ -99,7 +99,9 @@ function ExerciseDetail({ exercise, onBack }: { exercise: Exercise; onBack: () =
           <h3 id="your-numbers" className="text-lg font-bold">
             Your numbers
           </h3>
-          {loading ? null : !best || !last ? (
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Loading your history…</p>
+          ) : !best || !last ? (
             <p className="text-sm text-muted-foreground">
               You haven&apos;t logged {exercise.name} yet. Your best set and trend will show here.
             </p>
