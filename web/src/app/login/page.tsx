@@ -34,20 +34,28 @@ function mapFirebaseError(code: string | undefined): string {
       return "Choose a stronger password (at least 6 characters).";
     case "auth/invalid-email":
       return "Enter a valid email address.";
+    case "auth/too-many-requests":
+      return "Too many tries. Wait a few minutes, then try again.";
+    case "auth/network-request-failed":
+      return "You're offline. Connect to the internet and try again.";
     default:
       return "Something went wrong. Please try again.";
   }
 }
 
-type AuthAction = "signIn" | "signUp";
+type AuthAction = "signIn" | "signUp" | "reset";
+
+const resetSent = (email: string) =>
+  `If there's an account for ${email}, a reset link is on its way. Check your spam folder too.`;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading, signIn, signUp } = useAuth();
+  const { user, loading, signIn, signUp, resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState<AuthAction | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   // Already signed in? Straight to the app.
   useEffect(() => {
@@ -56,8 +64,35 @@ export default function LoginPage() {
     }
   }, [loading, user, router]);
 
+  // "Forgot password?" (P5-04, D29). The message is the same whether or not
+  // the account exists, so the form can't be used to find out who has one.
+  const handleReset = async () => {
+    const trimmedEmail = email.trim();
+    setNotice(null);
+    if (!emailRegex.test(trimmedEmail)) {
+      setError("Enter your email address above, then tap Forgot password.");
+      return;
+    }
+    setError(null);
+    setSubmitting("reset");
+    try {
+      await resetPassword(trimmedEmail);
+      setNotice(resetSent(trimmedEmail));
+    } catch (err) {
+      const code = typeof err === "object" && err !== null && "code" in err ? (err as { code?: string }).code : undefined;
+      if (code === "auth/user-not-found") {
+        setNotice(resetSent(trimmedEmail));
+      } else {
+        setError(mapFirebaseError(code));
+      }
+    } finally {
+      setSubmitting(null);
+    }
+  };
+
   const handleAuth = async (action: AuthAction) => {
     const trimmedEmail = email.trim();
+    setNotice(null);
 
     if (!trimmedEmail || !password) {
       setError("Enter both email and password to continue.");
@@ -135,9 +170,24 @@ export default function LoginPage() {
               />
             </div>
 
+            <button
+              type="button"
+              onClick={handleReset}
+              disabled={submitting !== null}
+              className="-mt-2 flex h-11 items-center gap-2 self-end text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              {submitting === "reset" && <Loader2 className="size-4 animate-spin" aria-hidden />}
+              Forgot password?
+            </button>
+
             {error && (
               <p role="alert" className="text-destructive text-sm">
                 {error}
+              </p>
+            )}
+            {notice && (
+              <p role="status" className="text-sm text-success">
+                {notice}
               </p>
             )}
 

@@ -12,6 +12,7 @@ import {
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   type User,
@@ -27,6 +28,8 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<User>;
   signUp: (email: string, password: string) => Promise<User>;
   signOut: () => Promise<void>;
+  /** Emails a reset link (P5-04, D29) from Firebase's built-in template. */
+  resetPassword: (email: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -62,9 +65,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setUser(null);
   }, []);
 
+  const resetPassword = useCallback((email: string) => sendPasswordResetEmail(auth, email), []);
+
   const value = useMemo(
-    () => ({ user, loading, signIn, signUp, signOut }),
-    [loading, signIn, signOut, signUp, user]
+    () => ({ user, loading, signIn, signUp, signOut, resetPassword }),
+    [loading, signIn, signOut, signUp, resetPassword, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
