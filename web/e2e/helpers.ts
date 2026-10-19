@@ -30,13 +30,20 @@ export async function setFirestoreRules(rules: string): Promise<void> {
 
 /** All workoutLogs documents in the emulator, across users (admin view). */
 export async function listWorkoutLogs(): Promise<{ path: string; fields: Record<string, unknown> }[]> {
+  return listDocuments("workoutLogs");
+}
+
+/** All documents in collections named `collectionId`, across users (admin view). */
+export async function listDocuments(
+  collectionId: string
+): Promise<{ path: string; fields: Record<string, unknown> }[]> {
   const response = await fetch(
     `${FIRESTORE}/v1/projects/${PROJECT}/databases/(default)/documents:runQuery`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: "Bearer owner" },
       body: JSON.stringify({
-        structuredQuery: { from: [{ collectionId: "workoutLogs", allDescendants: true }] },
+        structuredQuery: { from: [{ collectionId, allDescendants: true }] },
       }),
     }
   );

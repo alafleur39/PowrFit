@@ -36,6 +36,8 @@ export default defineConfig({
     {
       command: `npm run dev:emulators -- -p ${PORT}`,
       url: `http://localhost:${PORT}/login`,
+      // A stand-in feedback form (D30), so Profile shows its button.
+      env: { NEXT_PUBLIC_FEEDBACK_URL: "https://example.com/powrfit-feedback" },
       reuseExistingServer: true,
       timeout: 180_000,
     },

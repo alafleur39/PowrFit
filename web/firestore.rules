@@ -1,6 +1,7 @@
 rules_version = '2';
 
-// PowrFit Firestore rules (Phase 2, P2-06; routines added in P4-01). Every
+// PowrFit Firestore rules (Phase 2, P2-06; routines added in P4-01; legacy
+// deletes in P5-05). Every
 // path is listed explicitly: rules are OR-ed together, so a catch-all like
 // users/{uid}/{document=**} would let any write skip the validation below.
 // Anything not matched here is denied. Tested in tests/rules with the emulator (npm run test:rules).
@@ -66,16 +67,16 @@ service cloud.firestore {
 
     // The kg/lb preference.
     match /users/{userId}/settings/preferences {
-      allow read: if isOwner(userId);
-      allow write: if isOwner(userId)
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId)
         && request.resource.data.keys().hasOnly(['weightUnit'])
         && request.resource.data.weightUnit in ['kg', 'lb'];
     }
 
-    // Phase 0 mock data, retired in P2-15: owners can still read it, nobody
-    // can write it.
+    // Phase 0 mock data, retired in P2-15: owners can still read it and
+    // delete it (Delete account, P5-05), nobody can write it.
     match /users/{userId}/{legacy}/{docId} {
-      allow read: if isOwner(userId)
+      allow read, delete: if isOwner(userId)
         && legacy in ['dashboard', 'goals', 'upcomingSessions', 'workoutSessions'];
     }
   }

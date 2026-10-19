@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
@@ -216,7 +217,10 @@ export default function LoginPage() {
           </form>
           <p className="text-muted-foreground mx-auto mt-6 max-w-xs text-center text-xs">
             Creating an account will sync your workouts and progress securely
-            with PowrFit.
+            with PowrFit.{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+              Privacy
+            </Link>
           </p>
         </CardContent>
       </Card>

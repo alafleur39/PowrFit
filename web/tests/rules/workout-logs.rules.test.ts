@@ -151,6 +151,17 @@ describe("settings and legacy data", () => {
     await assertFails(bob().doc("users/alice/workoutSessions/s1").get());
   });
 
+  it("lets only the owner delete legacy data and settings (Delete account, P5-05)", async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("users/alice/goals/g1").set({ title: "Squat 300" });
+      await ctx.firestore().doc("users/alice/settings/preferences").set({ weightUnit: "kg" });
+    });
+    await assertFails(bob().doc("users/alice/goals/g1").delete());
+    await assertFails(bob().doc("users/alice/settings/preferences").delete());
+    await assertSucceeds(alice().doc("users/alice/goals/g1").delete());
+    await assertSucceeds(alice().doc("users/alice/settings/preferences").delete());
+  });
+
   it("denies paths nobody declared", async () => {
     await assertFails(alice().doc("users/alice/anything/else").set({ a: 1 }));
     await assertFails(alice().doc("other/doc").set({ a: 1 }));
