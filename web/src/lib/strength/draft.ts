@@ -32,8 +32,21 @@ export type DraftExercise = {
   exerciseName: string;
   /** Target from the routine, shown as a hint ("8–12"). */
   targetReps?: string;
+  /** Rest after each set, from the routine; DEFAULT_REST_SEC when absent. */
+  restSec?: number;
   sets: DraftSet[];
 };
+
+/** The running rest timer (P4-04, D23). */
+export type DraftRest = {
+  /** When the rest is over. A wall-clock time, so a reload keeps it. */
+  endsAt: string;
+  /** Length of the rest, for the progress bar. */
+  durationSec: number;
+};
+
+/** Rest between sets unless the routine says otherwise (D17). */
+export const DEFAULT_REST_SEC = 90;
 
 export type WorkoutDraft = {
   /** Becomes WorkoutLog.id and the Firestore document id. */
@@ -47,6 +60,8 @@ export type WorkoutDraft = {
   exercises: DraftExercise[];
   /** Counter for exercise keys. */
   nextKey: number;
+  /** Set while resting after a ticked set. */
+  rest?: DraftRest;
 };
 
 const EXERCISE_NAMES = new Map(EXERCISES.map((exercise) => [exercise.id, exercise.name]));
@@ -73,6 +88,7 @@ export function createDraft(options: {
     exerciseId: item.exerciseId,
     exerciseName: exerciseName(item.exerciseId),
     targetReps: item.targetReps,
+    ...(item.restSec !== undefined && { restSec: item.restSec }),
     sets: Array.from({ length: item.targetSets }, () => emptySet(unit)),
   }));
 
@@ -205,7 +221,13 @@ export function updateSet(
   });
 }
 
-/** Toggles done. Marking an incomplete set done returns the draft unchanged. */
+const addSeconds = (iso: string, seconds: number) =>
+  new Date(Date.parse(iso) + seconds * 1000).toISOString();
+
+/**
+ * Toggles done. Marking an incomplete set done returns the draft unchanged.
+ * Marking a set done starts the rest timer with the exercise's rest time.
+ */
 export function toggleSetDone(
   draft: WorkoutDraft,
   key: string,
@@ -218,10 +240,36 @@ export function toggleSetDone(
   const set = exercise.sets[index];
   if (!set.done && !canCompleteSet(set)) return draft;
 
-  return updateExercise(draft, key, now, (current) => ({
+  const next = updateExercise(draft, key, now, (current) => ({
     ...current,
     sets: current.sets.map((item, i) => (i === index ? { ...item, done: !item.done } : item)),
   }));
+  if (set.done) return next;
+  const durationSec = exercise.restSec ?? DEFAULT_REST_SEC;
+  if (durationSec === 0) return next;
+  return { ...next, rest: { endsAt: addSeconds(now, durationSec), durationSec } };
+}
+
+/** Adds (or with a negative delta, takes off) rest time. Never ends before `now`. */
+export function adjustRest(draft: WorkoutDraft, deltaSec: number, now: string): WorkoutDraft {
+  if (!draft.rest) return draft;
+  const endsAt = Math.max(Date.parse(draft.rest.endsAt) + deltaSec * 1000, Date.parse(now));
+  return {
+    ...draft,
+    updatedAt: now,
+    rest: {
+      endsAt: new Date(endsAt).toISOString(),
+      durationSec: Math.max(1, draft.rest.durationSec + deltaSec),
+    },
+  };
+}
+
+/** Stops the rest timer. */
+export function skipRest(draft: WorkoutDraft, now: string): WorkoutDraft {
+  if (!draft.rest) return draft;
+  const next = { ...draft, updatedAt: now };
+  delete next.rest;
+  return next;
 }
 
 /** Unit for new sets; sets already entered keep theirs. */

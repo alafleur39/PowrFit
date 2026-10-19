@@ -6,6 +6,7 @@ import { Dumbbell } from "lucide-react";
 
 import { formatElapsed } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
+import { formatRest, restRemaining } from "./rest-timer";
 import { useNow } from "./use-now";
 
 // "Workout in progress · 12:34" (design spec §5). Sits above the bottom tab
@@ -29,7 +30,9 @@ export function ActiveWorkoutStrip() {
         </span>
       </span>
       <span className="font-mono tabular-nums text-accent">
-        {formatElapsed(draft.startedAt, now)}
+        {draft.rest && restRemaining(draft.rest, now) > 0
+          ? `Rest ${formatRest(restRemaining(draft.rest, now))}`
+          : formatElapsed(draft.startedAt, now)}
       </span>
     </Link>
   );

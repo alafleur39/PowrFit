@@ -10,6 +10,7 @@ import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { Dialog } from "@/components/workout/dialog";
 import { ExerciseCard } from "@/components/workout/exercise-card";
 import { ExercisePicker } from "@/components/workout/exercise-picker";
+import { RestTimer } from "@/components/workout/rest-timer";
 import { useNow } from "@/components/workout/use-now";
 import { useRoutines } from "@/components/workout/use-routines";
 import { useHistoryLogs } from "@/components/workout/use-records";
@@ -183,7 +184,8 @@ function Logger({
   };
 
   return (
-    <div className="pb-10">
+    <div className={draft.rest ? "pb-36" : "pb-10"}>
+      {draft.rest && <RestTimer rest={draft.rest} />}
       <header className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur-xl sm:px-6 md:top-0">
         <div className="min-w-0">
           <h1 className="truncate text-xl font-bold">{draft.routineName ?? "Workout"}</h1>
