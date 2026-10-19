@@ -24,7 +24,8 @@ async function check(page: Page, screen: string, buttons: string[] = []) {
   for (const name of buttons) {
     const box = await page.getByRole("button", { name, exact: true }).first().boundingBox();
     expect(box, `${screen}: ${name}`).not.toBeNull();
-    expect(Math.min(box!.width, box!.height), `${screen}: ${name} size`).toBeGreaterThanOrEqual(44);
+    // Rounded: WebKit can report 43.99998 for a 44px box mid-animation.
+    expect(Math.round(Math.min(box!.width, box!.height)), `${screen}: ${name} size`).toBeGreaterThanOrEqual(44);
   }
   const dir = process.env.SCREENSHOT_DIR;
   if (dir) {

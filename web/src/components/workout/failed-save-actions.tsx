@@ -30,19 +30,19 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
         still saved on this device.
       </p>
       <div className="flex flex-wrap gap-2">
-        <Button className="h-10" onClick={() => retryReceipt(log.id)}>
+        <Button className="h-11" onClick={() => retryReceipt(log.id)}>
           Retry
         </Button>
         <Button
           variant="outline"
-          className="h-10 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
+          className="h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
           onClick={copy}
         >
           {copied ? "Copied" : "Copy as text"}
         </Button>
         <Button
           variant="ghost"
-          className="h-10 text-danger hover:bg-surface hover:text-danger"
+          className="h-11 text-danger hover:bg-surface hover:text-danger"
           onClick={() => setConfirmOpen(true)}
         >
           Discard

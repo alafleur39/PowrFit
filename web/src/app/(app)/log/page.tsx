@@ -32,7 +32,7 @@ import {
   type WorkoutDraft,
   type WorkoutLog,
 } from "@/lib/strength";
-import { formatElapsed, formatWeight } from "@/lib/workout/format";
+import { formatElapsed, formatWeight, plural } from "@/lib/workout/format";
 
 // The live workout logger (design spec §6.5, Phase 2 P2-08 to P2-10).
 export default function LogPage() {
@@ -195,7 +195,7 @@ function Logger({
               {formatElapsed(draft.startedAt, now)}
             </span>
             {" · "}
-            {totals.sets} sets · {formatWeight(totals.volume, unit)}
+            {plural(totals.sets, "set")} · {formatWeight(totals.volume, unit)}
           </p>
         </div>
         <Button className="h-11 px-5 text-base font-bold" onClick={() => setFinishOpen(true)}>

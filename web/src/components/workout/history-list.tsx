@@ -7,7 +7,7 @@ import { ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shell/placeholder";
 import { workoutTotals } from "@/lib/strength";
-import { formatDate, formatWeight } from "@/lib/workout/format";
+import { formatDate, formatWeight, plural } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
 import { PrBadge } from "./pr-badge";
@@ -74,7 +74,7 @@ export function HistoryList() {
                   <p className="text-xs text-muted-foreground">{formatDate(item.log.endedAt)}</p>
                   <p className="truncate font-bold">{item.log.routineName ?? "Workout"}</p>
                   <p className="text-sm text-muted-foreground">
-                    {totals.sets} sets · <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
+                    {plural(totals.sets, "set")} · <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
                   </p>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <SyncBadge status={item.status} />

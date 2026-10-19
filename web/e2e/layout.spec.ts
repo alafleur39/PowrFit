@@ -30,7 +30,8 @@ test("core screens fit the screen and label their controls", async ({ page }) =>
   for (const name of ["Set 1 done", "Set 2 not done", "Finish"]) {
     const box = await page.getByRole("button", { name, exact: true }).first().boundingBox();
     expect(box, name).not.toBeNull();
-    expect(Math.min(box!.width, box!.height), `${name} size`).toBeGreaterThanOrEqual(44);
+    // Rounded: WebKit can report 43.99998 for a 44px box mid-animation.
+    expect(Math.round(Math.min(box!.width, box!.height)), `${name} size`).toBeGreaterThanOrEqual(44);
   }
 
   await page.getByRole("button", { name: "Add exercise" }).click();

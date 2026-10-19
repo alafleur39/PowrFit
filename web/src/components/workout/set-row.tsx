@@ -87,7 +87,7 @@ export function SetRow({
   return (
     <li
       className={cn(
-        "grid grid-cols-[2rem_1fr_1fr_3rem_2.25rem] items-center gap-2 rounded-xl px-1 py-1",
+        "grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] items-center gap-2 rounded-xl px-1 py-1",
         set.done && "bg-surface-active"
       )}
     >
@@ -115,7 +115,7 @@ export function SetRow({
         parse={parseRepsInput}
         onValue={(reps) => onChange({ reps })}
         label={`Set ${number} reps`}
-        placeholder={targetReps ? `${targetReps} reps` : "reps"}
+        placeholder={targetReps ?? "reps"}
         inputMode="numeric"
       />
       <button
@@ -138,7 +138,7 @@ export function SetRow({
         type="button"
         onClick={onRemove}
         aria-label={`Remove set ${number}`}
-        className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface hover:text-danger"
+        className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface hover:text-danger"
       >
         <X className="size-4" aria-hidden />
       </button>

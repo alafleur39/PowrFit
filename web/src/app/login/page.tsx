@@ -156,6 +156,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={submitting !== null}
                 aria-invalid={Boolean(error)}
+                className="h-11"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -168,6 +169,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={submitting !== null}
                 aria-invalid={Boolean(error)}
+                className="h-11"
               />
             </div>
 
@@ -195,7 +197,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={submitting !== null}
-              className="mt-1 bg-primary font-black uppercase text-primary-foreground hover:bg-primary/90"
+              className="mt-1 h-11 bg-primary font-black uppercase text-primary-foreground hover:bg-primary/90"
             >
               {submitting === "signIn" && (
                 <Loader2 className="size-4 animate-spin" />
@@ -205,7 +207,7 @@ export default function LoginPage() {
             <Button
               type="button"
               variant="outline"
-              className="border-white/15 bg-white/[0.06] text-white hover:bg-white/10"
+              className="h-11 border-white/15 bg-white/[0.06] text-white hover:bg-white/10"
               disabled={submitting !== null}
               onClick={() => handleAuth("signUp")}
             >

@@ -76,14 +76,14 @@ export function ExerciseCard({
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${exercise.exerciseName}`}
-          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
+          className="flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
         >
           <Trash2 className="size-4" aria-hidden />
         </button>
       </div>
 
       <div
-        className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.25rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
+        className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
         aria-hidden
       >
         <span className="text-center">Set</span>

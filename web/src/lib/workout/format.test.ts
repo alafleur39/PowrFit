@@ -5,6 +5,8 @@ import {
   formatElapsed,
   formatSetsLine,
   formatWeight,
+  formatWeightAmount,
+  plural,
   parseRepsInput,
   parseWeightInput,
   weekStart,
@@ -94,5 +96,21 @@ describe("weekStart", () => {
     expect(weekStart(monday)).toEqual(new Date(2026, 9, 12));
     const sunday = new Date(2026, 9, 18, 23, 59);
     expect(weekStart(sunday)).toEqual(new Date(2026, 9, 12));
+  });
+});
+
+describe("plural", () => {
+  it("says 1 set and 2 sets", () => {
+    expect(plural(1, "set")).toBe("1 set");
+    expect(plural(0, "set")).toBe("0 sets");
+    expect(plural(2, "exercise")).toBe("2 exercises");
+    expect(plural(3, "person", "people")).toBe("3 people");
+  });
+});
+
+describe("formatWeightAmount", () => {
+  it("is formatWeight without the unit", () => {
+    expect(formatWeightAmount(1140, "lb")).toBe("1,140");
+    expect(formatWeight(1140, "lb")).toBe("1,140 lb");
   });
 });

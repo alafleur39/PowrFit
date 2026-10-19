@@ -25,7 +25,17 @@ const numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }
 
 /** "135 lb", "62.5 kg", "3,824.6 lb". The value is already in `unit`. */
 export function formatWeight(value: number, unit: WeightUnit): string {
-  return `${numberFormat.format(roundWeight(value, unit))} ${unit}`;
+  return `${formatWeightAmount(value, unit)} ${unit}`;
+}
+
+/** "1,140": the number formatWeight shows, without the unit. */
+export function formatWeightAmount(value: number, unit: WeightUnit): string {
+  return numberFormat.format(roundWeight(value, unit));
+}
+
+/** "1 set", "3 sets". */
+export function plural(count: number, one: string, many = `${one}s`): string {
+  return `${count} ${count === 1 ? one : many}`;
 }
 
 /** "135 × 6, 135 × 5" with each set converted to `unit`. */

@@ -12,7 +12,7 @@ import { useNow } from "@/components/workout/use-now";
 import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
 import { useWeekStats } from "@/components/workout/use-week-stats";
 import { PRESET_ROUTINES, workoutTotals } from "@/lib/strength";
-import { formatDate, formatElapsed, formatWeight } from "@/lib/workout/format";
+import { formatDate, formatElapsed, formatWeight, formatWeightAmount, plural } from "@/lib/workout/format";
 
 // Home is a training dashboard (D13, design spec §6.1): resume or start a
 // workout, this week's numbers, and the last workout. From the 2nd workout,
@@ -106,7 +106,8 @@ function WeekChips() {
   const chips = [
     { label: "Workouts", value: String(stats.workouts) },
     { label: "Sets", value: String(stats.sets) },
-    { label: "Volume", value: formatWeight(stats.volume, stats.unit) },
+    // The unit is set smaller so "1,140 lb" fits a 375px-wide phone.
+    { label: "Volume", value: formatWeightAmount(stats.volume, stats.unit), unit: stats.unit },
   ];
   return (
     <section aria-label="This week" className="lg:hidden">
@@ -117,6 +118,7 @@ function WeekChips() {
             <p className="text-xs text-muted-foreground">{chip.label}</p>
             <p className="mt-1 truncate font-mono text-lg font-bold tabular-nums text-accent">
               {chip.value}
+              {chip.unit && <span className="text-xs font-semibold"> {chip.unit}</span>}
             </p>
           </div>
         ))}
@@ -156,7 +158,7 @@ function LastWorkout() {
           <span className="block text-xs text-muted-foreground">{formatDate(last.log.endedAt)}</span>
           <span className="block truncate font-bold">{last.log.routineName ?? "Workout"}</span>
           <span className="block text-sm text-muted-foreground">
-            {totals.sets} sets ·{" "}
+            {plural(totals.sets, "set")} ·{" "}
             <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
           </span>
           <SyncBadge status={last.status} className="mt-1" />

@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open account menu"
-              className="flex size-9 items-center justify-center rounded-full bg-surface-active text-sm font-bold text-accent"
+              className="flex size-11 items-center justify-center rounded-full bg-surface-active text-sm font-bold text-accent"
             >
               {accountName.slice(0, 1).toUpperCase()}
             </button>

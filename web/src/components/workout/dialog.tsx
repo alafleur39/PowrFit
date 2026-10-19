@@ -75,7 +75,7 @@ export function Dialog({
             onClick={onClose}
             data-close
             aria-label="Close"
-            className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-surface hover:text-foreground"
+            className="flex size-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface hover:text-foreground"
           >
             <X className="size-5" aria-hidden />
           </button>
