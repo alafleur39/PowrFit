@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Dumbbell, Plus } from "lucide-react";
 
+import { InstallCard } from "@/components/install-card";
 import { ScreenHeader } from "@/components/shell/placeholder";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { SyncBadge } from "@/components/workout/sync-badge";
@@ -14,7 +15,8 @@ import { PRESET_ROUTINES, workoutTotals } from "@/lib/strength";
 import { formatDate, formatElapsed, formatWeight } from "@/lib/workout/format";
 
 // Home is a training dashboard (D13, design spec §6.1): resume or start a
-// workout, this week's numbers, and the last workout.
+// workout, this week's numbers, and the last workout. From the 2nd workout,
+// a card suggests installing the app (D26).
 export default function HomePage() {
   return (
     <div className="pb-6">
@@ -22,6 +24,7 @@ export default function HomePage() {
       <div className="flex flex-col gap-4 px-4 sm:px-6">
         <StartOrResume />
         <WeekChips />
+        <InstallCard />
         <LastWorkout />
       </div>
     </div>

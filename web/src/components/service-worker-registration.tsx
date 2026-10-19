@@ -2,8 +2,12 @@
 
 import { useEffect } from "react";
 
+import { startInstallListener } from "./install-prompt";
+
 export function ServiceWorkerRegistration() {
   useEffect(() => {
+    // Catch the install prompt early, before Home is on screen (P4-07).
+    startInstallListener();
     if (
       process.env.NODE_ENV !== "production" ||
       typeof navigator === "undefined" ||
