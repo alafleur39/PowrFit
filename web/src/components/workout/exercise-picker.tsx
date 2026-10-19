@@ -1,21 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Check, Search } from "lucide-react";
+import { useState } from "react";
+import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  EQUIPMENT,
-  MUSCLE_GROUPS,
-  searchExercises,
-  type Equipment,
-  type MuscleGroup,
-} from "@/lib/strength";
 import { cn } from "@/lib/utils";
 import { Dialog } from "./dialog";
-
-const label = (value: string) =>
-  value === "full-body" ? "Full body" : value.charAt(0).toUpperCase() + value.slice(1);
+import { catalogLabel, ExerciseSearchControls, useExerciseSearch } from "./exercise-search";
 
 // Exercise picker (design spec §6.3): search, muscle chips and an equipment
 // filter over the built-in catalog. Runs on the device, so it works offline.
@@ -28,15 +19,9 @@ export function ExercisePicker({
   onClose: () => void;
   onAdd: (exerciseIds: string[]) => void;
 }) {
-  const [query, setQuery] = useState("");
-  const [muscle, setMuscle] = useState<MuscleGroup | undefined>();
-  const [equipment, setEquipment] = useState<Equipment | undefined>();
+  const search = useExerciseSearch();
+  const { results } = search;
   const [selected, setSelected] = useState<string[]>([]);
-
-  const results = useMemo(
-    () => searchExercises(query, { muscle, equipment }),
-    [query, muscle, equipment]
-  );
 
   const close = () => {
     setSelected([]);
@@ -66,58 +51,8 @@ export function ExercisePicker({
         </Button>
       }
     >
-      <div className="sticky top-0 z-10 flex flex-col gap-3 bg-surface-raised pb-3">
-        <label className="relative block">
-          <span className="sr-only">Search exercises</span>
-          <Search
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search exercises"
-            className="h-11 w-full rounded-lg border border-input bg-background pr-3 pl-9 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
-          />
-        </label>
-
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4" role="group" aria-label="Muscle">
-          {MUSCLE_GROUPS.map((group) => (
-            <button
-              key={group}
-              type="button"
-              aria-pressed={muscle === group}
-              onClick={() => setMuscle(muscle === group ? undefined : group)}
-              className={cn(
-                "h-9 shrink-0 rounded-full border px-3 text-sm font-medium",
-                muscle === group
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-border bg-surface text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {label(group)}
-            </button>
-          ))}
-        </div>
-
-        <label className="flex items-center gap-2 text-sm text-muted-foreground">
-          Equipment
-          <select
-            value={equipment ?? ""}
-            onChange={(event) =>
-              setEquipment((event.target.value || undefined) as Equipment | undefined)
-            }
-            className="h-9 rounded-lg border border-input bg-background px-2 text-foreground"
-          >
-            <option value="">Any</option>
-            {EQUIPMENT.map((item) => (
-              <option key={item} value={item}>
-                {label(item)}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="sticky top-0 z-10 bg-surface-raised pb-3">
+        <ExerciseSearchControls search={search} />
       </div>
 
       {results.length === 0 ? (
@@ -146,7 +81,7 @@ export function ExercisePicker({
                   <span className="min-w-0">
                     <span className="block font-medium text-foreground">{exercise.name}</span>
                     <span className="block text-sm text-muted-foreground">
-                      {label(exercise.primaryMuscle)} · {label(exercise.equipment)}
+                      {catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
                     </span>
                   </span>
                 </button>
