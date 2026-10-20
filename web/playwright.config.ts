@@ -37,7 +37,14 @@ export default defineConfig({
       command: `npm run dev:emulators -- -p ${PORT}`,
       url: `http://localhost:${PORT}/login`,
       // A stand-in feedback form (D30), so Profile shows its button.
-      env: { NEXT_PUBLIC_FEEDBACK_URL: "https://example.com/powrfit-feedback" },
+      // Test-only server switches for /api/gyms (P6-05), ignored in
+      // production: fake gyms instead of OpenStreetMap, and trust the Auth
+      // emulator's unsigned sign-in tokens.
+      env: {
+        NEXT_PUBLIC_FEEDBACK_URL: "https://example.com/powrfit-feedback",
+        GYMS_PROVIDER: "fake",
+        GYMS_TRUST_EMULATOR_TOKENS: "1",
+      },
       reuseExistingServer: true,
       timeout: 180_000,
     },
