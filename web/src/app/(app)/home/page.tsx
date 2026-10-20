@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChevronRight, Dumbbell, Plus } from "lucide-react";
 
 import { InstallCard } from "@/components/install-card";
+import { ForYou } from "@/components/workout/for-you";
 import { ScreenHeader } from "@/components/shell/placeholder";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { SyncBadge } from "@/components/workout/sync-badge";
@@ -24,6 +25,7 @@ export default function HomePage() {
       <div className="flex flex-col gap-4 px-4 sm:px-6">
         <StartOrResume />
         <WeekChips />
+        <ForYou />
         <InstallCard />
         <LastWorkout />
       </div>

@@ -14,6 +14,7 @@ import {
   type ProgressRange,
 } from "@/lib/workout/progress";
 import { useActiveWorkout } from "./active-workout-provider";
+import { ForYou } from "./for-you";
 import { TrendChart, VolumeChart } from "./progress-charts";
 import { useHistoryLogs } from "./use-records";
 
@@ -57,6 +58,7 @@ export function ProgressView() {
         }))}
       />
       {!loading && <TrendPanel logs={logs} unit={unit} />}
+      <ForYou className="mt-2 border-t border-border px-4 py-5 sm:px-6" />
     </div>
   );
 }
