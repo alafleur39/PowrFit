@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // PowrFit Firestore rules (Phase 2, P2-06; routines added in P4-01; legacy
-// deletes in P5-05). Every
+// deletes in P5-05; profile and gyms in Phase 6). Every
 // path is listed explicitly: rules are OR-ed together, so a catch-all like
 // users/{uid}/{document=**} would let any write skip the validation below.
 // Anything not matched here is denied. Tested in tests/rules with the emulator (npm run test:rules).
@@ -92,6 +92,33 @@ service cloud.firestore {
       allow create, update: if isOwner(userId)
         && request.resource.data.keys().hasOnly(['weightUnit'])
         && request.resource.data.weightUnit in ['kg', 'lb'];
+    }
+
+    // Gym prices you approved (P6-04, D36): shared, read-only for signed-in
+    // users. Only you write them, by hand in the Firebase console, which
+    // bypasses these rules. No listing: the app reads gyms by id.
+    match /gyms/{placeId} {
+      allow get: if request.auth != null;
+      allow list, write: if false;
+    }
+
+    // Users' price reports (P6-04, D42): signed-in users can send one;
+    // nobody can read, change or delete them through the app. Anonymous:
+    // no user id is stored. Mirrors priceReportProblems in src/lib/gyms.
+    match /gymPriceReports/{reportId} {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['placeId', 'gymName', 'plan', 'monthlyPrice', 'currency', 'createdAt'])
+        && request.resource.data.keys().hasAll(['placeId', 'gymName', 'plan', 'monthlyPrice', 'currency', 'createdAt'])
+        && request.resource.data.placeId is string
+        && request.resource.data.placeId.matches('osm-(node|way|relation)-[0-9]{1,20}')
+        && request.resource.data.gymName is string && request.resource.data.gymName.size() <= 100
+        && request.resource.data.plan is string
+        && request.resource.data.plan.size() >= 1 && request.resource.data.plan.size() <= 60
+        && request.resource.data.monthlyPrice is number
+        && request.resource.data.monthlyPrice > 0 && request.resource.data.monthlyPrice <= 1000
+        && request.resource.data.currency in ['USD', 'CAD', 'GBP', 'EUR', 'AUD']
+        && request.resource.data.createdAt is string && request.resource.data.createdAt.size() <= 40;
+      allow read, update, delete: if false;
     }
 
     // Phase 0 mock data, retired in P2-15: owners can still read it and
