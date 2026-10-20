@@ -37,8 +37,9 @@ export async function deleteUserData(uid: string): Promise<void> {
     const snapshot = await getDocsFromServer(collection(db, "users", uid, name));
     refs.push(...snapshot.docs.map((item) => item.ref));
   }
-  // The rules allow the preferences document by path only (no listing).
+  // The rules allow the settings documents by path only (no listing).
   refs.push(doc(db, "users", uid, "settings", "preferences"));
+  refs.push(doc(db, "users", uid, "settings", "profile"));
 
   for (let start = 0; start < refs.length; start += BATCH_LIMIT) {
     const batch = writeBatch(db);
