@@ -8,3 +8,4 @@ export * from "./draft";
 export * from "./routines";
 export * from "./records";
 export * from "./edit-log";
+export * from "./insights";
