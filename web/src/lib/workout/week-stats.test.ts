@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { workoutTotals, type WorkoutLog } from "@/lib/strength";
 import type { HistoryItem } from "./history-merge";
-import { summarizeWeek } from "./week-stats";
+import { summarizeWeek, weekStreak } from "./week-stats";
 
 function log(id: string, weight: number, unit: "kg" | "lb"): WorkoutLog {
   const exercises = [
@@ -42,5 +42,24 @@ describe("summarizeWeek", () => {
 
   it("is zero for an empty week", () => {
     expect(summarizeWeek([], "kg")).toEqual({ workouts: 0, sets: 0, volume: 0, unit: "kg" });
+  });
+});
+
+describe("weekStreak", () => {
+  // Built in local time, so these pass in any time zone. Oct 15 2026 is a Thursday.
+  const at = (m: number, d: number) => new Date(2026, m, d, 18).toISOString();
+  const now = new Date(2026, 9, 15, 12);
+
+  it("counts weeks in a row with a workout, ending this week", () => {
+    expect(weekStreak([at(9, 13), at(9, 6), at(9, 1), at(8, 15)], now)).toBe(3);
+  });
+
+  it("keeps last week's streak alive while this week has none yet", () => {
+    expect(weekStreak([at(9, 6), at(8, 29)], now)).toBe(2);
+  });
+
+  it("is 0 after a missed week, or with no workouts", () => {
+    expect(weekStreak([at(8, 22)], now)).toBe(0);
+    expect(weekStreak([], now)).toBe(0);
   });
 });

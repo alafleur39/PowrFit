@@ -6,6 +6,7 @@ import { LogOut, X } from "lucide-react";
 
 import type { WeightUnit } from "@/lib/strength";
 import { cn } from "@/lib/utils";
+import { ProfileAvatar } from "@/components/profile/profile-avatar";
 
 type AccountDrawerProps = {
   open: boolean;
@@ -104,12 +105,7 @@ export function AccountDrawer({
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <span
-                  aria-hidden
-                  className="flex size-11 items-center justify-center rounded-full bg-surface-active text-base font-bold text-accent"
-                >
-                  {accountName.slice(0, 1).toUpperCase()}
-                </span>
+                <ProfileAvatar className="size-11 text-base" />
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-foreground">
                     {accountName}

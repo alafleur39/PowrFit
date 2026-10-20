@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
 import { PowrFitLogo } from "@/components/powrfit-logo";
+import { ProfileAvatar } from "@/components/profile/profile-avatar";
+import { useProfile } from "@/components/profile/use-profile";
 import { AccountDrawer } from "@/components/shell/account-drawer";
 import { BottomTabBar } from "@/components/shell/bottom-tab-bar";
 import { Fab } from "@/components/shell/fab";
@@ -28,7 +30,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [signOutWarning, setSignOutWarning] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const accountName = user?.displayName ?? "PowrFit Athlete";
+  const { profile } = useProfile();
+  const accountName = profile.displayName;
   const accountEmail = user?.email ?? "";
 
   // The FAB and the sidebar CTA both open the logger, which resumes any
@@ -76,9 +79,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => setDrawerOpen(true)}
               aria-label="Open account menu"
-              className="flex size-11 items-center justify-center rounded-full bg-surface-active text-sm font-bold text-accent"
+              className="flex size-11 items-center justify-center rounded-full"
             >
-              {accountName.slice(0, 1).toUpperCase()}
+              <ProfileAvatar className="size-10" />
             </button>
             <Link href="/home" aria-label="PowrFit home">
               <PowrFitLogo variant="compact" />

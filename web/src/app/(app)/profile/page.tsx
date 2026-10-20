@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { ChevronRight, MessageSquare, Shield } from "lucide-react";
 
-import { useAuth } from "@/components/auth-provider";
 import { DeleteAccount } from "@/components/profile/delete-account";
+import { ProfileCard } from "@/components/profile/profile-card";
 import { ScreenHeader } from "@/components/shell/placeholder";
 
 /** The beta feedback form (D30). Unset: the button isn't shown. */
@@ -15,13 +15,15 @@ const FEEDBACK_URL = process.env.NEXT_PUBLIC_FEEDBACK_URL?.startsWith("https://"
 const row =
   "flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3 hover:bg-surface-raised";
 
-// Profile (P5-05): the account, feedback, privacy and deleting the account.
+// Profile (P5-05, P6-13): who you are and your lifetime numbers, then
+// feedback, privacy and deleting the account.
 export default function ProfilePage() {
-  const { user } = useAuth();
   return (
     <div className="pb-10">
-      <ScreenHeader title="Profile" subtitle={user?.email ?? undefined} />
+      <ScreenHeader title="Profile" />
       <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 sm:px-6">
+        <ProfileCard />
+        <div className="mt-3" />
         {FEEDBACK_URL && (
           <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer" className={row}>
             <MessageSquare className="size-5 text-accent" aria-hidden />

@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import { PowrFitLogo } from "@/components/powrfit-logo";
 import { cn } from "@/lib/utils";
 import { DESTINATIONS, isDestinationActive } from "./nav-config";
+import { ProfileAvatar } from "@/components/profile/profile-avatar";
 
 type SidebarProps = {
   onLogWorkout: () => void;
@@ -67,12 +68,7 @@ export function Sidebar({
         onClick={onOpenAccount}
         className="mt-auto flex items-center gap-3 rounded-full p-2 text-left transition-colors hover:bg-surface"
       >
-        <span
-          aria-hidden
-          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-active text-sm font-bold text-accent"
-        >
-          {accountName.slice(0, 1).toUpperCase()}
-        </span>
+        <ProfileAvatar />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold text-foreground">
             {accountName}
