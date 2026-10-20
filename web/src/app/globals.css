@@ -117,3 +117,69 @@
     linear-gradient(90deg, color-mix(in srgb, var(--brand) 6%, transparent) 1px, transparent 1px);
   background-size: 32px 32px;
 }
+
+/*
+  Feel (P6-10, D39). Every control answers a tap: a slight dim and press-in
+  while held. touch-action: manipulation drops the double-tap-zoom delay on
+  phones, so taps register at once.
+*/
+@layer base {
+  button,
+  a,
+  [role="button"],
+  [role="tab"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition-property: color, background-color, border-color, opacity, transform;
+    transition-duration: 120ms;
+  }
+  button:not(:disabled):active,
+  a:active,
+  [role="button"]:active {
+    opacity: 0.75;
+    transform: scale(0.98);
+  }
+}
+
+/*
+  Screen changes crossfade with a slight rise (P6-10): a short exit, a
+  gentler enter, no sideways slide, since these are peer screens rather
+  than "going deeper" (Next view-transitions guide).
+*/
+::view-transition-old(.page-exit) {
+  animation: 120ms ease-in both page-fade reverse;
+}
+::view-transition-new(.page-enter) {
+  animation: 180ms ease-out 60ms both page-fade, 240ms ease-out both page-rise;
+}
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes page-rise {
+  from {
+    translate: 0 8px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Reduce Motion: no transitions or press-in, content swaps at once. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+  button:not(:disabled):active,
+  a:active,
+  [role="button"]:active {
+    transform: none;
+  }
+}

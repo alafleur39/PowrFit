@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Page transitions with React's <ViewTransition> (P6-10). Experimental in
+  // Next 16; browsers without the View Transitions API just don't animate.
+  experimental: {
+    viewTransition: true,
+  },
   // The login page's hero photo is served from Unsplash.
   images: {
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com", pathname: "/**" }],

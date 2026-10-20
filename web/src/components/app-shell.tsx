@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, ViewTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 // on mobile that collapses to a top bar, bottom tab bar, and a floating FAB.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, signOut } = useAuth();
   const { draft, unit, setUnit, hasUnsyncedWork, clearDevice } = useActiveWorkout();
   const [signOutWarning, setSignOutWarning] = useState(false);
@@ -85,7 +86,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <span className="size-9" aria-hidden />
           </header>
 
-          {children}
+          {/* A short crossfade between screens (P6-10). Keyed by path, so
+              in-page tab switches (?tab=) don't trigger it. */}
+          <ViewTransition key={pathname} enter="page-enter" exit="page-exit" default="none">
+            <div>{children}</div>
+          </ViewTransition>
         </main>
 
         <StatsRail />
