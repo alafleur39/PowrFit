@@ -18,6 +18,13 @@ type Subscribe = (
   onError: (error: Error) => void
 ) => () => void;
 
+/**
+ * The last results of each query this session, keyed by user and query
+ * (P6-09, D39). A screen that opens again starts from them instead of a
+ * spinner, and the subscription replaces them as soon as it answers.
+ */
+const lastSeen = new Map<string, LogEntry[]>();
+
 /** Subscribes to a query and merges in this device's receipts. */
 function useMergedLogs(subscribe: Subscribe, key: string) {
   const { user } = useAuth();
@@ -28,14 +35,23 @@ function useMergedLogs(subscribe: Subscribe, key: string) {
     entries: LogEntry[];
     loading: boolean;
     error: boolean;
-  }>({ key: "", entries: [], loading: true, error: false });
+  }>(() => {
+    const stateKey = `${uid}:${key}`;
+    const seen = uid ? lastSeen.get(stateKey) : undefined;
+    return seen
+      ? { key: stateKey, entries: seen, loading: false, error: false }
+      : { key: "", entries: [], loading: true, error: false };
+  });
 
   useEffect(() => {
     if (!uid) return;
     const stateKey = `${uid}:${key}`;
     return subscribe(
       uid,
-      (entries) => setState({ key: stateKey, entries, loading: false, error: false }),
+      (entries) => {
+        lastSeen.set(stateKey, entries);
+        setState({ key: stateKey, entries, loading: false, error: false });
+      },
       () => setState((current) => ({ ...current, key: stateKey, loading: false, error: true }))
     );
     // `subscribe` is rebuilt each render; `key` captures what it depends on.

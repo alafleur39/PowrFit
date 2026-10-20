@@ -31,6 +31,8 @@ test("browse the catalog and see your numbers for an exercise", async ({ page })
   await signUp(page, testEmail("explore"));
   await page.goto("/workouts");
   await page.getByRole("tab", { name: "Explore" }).click();
+  // The panel becomes usable once the swipe settles.
+  await expect(page.getByRole("tab", { name: "Explore" })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByText(/^\d+ exercises$/)).toBeVisible();
   await expectNoSidewaysScroll(page, "Explore");
   await expectLabelledControls(page, "Explore");

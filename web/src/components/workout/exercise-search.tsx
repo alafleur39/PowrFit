@@ -53,7 +53,8 @@ export function ExerciseSearchControls({
         />
       </label>
 
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4" role="group" aria-label="Muscle">
+      {/* overscroll-x-contain: reaching the end of the chips doesn't swipe the tabs. */}
+      <div className="-mx-4 flex gap-2 overflow-x-auto overscroll-x-contain px-4" role="group" aria-label="Muscle">
         {MUSCLE_GROUPS.map((group) => (
           <button
             key={group}

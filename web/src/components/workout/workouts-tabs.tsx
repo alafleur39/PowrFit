@@ -9,6 +9,7 @@ export function WorkoutsTabs({ initialTab }: { initialTab?: string }) {
   return (
     <SegmentedTabs
       ariaLabel="Workouts views"
+      urlParam="tab"
       defaultTabId={initialTab === "history" || initialTab === "explore" ? initialTab : "routines"}
       tabs={[
         { id: "routines", label: "Routines", content: <RoutineList /> },
