@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         PowrFit
       </Link>
       <h1 className="mt-2 text-3xl font-bold">Privacy</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Last updated October 19, 2026. PowrFit is in beta.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Last updated October 21, 2026. PowrFit is in beta.</p>
 
       <div className="mt-6 flex flex-col gap-6 text-base leading-relaxed">
         <section>
@@ -26,6 +26,7 @@ export default function PrivacyPage() {
             <li>Your email address and password, to sign you in. The password is never stored in readable form.</li>
             <li>The workouts you log: exercises, sets, weights, reps, notes, and when you trained.</li>
             <li>The routines you create, and whether you use kg or lb.</li>
+            <li>The name and avatar colour you pick in your profile. There are no profile photos.</li>
           </ul>
         </section>
         <section>
@@ -34,6 +35,23 @@ export default function PrivacyPage() {
             In Google Firebase, which runs PowrFit&apos;s sign-in and database. Your phone also keeps a
             copy so the app works offline. Only your account can read your data; the developer can
             reach the database to fix problems.
+          </p>
+        </section>
+        <section>
+          <h2 className="text-lg font-bold">Gyms near you</h2>
+          <p className="mt-2 text-muted-foreground">
+            Location is only asked for when you tap Near me. Your phone sends PowrFit a rough area of
+            about 1 km, never your exact spot, and nothing about where you searched is saved to your
+            account. Gyms are found on OpenStreetMap; a typed city or zip code is sent to
+            OpenStreetMap&apos;s place search. A price you report is stored without your name or
+            account, and shows to everyone once it&apos;s checked.
+          </p>
+        </section>
+        <section>
+          <h2 className="text-lg font-bold">Video suggestions</h2>
+          <p className="mt-2 text-muted-foreground">
+            Suggestions are worked out on your phone from your workouts. Opening one sends only the
+            search words to YouTube, never your workout data.
           </p>
         </section>
         <section>
