@@ -35,10 +35,13 @@ function json(status: number, body: unknown, cache = false): Response {
   });
 }
 
-async function geocode(place: string): Promise<{ lat: number; lon: number } | null> {
+async function geocode(place: string, deadline: number): Promise<{ lat: number; lon: number } | null> {
   if (FAKE) return fakeGeocode(place);
   const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(place)}`;
-  const response = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(10_000) });
+  const response = await fetch(url, {
+    headers: { "User-Agent": USER_AGENT },
+    signal: AbortSignal.timeout(Math.max(1, Math.min(4_000, deadline - Date.now()))),
+  });
   if (!response.ok) throw new Error(`Place search failed (${response.status})`);
   const [first] = (await response.json()) as { lat?: string; lon?: string }[];
   const lat = Number(first?.lat);
@@ -46,19 +49,44 @@ async function geocode(place: string): Promise<{ lat: number; lon: number } | nu
   return Number.isFinite(lat) && Number.isFinite(lon) ? { lat, lon } : null;
 }
 
-async function gymsAround(lat: number, lon: number): Promise<Gym[]> {
+// Public Overpass servers, tried in order: any one of them can be busy or
+// refuse a network, and a single answer is enough.
+const OVERPASS_SERVERS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+];
+/** The whole request stays inside Netlify's 10 second function limit. */
+const REQUEST_BUDGET_MS = 9_000;
+
+async function gymsAround(lat: number, lon: number, deadline: number): Promise<Gym[]> {
   if (FAKE) return fakeGyms(lat, lon);
-  const response = await fetch("https://overpass-api.de/api/interpreter", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": USER_AGENT },
-    body: `data=${encodeURIComponent(overpassQuery(lat, lon))}`,
-    signal: AbortSignal.timeout(20_000),
-  });
-  if (!response.ok) throw new Error(`Gym search failed (${response.status})`);
-  return parseOverpass(await response.json());
+  const failures: string[] = [];
+  for (const server of OVERPASS_SERVERS) {
+    const left = deadline - Date.now();
+    if (left < 1_000) break;
+    try {
+      const response = await fetch(server, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+          "User-Agent": USER_AGENT,
+        },
+        body: `data=${encodeURIComponent(overpassQuery(lat, lon))}`,
+        signal: AbortSignal.timeout(Math.min(left, 6_000)),
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      return parseOverpass(await response.json());
+    } catch (error) {
+      failures.push(`${new URL(server).host}: ${error instanceof Error ? error.message : error}`);
+    }
+  }
+  throw new Error(`Gym search failed (${failures.join("; ")})`);
 }
 
 export async function GET(request: Request): Promise<Response> {
+  const deadline = Date.now() + REQUEST_BUDGET_MS;
   const params = new URL(request.url).searchParams;
   const cellParam = params.get("cell");
   const place = params.get("place")?.trim();
@@ -74,12 +102,12 @@ export async function GET(request: Request): Promise<Response> {
   try {
     let cell = cellParam;
     if (!cell) {
-      const point = await geocode(place ?? "");
+      const point = await geocode(place ?? "", deadline);
       if (!point) return json(404, { error: "Couldn't find that place." });
       cell = encodeGeohash(point.lat, point.lon);
     }
     const center = decodeGeohash(cell);
-    const gyms = await gymsAround(center.lat, center.lon);
+    const gyms = await gymsAround(center.lat, center.lon, deadline);
     return json(200, { cell, center, gyms }, true);
   } catch (error) {
     console.error("Gym search failed", error);

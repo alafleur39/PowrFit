@@ -11,7 +11,7 @@ export const MAX_GYMS = 50;
 
 export function overpassQuery(lat: number, lon: number, radiusM = SEARCH_RADIUS_M): string {
   const around = `around:${radiusM},${lat.toFixed(5)},${lon.toFixed(5)}`;
-  return `[out:json][timeout:20];(nwr["leisure"="fitness_centre"](${around});nwr["amenity"="gym"](${around}););out center ${MAX_GYMS};`;
+  return `[out:json][timeout:8];(nwr["leisure"="fitness_centre"](${around});nwr["amenity"="gym"](${around}););out center ${MAX_GYMS};`;
 }
 
 type Element = {
