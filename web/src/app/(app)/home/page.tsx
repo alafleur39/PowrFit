@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Dumbbell, Plus } from "lucide-react";
+import { ChevronRight, Dumbbell, MapPin, Plus } from "lucide-react";
 
 import { InstallCard } from "@/components/install-card";
 import { ForYou } from "@/components/workout/for-you";
@@ -26,6 +26,7 @@ export default function HomePage() {
         <StartOrResume />
         <WeekChips />
         <ForYou />
+        <GymsCard />
         <InstallCard />
         <LastWorkout />
       </div>
@@ -126,6 +127,23 @@ function WeekChips() {
         ))}
       </div>
     </section>
+  );
+}
+
+// The way into gyms near you (P6-06).
+function GymsCard() {
+  return (
+    <Link
+      href="/gyms"
+      className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface p-4 hover:bg-surface-raised"
+    >
+      <MapPin className="size-6 shrink-0 text-accent" aria-hidden />
+      <span className="min-w-0 flex-1">
+        <span className="block font-semibold">Gyms near you</span>
+        <span className="block text-sm text-muted-foreground">Compare monthly prices nearby</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+    </Link>
   );
 }
 
