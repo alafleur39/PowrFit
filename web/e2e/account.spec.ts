@@ -50,7 +50,7 @@ test("deleting an account removes its data and login", async ({ page, isMobile }
   await logSet(page, "Barbell bench press", 0, "135", "5");
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Finish and save" }).click();
-  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 30_000 });
   await openAccountMenu(page, isMobile);
   await page.getByRole("radio", { name: "kg" }).click();
   await page.keyboard.press("Escape");

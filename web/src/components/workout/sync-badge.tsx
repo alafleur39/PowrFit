@@ -3,11 +3,11 @@ import { AlertTriangle, Check, CloudUpload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DisplayStatus } from "@/lib/workout/history-merge";
 
-// Honest sync status (Phase 2 plan, section B): "Synced" only after the
+// Honest sync status (Phase 2 plan, section B): "Saved" only after the
 // server confirmed the save.
 const STATUS = {
   pending: { label: "Waiting to sync", icon: CloudUpload, className: "text-muted-foreground" },
-  synced: { label: "Synced", icon: Check, className: "text-success" },
+  synced: { label: "Saved", icon: Check, className: "text-success" },
   failed: { label: "Sync failed", icon: AlertTriangle, className: "text-danger" },
 } as const;
 

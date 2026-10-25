@@ -26,7 +26,7 @@ async function finishBenchWorkout(page: Page) {
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Finish and save" }).click();
   await expect(page.getByText("Workout saved")).toBeVisible();
-  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 30_000 });
 }
 
 /** The bench sets saved in the emulator, as "weight×reps". */
@@ -66,7 +66,7 @@ test("edit a past workout's sets, then delete it", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Edit workout" })).toHaveCount(0);
   await expect(page.getByText("145 × 4")).toBeVisible();
-  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 30_000 });
   await expect.poll(savedBenchSets).toEqual(["135×6", "145×4"]);
 
   // Delete asks first; "Keep it" changes nothing.
@@ -100,7 +100,7 @@ test("edits and deletes made offline sync when the connection returns", async ({
   expect(await savedBenchSets()).toEqual(["135×6", "135×6"]);
 
   await context.setOffline(false);
-  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 45_000 });
   await expect.poll(savedBenchSets).toEqual(["135×6"]);
 
   await context.setOffline(true);

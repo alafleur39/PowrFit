@@ -47,7 +47,7 @@ test("a refused save shows Sync failed with recovery, and Retry fixes it", async
   await expect(page.getByText(/didn't accept this workout \(permission-denied\)/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy as text" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Discard", exact: true })).toBeVisible();
-  await expect(page.getByText("Synced", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Saved", { exact: true })).toHaveCount(0);
   expect(await listWorkoutLogs()).toHaveLength(0);
 
   // It stays visible after a reload, at the top of History.
@@ -57,7 +57,7 @@ test("a refused save shows Sync failed with recovery, and Retry fixes it", async
   // Once the server accepts it again, Retry saves the same workout once.
   await restoreFirestoreRules();
   await page.getByRole("button", { name: "Retry" }).click();
-  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 20_000 });
   await expect(page.getByText("Sync failed")).toHaveCount(0);
   await expect.poll(async () => (await listWorkoutLogs()).length).toBe(1);
 });

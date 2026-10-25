@@ -21,7 +21,7 @@ test("a second user on the same device sees none of the first user's data", asyn
   await logSet(page, "Barbell bench press", 0, "135", "5");
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Finish and save" }).click();
-  await expect(page.getByText("Synced", { exact: true })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 20_000 });
   await page.goto("/home");
   // Wait for history to load: Home suggests the preset after the last one.
   await expect(page.getByText("Up next")).toBeVisible();
