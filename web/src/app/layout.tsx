@@ -6,9 +6,21 @@ import { AuthProvider } from "@/components/auth-provider";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import "./globals.css";
 
+const description =
+  "Log every set and see your progress. A free workout tracker that installs from your browser.";
+
 export const metadata: Metadata = {
+  // Makes the generated opengraph-image URL absolute, which link previews need.
+  metadataBase: new URL("https://powrfit-andylafleur.netlify.app"),
   title: "PowrFit — Train smarter",
-  description: "Your gym, your progress, in the browser. PowrFit web app.",
+  description,
+  openGraph: {
+    type: "website",
+    siteName: "PowrFit",
+    title: "PowrFit — Train smarter",
+    description,
+  },
+  twitter: { card: "summary_large_image" },
   // Home-screen install on iOS (P1-08). The status bar overlays the page, so
   // the shell pads its top bar with env(safe-area-inset-top).
   appleWebApp: {
