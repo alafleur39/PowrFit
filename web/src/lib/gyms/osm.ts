@@ -48,3 +48,39 @@ export function parseOverpass(json: unknown): Gym[] {
   }
   return gyms;
 }
+
+// Nominatim, OpenStreetMap's place search, as the first source. Public
+// Overpass servers refuse requests from Netlify's network, while Nominatim
+// answers them. Its [leisure=fitness_centre] phrase searches the same map
+// data by category, bounded to a box around the point.
+
+/** Nominatim's search URL for gyms in a box about radiusM from the point. */
+export function nominatimGymsUrl(lat: number, lon: number, radiusM = SEARCH_RADIUS_M): string {
+  const dLat = radiusM / 111_320;
+  const dLon = radiusM / (111_320 * Math.cos((lat * Math.PI) / 180));
+  const box = [lon - dLon, lat + dLat, lon + dLon, lat - dLat].map((n) => n.toFixed(5)).join(",");
+  const q = encodeURIComponent("[leisure=fitness_centre]");
+  return `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&bounded=1&limit=${MAX_GYMS}&viewbox=${box}&q=${q}`;
+}
+
+type Place = {
+  osm_type?: unknown;
+  osm_id?: unknown;
+  lat?: unknown;
+  lon?: unknown;
+  name?: unknown;
+  address?: { house_number?: unknown; road?: unknown };
+};
+
+/** Nominatim JSON to gyms, with the same place ids Overpass gives. */
+export function parseNominatim(json: unknown): Gym[] {
+  if (!Array.isArray(json)) return [];
+  const elements = (json as Place[]).map((place) => ({
+    type: place.osm_type,
+    id: place.osm_id,
+    lat: typeof place.lat === "string" ? Number(place.lat) : place.lat,
+    lon: typeof place.lon === "string" ? Number(place.lon) : place.lon,
+    tags: { name: place.name, "addr:housenumber": place.address?.house_number, "addr:street": place.address?.road },
+  }));
+  return parseOverpass({ elements });
+}

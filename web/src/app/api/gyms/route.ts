@@ -9,7 +9,7 @@
 import { decodeGeohash, encodeGeohash, isCell } from "@/lib/gyms/geohash";
 import { fakeGeocode, fakeGyms } from "@/lib/gyms/fake-provider";
 import type { Gym } from "@/lib/gyms/gyms";
-import { overpassQuery, parseOverpass } from "@/lib/gyms/osm";
+import { nominatimGymsUrl, overpassQuery, parseNominatim, parseOverpass } from "@/lib/gyms/osm";
 import { verifyIdToken } from "@/lib/server/id-token";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "";
@@ -61,12 +61,12 @@ const REQUEST_BUDGET_MS = 9_000;
 
 async function gymsAround(lat: number, lon: number, deadline: number): Promise<Gym[]> {
   if (FAKE) return fakeGyms(lat, lon);
-  const failures: string[] = [];
-  for (const server of OVERPASS_SERVERS) {
-    const left = deadline - Date.now();
-    if (left < 1_000) break;
-    try {
-      const response = await fetch(server, {
+  // Nominatim first: Overpass servers have refused Netlify's network.
+  const sources: { url: string; init: RequestInit; parse: (json: unknown) => Gym[] }[] = [
+    { url: nominatimGymsUrl(lat, lon), init: { headers: { "User-Agent": USER_AGENT } }, parse: parseNominatim },
+    ...OVERPASS_SERVERS.map((url) => ({
+      url,
+      init: {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -74,12 +74,20 @@ async function gymsAround(lat: number, lon: number, deadline: number): Promise<G
           "User-Agent": USER_AGENT,
         },
         body: `data=${encodeURIComponent(overpassQuery(lat, lon))}`,
-        signal: AbortSignal.timeout(Math.min(left, 6_000)),
-      });
+      },
+      parse: parseOverpass,
+    })),
+  ];
+  const failures: string[] = [];
+  for (const source of sources) {
+    const left = deadline - Date.now();
+    if (left < 1_000) break;
+    try {
+      const response = await fetch(source.url, { ...source.init, signal: AbortSignal.timeout(Math.min(left, 4_000)) });
       if (!response.ok) throw new Error(String(response.status));
-      return parseOverpass(await response.json());
+      return source.parse(await response.json());
     } catch (error) {
-      failures.push(`${new URL(server).host}: ${error instanceof Error ? error.message : error}`);
+      failures.push(`${new URL(source.url).host}: ${error instanceof Error ? error.message : error}`);
     }
   }
   throw new Error(`Gym search failed (${failures.join("; ")})`);

@@ -1,4 +1,4 @@
-import { ChartLine, Dumbbell, Home, User, type LucideIcon } from "lucide-react";
+import { ChartLine, Dumbbell, Home, MapPin, User, type LucideIcon } from "lucide-react";
 
 // One shared destination config, two presentations (bottom bar + sidebar).
 // POWRFIT_NAV_SPEC §3.
@@ -12,6 +12,7 @@ export const DESTINATIONS: Destination[] = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/workouts", label: "Workouts", icon: Dumbbell },
   { href: "/progress", label: "Progress", icon: ChartLine },
+  { href: "/gyms", label: "Gyms", icon: MapPin },
   { href: "/profile", label: "Profile", icon: User },
 ];
 
