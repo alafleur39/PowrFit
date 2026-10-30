@@ -5,6 +5,8 @@ import { ImageResponse } from "next/og";
 export const alt = "PowrFit: log workouts and track your progress";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+// Prerendered even in the static iOS build (P7-01).
+export const dynamic = "force-static";
 
 export default function OpengraphImage() {
   return new ImageResponse(

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:ios": "NEXT_OUTPUT=export NEXT_PUBLIC_API_ORIGIN=https://powrfit-andylafleur.netlify.app next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",

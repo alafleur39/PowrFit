@@ -1,16 +1,25 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { RoutineEditor } from "@/components/workout/routine-editor";
 import { useRoutines } from "@/components/workout/use-routines";
 import { newRoutine } from "@/lib/strength";
 
-// /workouts/routines/new creates a routine; any other id edits that routine.
+// /workouts/routines/edit?id=new creates a routine; any other id edits that
+// routine (P7-01: query, not path, so the static iOS build has this page too).
 export default function RoutineEditorPage() {
-  const { routineId } = useParams<{ routineId: string }>();
+  return (
+    <Suspense>
+      <RoutineEditorForId />
+    </Suspense>
+  );
+}
+
+function RoutineEditorForId() {
+  const routineId = useSearchParams().get("id") ?? "";
   const { routines, loading } = useRoutines();
   const [fresh] = useState(() =>
     newRoutine({ id: crypto.randomUUID(), now: new Date().toISOString() })

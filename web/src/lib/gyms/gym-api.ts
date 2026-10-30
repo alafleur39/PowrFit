@@ -6,6 +6,8 @@
 
 import type { User } from "firebase/auth";
 
+import { apiUrl } from "@/lib/routes";
+
 import { encodeGeohash } from "./geohash";
 import type { Gym } from "./gyms";
 
@@ -27,7 +29,7 @@ export async function searchGyms(user: User, search: GymSearch): Promise<GymSear
       : `place=${encodeURIComponent(search.place.trim())}`;
   let response: Response;
   try {
-    response = await fetch(`/api/gyms?${query}`, {
+    response = await fetch(apiUrl(`/api/gyms?${query}`), {
       headers: { Authorization: `Bearer ${await user.getIdToken()}` },
     });
   } catch {

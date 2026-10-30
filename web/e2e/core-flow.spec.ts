@@ -55,7 +55,7 @@ test("a workout can be started, logged, finished and reopened with matching tota
   await expect(row).toContainText("3 sets · 2,515 lb");
   await expect(row).toContainText("Saved");
   await row.click();
-  await expect(page).toHaveURL(/\/workouts\/history\/[0-9a-f-]{36}$/);
+  await expect(page).toHaveURL(/\/workouts\/history\/view\?id=[0-9a-f-]{36}$/);
   await expectSummary(page);
 
   // Home's week stats and last-workout card agree.

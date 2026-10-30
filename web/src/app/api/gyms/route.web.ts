@@ -1,5 +1,6 @@
 // GET /api/gyms (P6-05): gyms on the map around a ~1 km cell, or around a
-// place the user typed. PowrFit's first server endpoint: the phone sends a
+// place the user typed. Website only: the static iOS build leaves .web.ts
+// files out and calls this endpoint on Netlify instead (P7-01). PowrFit's first server endpoint: the phone sends a
 // geohash cell, never its exact position (D35); only signed-in users get
 // past the cache to the provider; prices are not added here, the phone
 // reads them from Firestore itself.

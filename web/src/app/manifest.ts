@@ -3,6 +3,9 @@ import type { MetadataRoute } from "next";
 // Install metadata (P1-08). Colors match --bg (decision D11). Icons are
 // rendered from public/icons/icon.svg; the bolt sits inside the maskable
 // safe zone, so the maskable copy is the same artwork.
+// Prerendered even in the static iOS build (P7-01).
+export const dynamic = "force-static";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",

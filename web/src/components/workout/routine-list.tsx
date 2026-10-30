@@ -8,6 +8,7 @@ import { Copy, Pencil, Plus } from "lucide-react";
 import { useAuth } from "@/components/auth-provider";
 import { PRESET_ROUTINES, copyRoutine, type Routine } from "@/lib/strength";
 import { saveRoutine } from "@/lib/workout/routine-repo";
+import { NEW_ROUTINE_HREF, routineHref } from "@/lib/routes";
 import { useActiveWorkout } from "./active-workout-provider";
 import { useRoutines } from "./use-routines";
 
@@ -82,7 +83,7 @@ export function RoutineList() {
     setCopyError(false);
     // Not awaited: offline, the write waits in the cache until it syncs.
     saveRoutine(user.uid, routine).catch(() => setCopyError(true));
-    router.push(`/workouts/routines/${routine.id}`);
+    router.push(routineHref(routine.id));
   };
 
   return (
@@ -99,7 +100,7 @@ export function RoutineList() {
             My routines
           </h2>
           <Link
-            href="/workouts/routines/new"
+            href={NEW_ROUTINE_HREF}
             className="flex h-11 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface"
           >
             <Plus className="size-4" aria-hidden />
@@ -131,7 +132,7 @@ export function RoutineList() {
                 actions={
                   <>
                     <Link
-                      href={`/workouts/routines/${routine.id}`}
+                      href={routineHref(routine.id)}
                       aria-label={`Edit ${routine.name}`}
                       className={iconButton}
                     >

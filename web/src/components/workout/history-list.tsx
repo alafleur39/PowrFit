@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shell/placeholder";
 import { workoutTotals } from "@/lib/strength";
 import { formatDate, formatWeight, plural } from "@/lib/workout/format";
+import { workoutLogHref } from "@/lib/routes";
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
 import { PrBadge } from "./pr-badge";
@@ -67,7 +68,7 @@ export function HistoryList() {
           return (
             <li key={item.id} className="rounded-2xl border border-border bg-surface">
               <Link
-                href={`/workouts/history/${item.id}`}
+                href={workoutLogHref(item.id)}
                 className="flex items-center gap-3 p-4"
               >
                 <div className="min-w-0 flex-1">

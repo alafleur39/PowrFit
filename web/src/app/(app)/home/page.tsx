@@ -14,6 +14,7 @@ import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
 import { useWeekStats } from "@/components/workout/use-week-stats";
 import { PRESET_ROUTINES, workoutTotals } from "@/lib/strength";
 import { formatDate, formatElapsed, formatWeight, formatWeightAmount, plural } from "@/lib/workout/format";
+import { workoutLogHref } from "@/lib/routes";
 
 // Home is a training dashboard (D13, design spec §6.1): resume or start a
 // workout, this week's numbers, and the last workout. From the 2nd workout,
@@ -171,7 +172,7 @@ function LastWorkout() {
         </Link>
       </div>
       <Link
-        href={`/workouts/history/${last.id}`}
+        href={workoutLogHref(last.id)}
         className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4"
       >
         <span className="min-w-0 flex-1">
