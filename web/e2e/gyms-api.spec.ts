@@ -43,3 +43,24 @@ test("checks input, requires sign-in, and returns cacheable gyms", async ({ requ
   expect(((await byPlace.json()) as { cell: string }).cell).toBe("dr5ru7");
   expect((await request.get("/api/gyms?place=Nowhere%20Land", { headers: auth })).status()).toBe(404);
 });
+
+test("lets the iOS app call it across origins", async ({ request, isMobile }) => {
+  test.skip(isMobile, "an API test; one browser is enough");
+  const app = "capacitor://localhost";
+
+  const preflight = await request.fetch("/api/gyms?cell=dr5ru7", {
+    method: "OPTIONS",
+    headers: { Origin: app, "Access-Control-Request-Method": "GET", "Access-Control-Request-Headers": "authorization" },
+  });
+  expect(preflight.status()).toBe(204);
+  expect(preflight.headers()["access-control-allow-origin"]).toBe(app);
+  expect(preflight.headers()["access-control-allow-headers"]).toBe("Authorization");
+
+  const answer = await request.get("/api/gyms?cell=dr5ru7", {
+    headers: { Origin: app, Authorization: `Bearer ${await idToken()}` },
+  });
+  expect(answer.status()).toBe(200);
+  expect(answer.headers()["access-control-allow-origin"]).toBe(app);
+  // Refusals carry it too, so the app can read the error message.
+  expect((await request.get("/api/gyms?cell=dr5ru7", { headers: { Origin: app } })).headers()["access-control-allow-origin"]).toBe(app);
+});

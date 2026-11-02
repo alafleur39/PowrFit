@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { Capacitor } from "@capacitor/core";
+import { connectAuthEmulator, getAuth, indexedDBLocalPersistence, initializeAuth, type Auth } from "firebase/auth";
 import {
   connectFirestoreEmulator,
   getFirestore,
@@ -49,7 +50,21 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
+// In the iOS app (P7-02) getAuth's popup and redirect helper tries to load
+// Google's sign-in iframe, which a capacitor:// page can't, and sign-in never
+// settles. PowrFit only uses email and password, so the app skips that helper
+// and keeps the session in IndexedDB.
+function createAuth(): Auth {
+  if (typeof window === "undefined" || !Capacitor.isNativePlatform()) return getAuth(app);
+  try {
+    return initializeAuth(app, { persistence: indexedDBLocalPersistence });
+  } catch {
+    // Already initialised (for example after a hot reload).
+    return getAuth(app);
+  }
+}
+
+export const auth = createAuth();
 // Firestore keeps a persistent cache in IndexedDB in the browser, so writes
 // made offline are queued on the device, survive reloads and sync when the
 // connection returns (Phase 2 plan, section B). If IndexedDB can't be opened

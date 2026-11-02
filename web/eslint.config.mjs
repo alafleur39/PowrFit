@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Netlify CLI build output.
     ".netlify/**",
+    // The iOS project; its public/ is a copy of out/.
+    "ios/**",
   ]),
 ]);
 

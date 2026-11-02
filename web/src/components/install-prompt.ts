@@ -5,6 +5,7 @@
 // is caught from app start (ServiceWorkerRegistration) and kept here.
 // Components read it with useInstallState; on the server the card is hidden.
 
+import { Capacitor } from "@capacitor/core";
 import { useSyncExternalStore } from "react";
 
 import { INSTALL_DISMISSED_KEY, isIosDevice } from "@/lib/install";
@@ -42,6 +43,8 @@ function readDismissed(): boolean {
 }
 
 function isStandalone(): boolean {
+  // The iOS app (P7-02) is already installed.
+  if (Capacitor.isNativePlatform()) return true;
   const iosStandalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
   return installed || iosStandalone || window.matchMedia("(display-mode: standalone)").matches;
 }
