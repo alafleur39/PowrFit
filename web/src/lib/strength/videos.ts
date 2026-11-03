@@ -11,6 +11,8 @@ export type CuratedVideo = {
   title: string;
   /** https://www.youtube.com/watch?v=… (checked by videos.test.ts). */
   url: string;
+  /** The channel's name, shown with the video (YouTube's terms ask for it). */
+  channel: string;
 };
 
 /**

@@ -10,7 +10,7 @@ describe("video links", () => {
   });
 
   it("prefers the curated library, then falls back to search", () => {
-    const library = { beginner: { title: "Basics", url: "https://www.youtube.com/watch?v=abcdefghijk" } };
+    const library = { beginner: { title: "Basics", url: "https://www.youtube.com/watch?v=abcdefghijk", channel: "Coach" } };
     expect(videoLinkFor({ topic: "beginner", query: "x" }, library)).toBe(library.beginner.url);
     expect(videoLinkFor({ topic: "comeback", query: "get back" }, library)).toBe(youtubeSearchUrl("get back"));
   });

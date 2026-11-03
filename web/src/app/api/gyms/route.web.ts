@@ -11,6 +11,7 @@ import { decodeGeohash, encodeGeohash, isCell } from "@/lib/gyms/geohash";
 import { fakeGeocode, fakeGyms } from "@/lib/gyms/fake-provider";
 import type { Gym } from "@/lib/gyms/gyms";
 import { nominatimGymsUrl, overpassQuery, parseNominatim, parseOverpass } from "@/lib/gyms/osm";
+import { CORS_ORIGIN, preflight } from "@/lib/server/cors";
 import { verifyIdToken } from "@/lib/server/id-token";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "";
@@ -22,21 +23,11 @@ const FAKE = !PRODUCTION && process.env.GYMS_PROVIDER === "fake";
 // OpenStreetMap's usage policies ask apps to identify themselves.
 const USER_AGENT = "PowrFit/1.0 (https://powrfit-andylafleur.netlify.app)";
 
-// The iOS app (P7-02) runs at capacitor://localhost and calls this endpoint
-// across origins; the website is same-origin and needs no CORS. One fixed
-// origin, so cached answers are the same for everyone and need no Vary.
-const CORS = {
-  "Access-Control-Allow-Origin": "capacitor://localhost",
-  "Access-Control-Allow-Methods": "GET",
-  "Access-Control-Allow-Headers": "Authorization",
-  "Access-Control-Max-Age": "86400",
-};
-
 function json(status: number, body: unknown, cache = false): Response {
   return Response.json(body, {
     status,
     headers: {
-      "Access-Control-Allow-Origin": CORS["Access-Control-Allow-Origin"],
+      ...CORS_ORIGIN,
       ...(cache
         ? {
             // The phone keeps an hour; Netlify's CDN keeps a day per cell or place.
@@ -49,10 +40,8 @@ function json(status: number, body: unknown, cache = false): Response {
   });
 }
 
-/** The app's preflight: the Authorization header makes it a non-simple request. */
-export function OPTIONS(): Response {
-  return new Response(null, { status: 204, headers: CORS });
-}
+/** The iOS app's preflight (see lib/server/cors.ts). */
+export const OPTIONS = preflight;
 
 async function geocode(place: string, deadline: number): Promise<{ lat: number; lon: number } | null> {
   if (FAKE) return fakeGeocode(place);
