@@ -194,27 +194,17 @@ export default function LoginPage() {
               </p>
             )}
 
-            <Button
-              type="submit"
-              disabled={submitting !== null}
-              className="mt-1 h-11 bg-primary font-black uppercase text-primary-foreground hover:bg-primary/90"
-            >
-              {submitting === "signIn" && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              Sign In
+            <Button type="submit" className="mt-1" disabled={submitting !== null} loading={submitting === "signIn"}>
+              Sign in
             </Button>
             <Button
               type="button"
-              variant="outline"
-              className="h-11 border-border bg-surface-raised text-foreground hover:bg-border"
+              variant="secondary"
               disabled={submitting !== null}
+              loading={submitting === "signUp"}
               onClick={() => handleAuth("signUp")}
             >
-              {submitting === "signUp" && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              Create Account
+              Create account
             </Button>
           </form>
           <p className="text-muted-foreground mx-auto mt-6 max-w-xs text-center text-caption">

@@ -6,7 +6,9 @@ import { ChevronRight, Dumbbell, MapPin, Plus } from "lucide-react";
 
 import { InstallCard } from "@/components/install-card";
 import { ForYou } from "@/components/workout/for-you";
-import { ScreenHeader } from "@/components/shell/placeholder";
+import { Button } from "@/components/ui/button";
+import { ScreenHeader } from "@/components/ui/screen-header";
+import { StatGrid, StatTile } from "@/components/ui/stat-tile";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { SyncBadge } from "@/components/workout/sync-badge";
 import { useNow } from "@/components/workout/use-now";
@@ -77,28 +79,25 @@ function StartOrResume() {
       <p className="mt-1 text-headline font-bold">{next.name}</p>
       <p className="text-footnote text-muted-foreground">{next.notes}</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button
-          type="button"
+        <Button
           onClick={() => {
             start(next);
             router.push("/log");
           }}
-          className="flex h-11 items-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground"
         >
-          <Dumbbell className="size-4" aria-hidden />
+          <Dumbbell aria-hidden />
           Start {next.name}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="secondary"
           onClick={() => {
             start();
             router.push("/log");
           }}
-          className="flex h-11 items-center gap-2 rounded-full border border-border px-5 font-semibold text-foreground hover:bg-surface-raised"
         >
-          <Plus className="size-4" aria-hidden />
+          <Plus aria-hidden />
           Empty workout
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -117,17 +116,11 @@ function WeekChips() {
   return (
     <section aria-label="This week" className="lg:hidden">
       <h2 className="mb-2 text-footnote font-bold">This week</h2>
-      <div className={chips.length === 4 ? "grid grid-cols-2 gap-3" : "grid grid-cols-3 gap-3"}>
+      <StatGrid label="This week's totals" columns={chips.length === 4 ? 2 : 3}>
         {chips.map((chip) => (
-          <div key={chip.label} className="rounded-tile border border-border bg-surface p-3">
-            <p className="text-caption text-muted-foreground">{chip.label}</p>
-            <p className="mt-1 truncate text-headline font-bold tabular-nums text-accent">
-              {chip.value}
-              {chip.unit && <span className="text-caption font-semibold"> {chip.unit}</span>}
-            </p>
-          </div>
+          <StatTile key={chip.label} label={chip.label} value={chip.value} unit={chip.unit} highlight />
         ))}
-      </div>
+      </StatGrid>
     </section>
   );
 }

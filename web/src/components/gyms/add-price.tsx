@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/workout/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { sendPriceReport } from "@/lib/gyms/gym-repo";
 import { CURRENCIES, PRICE_LIMITS, priceReportProblems, type Currency, type Gym } from "@/lib/gyms/gyms";
 
@@ -61,13 +61,13 @@ export function AddPrice({ gym }: { gym: Gym }) {
         Add a price
       </button>
 
-      <Dialog
+      <Sheet
         open={open}
         title={`What do you pay at ${gym.name}?`}
         onClose={close}
         footer={
           <div className="flex gap-3">
-            <Button variant="outline" className="h-12 flex-1" onClick={close}>
+            <Button variant="secondary" className="h-12 flex-1" onClick={close}>
               Cancel
             </Button>
             <Button className="h-12 flex-1 font-bold" onClick={submit}>
@@ -133,7 +133,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
             </ul>
           )}
         </form>
-      </Dialog>
+      </Sheet>
     </>
   );
 }

@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { ROUTINE_LIMITS, routineFromWorkout, type WorkoutLog } from "@/lib/strength";
 import { saveRoutine } from "@/lib/workout/routine-repo";
-import { Dialog } from "./dialog";
+import { Sheet } from "@/components/ui/sheet";
 
 // "Save as routine" on the workout summary (P4-02): repeats this workout's
 // exercises and set counts as a routine in My routines.
@@ -51,7 +51,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
         </p>
       ) : (
         <Button
-          variant="outline"
+          variant="secondary"
           className="h-11 border-border bg-transparent font-semibold text-foreground hover:bg-surface"
           onClick={() => setOpen(true)}
         >
@@ -65,7 +65,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
         </p>
       )}
 
-      <Dialog
+      <Sheet
         open={open}
         title="Save as routine"
         onClose={() => setOpen(false)}
@@ -87,7 +87,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
         <p className="mt-2 text-footnote text-muted-foreground">
           Uses this workout&apos;s exercises, in order, with one target set per finished set.
         </p>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

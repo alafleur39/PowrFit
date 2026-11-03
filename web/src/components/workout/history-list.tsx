@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronRight, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/shell/placeholder";
+import { EmptyState } from "@/components/ui/empty-state";
 import { workoutTotals } from "@/lib/strength";
 import { formatCardioSuffix, formatDate, formatWeight, plural } from "@/lib/workout/format";
 import { workoutLogHref } from "@/lib/routes";
@@ -39,7 +39,7 @@ export function HistoryList() {
     return (
       <EmptyState
         title={error ? "Couldn't load your history" : "No workouts yet"}
-        hint={
+        description={
           error
             ? "Check your connection and try again."
             : "Finished workouts will appear here."
@@ -96,7 +96,7 @@ export function HistoryList() {
       </ul>
       {serverCount >= count && (
         <Button
-          variant="outline"
+          variant="secondary"
           className="mt-2 h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
           onClick={() => setCount((current) => current + PAGE)}
         >

@@ -34,7 +34,7 @@ const button = (page: Page, name: string) => page.getByRole("button", { name, ex
 
 test("polish: tap targets, wording and fit", async ({ page, isMobile }) => {
   await page.goto("/login");
-  for (const name of ["Sign In", "Create Account", "Forgot password?"]) await expect44(button(page, name), name);
+  for (const name of ["Sign in", "Create account", "Forgot password?"]) await expect44(button(page, name), name);
   await expect44(page.getByLabel("Email address"), "Email field");
 
   await signUp(page, testEmail("polish"));
@@ -60,7 +60,7 @@ test("polish: tap targets, wording and fit", async ({ page, isMobile }) => {
   await page.goto("/home");
   const week = page.getByRole("region", { name: "This week" });
   if (isMobile) {
-    const volume = week.locator("p", { hasText: "675" });
+    const volume = week.locator("dd", { hasText: "675" });
     await expect(volume).toHaveText("675 lb");
     await expectNotCutOff(volume, "Home volume");
   }

@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
+import { ToastProvider } from "@/components/ui/toast";
 import { ActiveWorkoutProvider } from "@/components/workout/active-workout-provider";
 
 // Client-side guard for everything inside the (app) route group — the web
@@ -31,7 +32,9 @@ export default function ProtectedLayout({ children }: PropsWithChildren) {
 
   return (
     <ActiveWorkoutProvider>
-      <AppShell>{children}</AppShell>
+      <ToastProvider>
+        <AppShell>{children}</AppShell>
+      </ToastProvider>
     </ActiveWorkoutProvider>
   );
 }

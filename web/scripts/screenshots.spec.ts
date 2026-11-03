@@ -143,6 +143,14 @@ test("first use (new account)", async ({ page }) => {
   await shot(page, "gyms-empty");
   await page.goto("/profile");
   await shot(page, "profile-empty");
+
+  // The dev-only Components screen (Phase 2), whole page, then a sheet.
+  await page.goto("/dev/components");
+  await expect(page.getByRole("heading", { name: "Components" })).toBeVisible();
+  mkdirSync(DIR, { recursive: true });
+  await page.screenshot({ path: `${DIR}/components-full.jpg`, type: "jpeg", quality: 80, fullPage: true });
+  await page.getByRole("button", { name: "Open sheet" }).click();
+  await shot(page, "components-sheet");
 });
 
 test("regular lifter (5 weeks of history)", async ({ page }) => {

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { WorkoutLog } from "@/lib/strength";
 import { useActiveWorkout } from "./active-workout-provider";
-import { Dialog } from "./dialog";
+import { Sheet } from "@/components/ui/sheet";
 
 // Recovery for a save the server refused (P2-14): retry with the same id,
 // copy the workout as JSON, or discard it after confirming.
@@ -34,7 +34,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
           Retry
         </Button>
         <Button
-          variant="outline"
+          variant="secondary"
           className="h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
           onClick={copy}
         >
@@ -49,7 +49,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
         </Button>
       </div>
 
-      <Dialog
+      <Sheet
         open={confirmOpen}
         title="Discard this workout?"
         onClose={() => setConfirmOpen(false)}
@@ -79,7 +79,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
           It was never saved to your account, so discarding deletes it for good. Copy it first if
           you want a record.
         </p>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

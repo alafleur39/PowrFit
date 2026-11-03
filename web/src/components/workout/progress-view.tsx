@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 
-import { EmptyState } from "@/components/shell/placeholder";
-import { SegmentedTabs } from "@/components/shell/segmented-tabs";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Tabs } from "@/components/ui/tabs";
 import type { WeightUnit, WorkoutLog } from "@/lib/strength";
 import { formatCardioMinutes, formatWeight } from "@/lib/workout/format";
 import {
@@ -45,7 +45,7 @@ export function ProgressView() {
 
   return (
     <div className="pb-10">
-      <SegmentedTabs
+      <Tabs
         ariaLabel="Progress range"
         tabs={RANGES.map((range) => ({
           id: range.id,
@@ -83,7 +83,7 @@ function VolumePanel({
     return (
       <EmptyState
         title={`No workouts ${range.period}`}
-        hint={`Finish a workout and its volume will chart here, per ${range.per}.`}
+        description={`Finish a workout and its volume will chart here, per ${range.per}.`}
       />
     );
   }

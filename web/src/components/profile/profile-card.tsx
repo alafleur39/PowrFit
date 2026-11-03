@@ -5,6 +5,8 @@ import { Check, Pencil } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { StatGrid, StatTile } from "@/components/ui/stat-tile";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { useHistoryLogs, useRecords } from "@/components/workout/use-records";
 import {
@@ -127,46 +129,33 @@ export function ProfileCard() {
             </p>
           )}
           <div className="flex gap-3">
-            <Button className="h-11 flex-1 font-bold" onClick={saveEdit}>
+            <Button className="flex-1" onClick={saveEdit}>
               Save
             </Button>
-            <Button variant="outline" className="h-11 flex-1" onClick={() => setEditing(false)}>
+            <Button variant="secondary" className="flex-1" onClick={() => setEditing(false)}>
               Cancel
             </Button>
           </div>
         </div>
       )}
 
-      <dl aria-label="Lifetime" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatGrid label="Lifetime" columns={4}>
         {stats.map(([label, value]) => (
-          <div key={label} className="rounded-tile border border-border bg-surface p-3">
-            <dt className="text-caption text-muted-foreground">{label}</dt>
-            <dd className="mt-1 truncate text-headline font-bold tabular-nums text-accent">{value}</dd>
-          </div>
+          <StatTile key={label} label={label} value={value} />
         ))}
-      </dl>
+      </StatGrid>
 
       <section aria-labelledby="profile-unit" className="flex items-center justify-between gap-3">
         <h2 id="profile-unit" className="text-footnote font-bold">
           Weight unit
         </h2>
-        <div role="radiogroup" aria-labelledby="profile-unit" className="grid grid-cols-2 gap-1 rounded-tile bg-surface p-1">
-          {WEIGHT_UNITS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={unit === option}
-              onClick={() => setUnit(option)}
-              className={cn(
-                "h-11 w-16 rounded-input text-footnote font-bold",
-                unit === option ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          ariaLabel="Weight unit"
+          segments={WEIGHT_UNITS.map((option) => ({ value: option, label: option }))}
+          value={unit}
+          onChange={setUnit}
+          className="w-36"
+        />
       </section>
     </div>
   );

@@ -1,4 +1,4 @@
-import { ScreenHeader } from "@/components/shell/placeholder";
+import { ScreenHeader } from "@/components/ui/screen-header";
 import { ProgressView } from "@/components/workout/progress-view";
 
 export default function ProgressPage() {

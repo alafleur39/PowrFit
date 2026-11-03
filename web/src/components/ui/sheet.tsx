@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // Bottom sheet on phones, centred dialog on desktop (design spec §7 "Sheet").
 // Escape and the backdrop close it; focus moves into it when it opens and
 // back to where it was when it closes.
-export function Dialog({
+export function Sheet({
   open,
   title,
   onClose,

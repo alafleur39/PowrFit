@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
-import { Dialog } from "@/components/workout/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { deleteAccount } from "@/lib/account";
 import { errorCode } from "@/lib/workout/sync-status";
 
@@ -60,29 +59,20 @@ export function DeleteAccount() {
 
   return (
     <>
-      <Button
-        variant="outline"
-        className="h-12 w-full border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface sm:w-auto"
-        onClick={() => setOpen(true)}
-      >
+      <Button variant="destructive" size="lg" block className="sm:w-auto" onClick={() => setOpen(true)}>
         Delete account
       </Button>
 
-      <Dialog
+      <Sheet
         open={open}
         title="Delete your account?"
         onClose={busy ? () => undefined : close}
         footer={
           <div className="flex gap-3">
-            <Button variant="outline" className="h-12 flex-1" disabled={busy} onClick={close}>
+            <Button variant="secondary" className="h-12 flex-1" disabled={busy} onClick={close}>
               Keep it
             </Button>
-            <Button
-              className="h-12 flex-1 bg-danger text-danger-foreground hover:bg-danger/90"
-              disabled={busy}
-              onClick={confirm}
-            >
-              {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
+            <Button variant="destructive" size="lg" className="flex-1" loading={busy} onClick={confirm}>
               Delete forever
             </Button>
           </div>
@@ -110,7 +100,7 @@ export function DeleteAccount() {
             </p>
           )}
         </div>
-      </Dialog>
+      </Sheet>
     </>
   );
 }

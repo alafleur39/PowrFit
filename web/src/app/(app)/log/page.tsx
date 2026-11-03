@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, Loader2, Plus } from "lucide-react";
 
-import { ScreenHeader } from "@/components/shell/placeholder";
+import { ScreenHeader } from "@/components/ui/screen-header";
 import { Button } from "@/components/ui/button";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
-import { Dialog } from "@/components/workout/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { ExerciseCard } from "@/components/workout/exercise-card";
 import { ExercisePicker } from "@/components/workout/exercise-picker";
 import { RestTimer } from "@/components/workout/rest-timer";
@@ -134,7 +134,7 @@ function StartPanel() {
           <RoutineButton key={routine.id} routine={routine} />
         ))}
         <Button
-          variant="outline"
+          variant="secondary"
           className="h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => start()}
         >
@@ -236,7 +236,7 @@ function Logger({
         ))}
 
         <Button
-          variant="outline"
+          variant="secondary"
           className="h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => setPickerOpen(true)}
         >
@@ -260,7 +260,7 @@ function Logger({
         }
       />
 
-      <Dialog
+      <Sheet
         open={finishOpen}
         title={counts.done > 0 ? "Finish workout?" : "Nothing to save yet"}
         onClose={() => setFinishOpen(false)}
@@ -299,9 +299,9 @@ function Logger({
             Tick at least one set to finish. To throw this workout away, use Discard workout.
           </p>
         )}
-      </Dialog>
+      </Sheet>
 
-      <Dialog
+      <Sheet
         open={discardOpen}
         title="Discard this workout?"
         onClose={() => setDiscardOpen(false)}
@@ -330,7 +330,7 @@ function Logger({
         <p className="text-footnote text-muted-foreground">
           Every set in this workout will be deleted. This can&apos;t be undone.
         </p>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

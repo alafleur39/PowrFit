@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth-provider";
 import { suggestTopics, videoLinkFor, youtubeSearchUrl, type Suggestion } from "@/lib/strength";
 import { embedUrl, formatVideoLength, topicVideos, watchUrl } from "@/lib/videos/video-api";
 import type { Video } from "@/lib/videos/youtube";
-import { Dialog } from "./dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { useHistoryLogs } from "./use-records";
 
 // "For you" (P6-02, D37; videos in V-03): videos picked from the user's own
@@ -144,7 +144,7 @@ function SearchLinkCard({ suggestion }: { suggestion: Suggestion }) {
 /** The video in a sheet, with YouTube's privacy-enhanced player (D49). */
 function VideoPlayer({ video, onClose }: { video: Video | null; onClose: () => void }) {
   return (
-    <Dialog open={video !== null} title={video?.title ?? ""} onClose={onClose} className="md:max-w-2xl">
+    <Sheet open={video !== null} title={video?.title ?? ""} onClose={onClose} className="md:max-w-2xl">
       {video && (
         <div className="flex flex-col gap-3">
           <iframe
@@ -167,6 +167,6 @@ function VideoPlayer({ video, onClose }: { video: Video | null; onClose: () => v
           </a>
         </div>
       )}
-    </Dialog>
+    </Sheet>
   );
 }

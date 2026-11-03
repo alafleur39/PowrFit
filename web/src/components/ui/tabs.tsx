@@ -12,7 +12,7 @@ import {
 
 import { cn } from "@/lib/utils";
 
-export type SegmentedTab = {
+export type Tab = {
   id: string;
   label: string;
   content: ReactNode;
@@ -21,18 +21,21 @@ export type SegmentedTab = {
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Tabs switch between sections of one screen (Workouts: Routines / History /
+// Explore). To filter one view, use SegmentedControl instead.
+//
 // Swipeable top tabs (P6-11, D40), like X's For you / Following. Every panel
 // stays mounted side by side in a horizontal scroll-snap row, so switching
 // is just scrolling: nothing reloads (P6-09), and on a phone the content
 // follows your finger with the browser's own momentum. The underline tracks
 // the scroll position, and each tab keeps its own vertical scroll.
-export function SegmentedTabs({
+export function Tabs({
   tabs,
   ariaLabel,
   defaultTabId,
   urlParam,
 }: {
-  tabs: SegmentedTab[];
+  tabs: Tab[];
   ariaLabel: string;
   /** Tab to open first; defaults to the first tab. */
   defaultTabId?: string;

@@ -16,7 +16,7 @@ import { Sidebar } from "@/components/shell/sidebar";
 import { StatsRail } from "@/components/shell/stats-rail";
 import { Button } from "@/components/ui/button";
 import { ActiveWorkoutStrip } from "@/components/workout/active-workout-strip";
-import { Dialog } from "@/components/workout/dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 
 // The navigation shell (POWRFIT_NAV_SPEC §5). X/Twitter layout: a left sidebar
@@ -114,7 +114,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onUnitChange={setUnit}
       />
 
-      <Dialog
+      <Sheet
         open={signOutWarning}
         title="Workout not synced yet"
         onClose={() => setSignOutWarning(false)}
@@ -148,7 +148,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           your account yet. If you keep it, it comes back when you sign in here again and is
           never shown to anyone else. If you discard it, it&apos;s gone for good.
         </p>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

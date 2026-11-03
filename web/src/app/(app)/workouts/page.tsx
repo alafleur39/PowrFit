@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-import { ScreenHeader } from "@/components/shell/placeholder";
+import { ScreenHeader } from "@/components/ui/screen-header";
 import { WorkoutsTabs } from "@/components/workout/workouts-tabs";
 
 // Workouts: routines to start (the user's own and the presets, P4-02),

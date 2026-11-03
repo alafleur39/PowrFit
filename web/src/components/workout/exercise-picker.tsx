@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Dialog } from "./dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { catalogLabel, ExerciseSearchControls, useExerciseSearch } from "./exercise-search";
 
 // Exercise picker (design spec §6.3): search, muscle chips and an equipment
@@ -34,7 +34,7 @@ export function ExercisePicker({
     );
 
   return (
-    <Dialog
+    <Sheet
       open={open}
       title="Add exercises"
       onClose={close}
@@ -90,6 +90,6 @@ export function ExercisePicker({
           })}
         </ul>
       )}
-    </Dialog>
+    </Sheet>
   );
 }

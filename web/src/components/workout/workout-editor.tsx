@@ -22,7 +22,7 @@ import {
 import { formatDate, parseRepsInput, parseWeightInput } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
 import { CardioStatFields, CardioTimeField } from "./cardio-set-row";
-import { Dialog } from "./dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { ExerciseNote } from "./exercise-note";
 import { NumberField } from "./set-row";
 
@@ -198,7 +198,7 @@ export function WorkoutEditor({
             Save changes
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             className="h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
             onClick={() => setDeleteOpen(true)}
           >
@@ -207,16 +207,16 @@ export function WorkoutEditor({
         </div>
       </div>
 
-      <Dialog
+      <Sheet
         open={deleteOpen}
         title="Delete this workout?"
         onClose={() => setDeleteOpen(false)}
         footer={
           <div className="flex gap-3">
-            <Button variant="outline" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
+            <Button variant="secondary" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
               Keep it
             </Button>
-            <Button className="h-12 flex-1 bg-danger text-danger-foreground hover:bg-danger/90" onClick={remove}>
+            <Button variant="destructive" className="h-12 flex-1" onClick={remove}>
               Delete
             </Button>
           </div>
@@ -226,7 +226,7 @@ export function WorkoutEditor({
           It will be removed from History, your stats and your personal records on every device.
           This can&apos;t be undone.
         </p>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

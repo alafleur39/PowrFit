@@ -9,6 +9,7 @@ import { searchGyms, GymSearchError, type GymSearch, type GymSearchResult } from
 import { loadGymPrices } from "@/lib/gyms/gym-repo";
 import type { GymPrices } from "@/lib/gyms/gyms";
 import { formatDistance, formatMonthly, rankGyms, type GymSort, type RankedGym } from "@/lib/gyms/rank";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AddPrice } from "./add-price";
 
@@ -100,19 +101,10 @@ export function GymsView() {
   return (
     <div className="flex flex-col gap-4 px-4 pb-6 sm:px-6">
       <section aria-label="Find gyms" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
-        <button
-          type="button"
-          onClick={() => void run("near")}
-          disabled={busy !== null}
-          className="flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground disabled:opacity-70"
-        >
-          {busy === "near" ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-          ) : (
-            <LocateFixed className="size-4" aria-hidden />
-          )}
+        <Button size="lg" block loading={busy === "near"} disabled={busy !== null} onClick={() => void run("near")}>
+          {busy !== "near" && <LocateFixed aria-hidden />}
           Near me
-        </button>
+        </Button>
         <form
           className="flex gap-2"
           onSubmit={(event) => {

@@ -20,7 +20,7 @@ import {
   type Routine,
 } from "@/lib/strength";
 import { deleteRoutine, saveRoutine } from "@/lib/workout/routine-repo";
-import { Dialog } from "./dialog";
+import { Sheet } from "@/components/ui/sheet";
 import { ExercisePicker } from "./exercise-picker";
 
 const EXERCISE_NAMES = new Map(EXERCISES.map((exercise) => [exercise.id, exercise.name]));
@@ -213,7 +213,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         </ol>
 
         <Button
-          variant="outline"
+          variant="secondary"
           disabled={routine.exercises.length >= ROUTINE_LIMITS.exercises}
           className="h-12 border-dashed border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => setPickerOpen(true)}
@@ -236,7 +236,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
           </Button>
           {!isNew && (
             <Button
-              variant="outline"
+              variant="secondary"
               className="h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
               onClick={() => setDeleteOpen(true)}
             >
@@ -258,16 +258,16 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         }
       />
 
-      <Dialog
+      <Sheet
         open={deleteOpen}
         title="Delete this routine?"
         onClose={() => setDeleteOpen(false)}
         footer={
           <div className="flex gap-3">
-            <Button variant="outline" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
+            <Button variant="secondary" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
               Keep it
             </Button>
-            <Button className="h-12 flex-1 bg-danger text-danger-foreground hover:bg-danger/90" onClick={remove}>
+            <Button variant="destructive" className="h-12 flex-1" onClick={remove}>
               Delete routine
             </Button>
           </div>
@@ -277,7 +277,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
           {routine.name || "This routine"} will be removed from My routines. Workouts you already
           logged with it stay in History.
         </p>
-      </Dialog>
+      </Sheet>
     </div>
   );
 }

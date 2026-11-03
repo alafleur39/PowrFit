@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { PowrFitLogo } from "@/components/powrfit-logo";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DESTINATIONS, isDestinationActive } from "./nav-config";
 import { ProfileAvatar } from "@/components/profile/profile-avatar";
@@ -54,14 +55,10 @@ export function Sidebar({
         })}
       </nav>
 
-      <button
-        type="button"
-        onClick={onLogWorkout}
-        className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-body font-bold text-background transition-transform hover:scale-[1.02] active:scale-95"
-      >
+      <Button size="lg" block className="mt-5" onClick={onLogWorkout}>
         <Plus className="size-5" aria-hidden />
         Log workout
-      </button>
+      </Button>
 
       <button
         type="button"
