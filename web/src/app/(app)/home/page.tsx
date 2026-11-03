@@ -41,20 +41,20 @@ function StartOrResume() {
   const now = useNow();
   const { items } = useRecentWorkouts(1);
 
-  if (!ready) return <div className="h-32 rounded-2xl border border-border bg-surface" />;
+  if (!ready) return <div className="h-32 rounded-card border border-border bg-surface" />;
 
   if (draft) {
     return (
       <Link
         href="/log"
-        className="flex items-center justify-between gap-3 rounded-2xl border border-accent/50 bg-surface-active p-4"
+        className="flex items-center justify-between gap-3 rounded-card border border-accent/50 bg-accent-muted p-4"
       >
         <span className="min-w-0">
-          <span className="block text-xs font-semibold tracking-wide text-accent uppercase">
-            In progress · <span className="font-mono tabular-nums">{formatElapsed(draft.startedAt, now)}</span>
+          <span className="block text-caption font-semibold tracking-wide text-accent uppercase">
+            In progress · <span className="tabular-nums">{formatElapsed(draft.startedAt, now)}</span>
           </span>
-          <span className="block truncate text-lg font-bold">{draft.routineName ?? "Workout"}</span>
-          <span className="block text-sm text-muted-foreground">Tap to keep logging</span>
+          <span className="block truncate text-headline font-bold">{draft.routineName ?? "Workout"}</span>
+          <span className="block text-footnote text-muted-foreground">Tap to keep logging</span>
         </span>
         <ChevronRight className="size-5 shrink-0 text-accent" aria-hidden />
       </Link>
@@ -70,12 +70,12 @@ function StartOrResume() {
   const isFirst = items.length === 0;
 
   return (
-    <div className="rounded-2xl border border-border bg-surface p-4">
-      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+    <div className="rounded-card border border-border bg-surface p-4">
+      <p className="text-caption font-semibold tracking-wide text-muted-foreground uppercase">
         {isFirst ? "Start your first workout" : "Up next"}
       </p>
-      <p className="mt-1 text-lg font-bold">{next.name}</p>
-      <p className="text-sm text-muted-foreground">{next.notes}</p>
+      <p className="mt-1 text-headline font-bold">{next.name}</p>
+      <p className="text-footnote text-muted-foreground">{next.notes}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
@@ -83,7 +83,7 @@ function StartOrResume() {
             start(next);
             router.push("/log");
           }}
-          className="brand-glow flex h-11 items-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground"
+          className="flex h-11 items-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground"
         >
           <Dumbbell className="size-4" aria-hidden />
           Start {next.name}
@@ -116,14 +116,14 @@ function WeekChips() {
   ];
   return (
     <section aria-label="This week" className="lg:hidden">
-      <h2 className="mb-2 text-sm font-bold">This week</h2>
+      <h2 className="mb-2 text-footnote font-bold">This week</h2>
       <div className={chips.length === 4 ? "grid grid-cols-2 gap-3" : "grid grid-cols-3 gap-3"}>
         {chips.map((chip) => (
-          <div key={chip.label} className="rounded-xl border border-border bg-surface p-3">
-            <p className="text-xs text-muted-foreground">{chip.label}</p>
-            <p className="mt-1 truncate font-mono text-lg font-bold tabular-nums text-accent">
+          <div key={chip.label} className="rounded-tile border border-border bg-surface p-3">
+            <p className="text-caption text-muted-foreground">{chip.label}</p>
+            <p className="mt-1 truncate text-headline font-bold tabular-nums text-accent">
               {chip.value}
-              {chip.unit && <span className="text-xs font-semibold"> {chip.unit}</span>}
+              {chip.unit && <span className="text-caption font-semibold"> {chip.unit}</span>}
             </p>
           </div>
         ))}
@@ -137,12 +137,12 @@ function GymsCard() {
   return (
     <Link
       href="/gyms"
-      className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface p-4 hover:bg-surface-raised"
+      className="flex min-h-14 items-center gap-3 rounded-card border border-border bg-surface p-4 hover:bg-surface-raised"
     >
       <MapPin className="size-6 shrink-0 text-accent" aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">Gyms near you</span>
-        <span className="block text-sm text-muted-foreground">Compare monthly prices nearby</span>
+        <span className="block text-footnote text-muted-foreground">Compare monthly prices nearby</span>
       </span>
       <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
     </Link>
@@ -157,7 +157,7 @@ function LastWorkout() {
   if (loading && !last) return null;
   if (!last || !("log" in last)) {
     return (
-      <p className="rounded-2xl border border-dashed border-border bg-surface p-6 text-center text-sm text-muted-foreground">
+      <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-footnote text-muted-foreground">
         Your finished workouts will show up here.
       </p>
     );
@@ -167,21 +167,21 @@ function LastWorkout() {
   return (
     <section aria-label="Last workout">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-sm font-bold">Last workout</h2>
-        <Link href="/workouts?tab=history" className="text-sm font-medium text-accent">
+        <h2 className="text-footnote font-bold">Last workout</h2>
+        <Link href="/workouts?tab=history" className="text-footnote font-medium text-accent">
           All history
         </Link>
       </div>
       <Link
         href={workoutLogHref(last.id)}
-        className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4"
+        className="flex items-center gap-3 rounded-card border border-border bg-surface p-4"
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-xs text-muted-foreground">{formatDate(last.log.endedAt)}</span>
+          <span className="block text-caption text-muted-foreground">{formatDate(last.log.endedAt)}</span>
           <span className="block truncate font-bold">{last.log.routineName ?? "Workout"}</span>
-          <span className="block text-sm text-muted-foreground">
+          <span className="block text-footnote text-muted-foreground">
             {plural(totals.sets, "set")} ·{" "}
-            <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
+            <span className="tabular-nums">{formatWeight(totals.volume, unit)}</span>
             {formatCardioSuffix(totals.cardioSec)}
           </span>
           <SyncBadge status={last.status} className="mt-1" />

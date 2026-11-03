@@ -28,7 +28,7 @@ const SET_OPTIONS = Array.from({ length: ROUTINE_LIMITS.targetSets }, (_, i) => 
 const REST_OPTIONS = [30, 45, 60, 90, 120, 150, 180, 240, 300];
 
 const field =
-  "w-full rounded-lg border border-input bg-background px-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none";
+  "w-full rounded-input border border-input bg-background px-3 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none";
 const iconButton =
   "flex size-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface-raised hover:text-foreground disabled:opacity-30";
 
@@ -78,17 +78,17 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
     <div className="pb-10">
       <Link
         href="/workouts"
-        className="inline-flex h-11 items-center gap-2 px-4 text-sm font-medium text-muted-foreground hover:text-foreground sm:px-6"
+        className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Workouts
       </Link>
 
       <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 sm:px-6">
-        <h1 className="text-2xl font-bold">{isNew ? "New routine" : "Edit routine"}</h1>
+        <h1 className="text-title2 font-bold">{isNew ? "New routine" : "Edit routine"}</h1>
 
         <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">Routine name</span>
+          <span className="text-footnote font-medium">Routine name</span>
           <input
             value={routine.name}
             maxLength={ROUTINE_LIMITS.name}
@@ -99,7 +99,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         </label>
 
         <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">Notes (optional)</span>
+          <span className="text-footnote font-medium">Notes (optional)</span>
           <textarea
             value={routine.notes ?? ""}
             maxLength={ROUTINE_LIMITS.notes}
@@ -115,7 +115,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
             return (
               <li
                 key={`${exercise.exerciseId}-${index}`}
-                className="rounded-2xl border border-border bg-surface p-3"
+                className="rounded-card border border-border bg-surface p-3"
               >
                 <div className="flex items-center gap-1">
                   <h2 className="min-w-0 flex-1 truncate font-bold">{name}</h2>
@@ -148,7 +148,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                 </div>
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">Sets</span>
+                    <span className="text-caption text-muted-foreground">Sets</span>
                     <select
                       aria-label={`Sets for ${name}`}
                       value={exercise.targetSets}
@@ -167,7 +167,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                     </select>
                   </label>
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">Reps</span>
+                    <span className="text-caption text-muted-foreground">Reps</span>
                     <input
                       aria-label={`Reps for ${name}`}
                       value={exercise.targetReps ?? ""}
@@ -182,7 +182,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                     />
                   </label>
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs text-muted-foreground">Rest</span>
+                    <span className="text-caption text-muted-foreground">Rest</span>
                     <select
                       aria-label={`Rest for ${name}`}
                       value={exercise.restSec ?? ""}
@@ -215,7 +215,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         <Button
           variant="outline"
           disabled={routine.exercises.length >= ROUTINE_LIMITS.exercises}
-          className="h-12 border-dashed border-border bg-transparent text-base font-semibold text-foreground hover:bg-surface"
+          className="h-12 border-dashed border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => setPickerOpen(true)}
         >
           <Plus className="size-4" aria-hidden />
@@ -223,7 +223,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         </Button>
 
         {problems.length > 0 && (
-          <ul role="alert" className="rounded-xl border border-danger/40 bg-surface p-3 text-sm text-danger">
+          <ul role="alert" className="rounded-tile border border-danger/40 bg-surface p-3 text-footnote text-danger">
             {problems.map((problem) => (
               <li key={problem}>{problem}</li>
             ))}
@@ -231,13 +231,13 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button className="h-12 flex-1 text-base font-bold" onClick={save}>
+          <Button className="h-12 flex-1 text-body font-bold" onClick={save}>
             Save routine
           </Button>
           {!isNew && (
             <Button
               variant="outline"
-              className="h-12 border-danger/50 bg-transparent text-base font-semibold text-danger hover:bg-surface"
+              className="h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
               onClick={() => setDeleteOpen(true)}
             >
               Delete
@@ -267,13 +267,13 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
             <Button variant="outline" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
               Keep it
             </Button>
-            <Button className="h-12 flex-1 bg-danger text-white hover:bg-danger/90" onClick={remove}>
+            <Button className="h-12 flex-1 bg-danger text-danger-foreground hover:bg-danger/90" onClick={remove}>
               Delete routine
             </Button>
           </div>
         }
       >
-        <p className="text-sm text-muted-foreground">
+        <p className="text-footnote text-muted-foreground">
           {routine.name || "This routine"} will be removed from My routines. Workouts you already
           logged with it stay in History.
         </p>

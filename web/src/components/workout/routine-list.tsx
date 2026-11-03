@@ -25,17 +25,17 @@ function RoutineCard({
   actions: React.ReactNode;
 }) {
   return (
-    <li className="rounded-2xl border border-border bg-surface p-4">
+    <li className="rounded-card border border-border bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-lg font-bold">{routine.name}</h3>
+          <h3 className="truncate text-headline font-bold">{routine.name}</h3>
           {routine.notes && (
-            <p className="line-clamp-2 text-sm text-muted-foreground">{routine.notes}</p>
+            <p className="line-clamp-2 text-footnote text-muted-foreground">{routine.notes}</p>
           )}
         </div>
         <div className="flex shrink-0 items-center gap-2">{actions}</div>
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <p className="mt-2 text-footnote text-muted-foreground">
         {plural(routine.exercises.length, "exercise")} · {plural(setCount(routine), "set")}
         {pending && " · Not synced yet"}
       </p>
@@ -55,7 +55,7 @@ function StartButton({ routine, disabled }: { routine: Routine; disabled: boolea
         start(routine);
         router.push("/log");
       }}
-      className="h-11 rounded-full bg-accent px-4 text-sm font-bold text-accent-foreground disabled:opacity-40"
+      className="h-11 rounded-full bg-accent px-4 text-footnote font-bold text-accent-foreground disabled:opacity-40"
     >
       Start
     </button>
@@ -89,35 +89,35 @@ export function RoutineList() {
   return (
     <div className="flex flex-col gap-6 px-4 py-4 sm:px-6">
       {busy && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-footnote text-muted-foreground">
           Finish or discard your current workout before starting another.
         </p>
       )}
 
       <section aria-labelledby="my-routines" className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 id="my-routines" className="text-base font-bold">
+          <h2 id="my-routines" className="text-body font-bold">
             My routines
           </h2>
           <Link
             href={NEW_ROUTINE_HREF}
-            className="flex h-11 items-center gap-1.5 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface"
+            className="flex h-11 items-center gap-1.5 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface"
           >
             <Plus className="size-4" aria-hidden />
             New routine
           </Link>
         </div>
         {copyError && (
-          <p role="alert" className="text-sm text-danger">
+          <p role="alert" className="text-footnote text-danger">
             Couldn&apos;t save the copy. Try again.
           </p>
         )}
         {error ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-footnote text-muted-foreground">
             Couldn&apos;t load your routines. Check your connection.
           </p>
         ) : routines.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-border bg-surface p-5 text-center text-sm text-muted-foreground">
+          <p className="rounded-card border border-dashed border-border bg-surface p-5 text-center text-footnote text-muted-foreground">
             {loading
               ? "Loading your routines…"
               : "No routines yet. Create one, copy a preset below, or save a finished workout as a routine."}
@@ -148,7 +148,7 @@ export function RoutineList() {
       </section>
 
       <section aria-labelledby="preset-routines" className="flex flex-col gap-3">
-        <h2 id="preset-routines" className="text-base font-bold">
+        <h2 id="preset-routines" className="text-body font-bold">
           Presets
         </h2>
         <ul className="flex flex-col gap-3">

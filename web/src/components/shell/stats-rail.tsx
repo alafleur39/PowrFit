@@ -16,13 +16,13 @@ export function StatsRail() {
 
   return (
     <aside className="sticky top-0 hidden h-dvh w-80 shrink-0 overflow-y-auto py-5 pl-6 lg:block">
-      <div className="rounded-2xl border border-border bg-surface p-5">
-        <h2 className="text-sm font-bold text-foreground">This week</h2>
+      <div className="rounded-card border border-border bg-surface p-5">
+        <h2 className="text-footnote font-bold text-foreground">This week</h2>
         <dl className="mt-4 space-y-4">
           {rows.map((row) => (
             <div key={row.label} className="flex items-baseline justify-between gap-3">
-              <dt className="text-sm text-muted-foreground">{row.label}</dt>
-              <dd className="font-mono text-xl font-bold tabular-nums text-accent">{row.value}</dd>
+              <dt className="text-footnote text-muted-foreground">{row.label}</dt>
+              <dd className="text-title3 font-bold tabular-nums text-accent">{row.value}</dd>
             </div>
           ))}
         </dl>

@@ -12,7 +12,7 @@ export function ProfileAvatar({ className }: { className?: string }) {
       aria-hidden
       style={{ backgroundColor: AVATAR_SWATCH[profile.avatar.color] }}
       className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-[#0a0a0a]",
+        "flex size-10 shrink-0 items-center justify-center rounded-full text-footnote font-bold text-accent-foreground",
         className
       )}
     >

@@ -156,7 +156,7 @@ export function SegmentedTabs({
               aria-controls={`${baseId}-panel-${tab.id}`}
               onClick={() => open(index)}
               className={cn(
-                "relative flex-1 px-4 py-3.5 text-sm font-semibold transition-colors sm:flex-none sm:px-6",
+                "relative flex-1 px-4 py-3.5 text-footnote font-semibold transition-colors sm:flex-none sm:px-6",
                 selected ? "text-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >

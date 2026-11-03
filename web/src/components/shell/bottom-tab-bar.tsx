@@ -14,7 +14,7 @@ export function BottomTabBar() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
         {DESTINATIONS.map((item) => {
@@ -25,7 +25,7 @@ export function BottomTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-16 flex-col items-center justify-center gap-1 text-[0.7rem] font-semibold transition-colors",
+                  "flex h-16 flex-col items-center justify-center gap-1 text-caption font-semibold transition-colors",
                   active
                     ? "text-accent"
                     : "text-muted-foreground hover:text-foreground"

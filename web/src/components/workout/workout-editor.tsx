@@ -76,7 +76,7 @@ export function WorkoutEditor({
       <button
         type="button"
         onClick={onClose}
-        className="inline-flex h-11 items-center gap-2 px-4 text-sm font-medium text-muted-foreground hover:text-foreground sm:px-6"
+        className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Cancel
@@ -84,8 +84,8 @@ export function WorkoutEditor({
 
       <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 sm:px-6">
         <header>
-          <p className="text-sm text-muted-foreground">{formatDate(log.endedAt)}</p>
-          <h1 className="mt-1 text-2xl font-bold">Edit workout</h1>
+          <p className="text-footnote text-muted-foreground">{formatDate(log.endedAt)}</p>
+          <h1 className="mt-1 text-title2 font-bold">Edit workout</h1>
         </header>
 
         <ol className="flex flex-col gap-3" aria-label="Exercises">
@@ -94,7 +94,7 @@ export function WorkoutEditor({
             return (
               <li
                 key={`${exercise.exerciseId}-${exerciseIndex}`}
-                className="rounded-2xl border border-border bg-surface p-3"
+                className="rounded-card border border-border bg-surface p-3"
               >
                 <div className="flex items-center gap-1">
                   <h2 className="min-w-0 flex-1 truncate font-bold">{name}</h2>
@@ -108,7 +108,7 @@ export function WorkoutEditor({
                   </button>
                 </div>
                 {exercise.sets.length === 0 ? (
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-footnote text-muted-foreground">
                     No sets left. This exercise will be removed when you save.
                   </p>
                 ) : (
@@ -135,7 +135,7 @@ export function WorkoutEditor({
                           key={setIndex}
                           className="grid grid-cols-[2rem_1fr_1fr_2.75rem] items-center gap-2"
                         >
-                          <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
+                          <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
                             {number}
                           </span>
                           <NumberField
@@ -166,7 +166,7 @@ export function WorkoutEditor({
                             type="button"
                             aria-label={`Remove ${name} set ${number}`}
                             onClick={() => change((l, now) => removeLogSet(l, exerciseIndex, setIndex, now))}
-                            className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
+                            className="flex size-11 items-center justify-center rounded-input text-muted-foreground hover:bg-surface-raised hover:text-danger"
                           >
                             <X className="size-4" aria-hidden />
                           </button>
@@ -186,7 +186,7 @@ export function WorkoutEditor({
         </ol>
 
         {problems.length > 0 && (
-          <ul role="alert" className="rounded-xl border border-danger/40 bg-surface p-3 text-sm text-danger">
+          <ul role="alert" className="rounded-tile border border-danger/40 bg-surface p-3 text-footnote text-danger">
             {problems.map((problem) => (
               <li key={problem}>{problem}</li>
             ))}
@@ -194,12 +194,12 @@ export function WorkoutEditor({
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button className="h-12 flex-1 text-base font-bold" onClick={save}>
+          <Button className="h-12 flex-1 text-body font-bold" onClick={save}>
             Save changes
           </Button>
           <Button
             variant="outline"
-            className="h-12 border-danger/50 bg-transparent text-base font-semibold text-danger hover:bg-surface"
+            className="h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
             onClick={() => setDeleteOpen(true)}
           >
             Delete workout
@@ -216,13 +216,13 @@ export function WorkoutEditor({
             <Button variant="outline" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
               Keep it
             </Button>
-            <Button className="h-12 flex-1 bg-danger text-white hover:bg-danger/90" onClick={remove}>
+            <Button className="h-12 flex-1 bg-danger text-danger-foreground hover:bg-danger/90" onClick={remove}>
               Delete
             </Button>
           </div>
         }
       >
-        <p className="text-sm text-muted-foreground">
+        <p className="text-footnote text-muted-foreground">
           It will be removed from History, your stats and your personal records on every device.
           This can&apos;t be undone.
         </p>
@@ -250,7 +250,7 @@ function CardioEditRow({
   return (
     <li className="flex flex-col gap-2">
       <div className="grid grid-cols-[2rem_1fr_2.75rem] items-center gap-2">
-        <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
+        <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
           {label.split(" ").at(-1)}
         </span>
         <CardioTimeField
@@ -262,7 +262,7 @@ function CardioEditRow({
           type="button"
           aria-label={`Remove ${label}`}
           onClick={onRemove}
-          className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
+          className="flex size-11 items-center justify-center rounded-input text-muted-foreground hover:bg-surface-raised hover:text-danger"
         >
           <X className="size-4" aria-hidden />
         </button>

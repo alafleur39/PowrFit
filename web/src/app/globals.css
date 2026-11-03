@@ -4,26 +4,71 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  PowrFit design tokens (POWRFIT_NAV_SPEC §2, web design spec §4). The app is
-  dark-only: "lights out" black surfaces with electric-yellow accents. Yellow
-  is for actions and achievements only; text on yellow is near-black.
+  PowrFit design tokens: the one place colors, type, radii and motion are
+  defined (UI playbook Phase 1, docs/design/DESIGN_RULES.md). Components use
+  the Tailwind names below, never raw values; src/app/theme.test.ts checks.
+
+  Dark-only by choice: near-black surfaces with an electric-yellow accent.
+  Accent rule: each screen has one filled-yellow element, its primary action.
+  Anywhere else yellow only highlights data (a PR, a key number), never
+  decoration. Surfaces separate by tone and a border, never by shadow or glow.
+
+  Color roles → Tailwind classes
+    background       bg-background                       #0a0a0a
+    surface          bg-surface / bg-card                #161616
+    surfaceRaised    bg-surface-raised                   #1f1f1f
+    border           border-border                       #262626
+    textPrimary      text-foreground                     #ffffff
+    textSecondary    text-muted-foreground               #8e8e93
+    textTertiary     text-tertiary-foreground            #86868b
+    accent           bg-accent / text-accent             #ffd60a
+    onAccent         text-accent-foreground              #0a0a0a
+    accentMuted      bg-accent-muted                     #1a1a0e
+    success          text-success                        #30d158
+    warning          text-warning                        #ff9f0a
+    danger           text-danger / bg-danger             #ff453a
+    onDanger         text-danger-foreground              #ffffff
+    scrim            bg-scrim (behind sheets, on video)  black 70%
+
+  Contrast (WCAG 2.x; AA needs 4.5:1 for body text, 3:1 for 18.66px bold+)
+                     background  surface  raised  accentMuted
+    textPrimary        19.80      18.10    16.48     17.53
+    textSecondary       6.07       5.55     5.06      5.38
+    textTertiary        5.46       5.00     4.55      4.84
+    accent             14.02      12.82    11.68     12.42
+    success             9.79       8.95     8.15      8.67
+    warning             9.63       8.80     8.02      8.53
+    danger              5.81       5.31     4.84      5.15
+    onAccent on accent 14.02
+    onDanger on danger  3.41  FAILS AA for body text: filled red buttons
+                              are a known gap, fixed by the Phase 2
+                              destructive Button (red text, not red fill).
 */
 :root {
   color-scheme: dark;
-  --radius: 0.625rem;
 
-  /* Brand tokens */
   --bg: #0a0a0a;
   --surface: #161616;
-  --surface-active: #1a1a0e;
   --surface-raised: #1f1f1f;
   --hairline: #262626;
   --brand: #ffd60a;
   --on-brand: #0a0a0a;
+  --brand-muted: #1a1a0e;
   --text-primary: #ffffff;
   --text-secondary: #8e8e93;
+  --text-tertiary: #86868b;
   --success: #30d158;
+  --warning: #ff9f0a;
   --danger: #ff453a;
+  --on-danger: #ffffff;
+  --scrim: rgb(0 0 0 / 0.7);
+
+  /* Motion: three durations and two curves. Reduce Motion: see the end of this file. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease-enter: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   /* shadcn variables, pointed at the brand tokens */
   --background: var(--bg);
@@ -48,7 +93,7 @@
   --accent-foreground: var(--on-brand);
 
   --destructive: var(--danger);
-  --destructive-foreground: var(--text-primary);
+  --destructive-foreground: var(--on-danger);
 
   --border: var(--hairline);
   --input: var(--hairline);
@@ -56,10 +101,46 @@
 }
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /*
+    Radii: square-ish inputs, rounded tiles and cards, pills for actions
+    (rounded-full). The shadcn names point at the same three values.
+  */
+  --radius-input: 0.5rem;
+  --radius-tile: 0.75rem;
+  --radius-card: 1rem;
+  --radius-sm: var(--radius-input);
+  --radius-md: var(--radius-input);
+  --radius-lg: var(--radius-tile);
+  --radius-xl: var(--radius-card);
+
+  /*
+    Type: eight steps in rem, so text follows the root size (iOS text size
+    once Phase 6 turns that on). Sizes match the ones the app used before
+    tokens: caption 12, footnote 14, body 16, headline 18, title3 20,
+    title2 24, title1 30, display 36. Numbers add tabular-nums; there is no
+    monospace font.
+  */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-footnote: 0.875rem;
+  --text-footnote--line-height: 1.25rem;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5rem;
+  --text-headline: 1.125rem;
+  --text-headline--line-height: 1.75rem;
+  --text-title3: 1.25rem;
+  --text-title3--line-height: 1.75rem;
+  --text-title2: 1.5rem;
+  --text-title2--line-height: 2rem;
+  --text-title1: 1.875rem;
+  --text-title1--line-height: 2.25rem;
+  --text-display: 2.25rem;
+  --text-display--line-height: 2.5rem;
+
+  /* The system font: SF Pro on iPhone and Mac. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+
+  /* Spacing: Tailwind's default 4-pt scale (p-1 = 4px … p-12 = 48px). */
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -73,21 +154,22 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-tertiary-foreground: var(--text-tertiary);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-muted: var(--brand-muted);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-surface: var(--surface);
-  --color-surface-active: var(--surface-active);
   --color-surface-raised: var(--surface-raised);
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-danger: var(--danger);
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-danger-foreground: var(--on-danger);
+  --color-scrim: var(--scrim);
 }
 
 @layer base {
@@ -97,25 +179,6 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* Brand utilities used by the shell and login (P2-01). */
-@utility brand-glow {
-  box-shadow: 0 0 24px color-mix(in srgb, var(--brand) 35%, transparent);
-}
-
-@utility glass-card {
-  background-color: color-mix(in srgb, var(--surface) 88%, transparent);
-  border-color: var(--hairline);
-  backdrop-filter: blur(16px);
-}
-
-@utility energy-grid {
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--brand) 6%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--brand) 6%, transparent) 1px, transparent 1px);
-  background-size: 32px 32px;
 }
 
 /*
@@ -131,7 +194,7 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     transition-property: color, background-color, border-color, opacity, transform;
-    transition-duration: 120ms;
+    transition-duration: var(--duration-fast);
   }
   button:not(:disabled):active,
   a:active,
@@ -147,10 +210,10 @@
   than "going deeper" (Next view-transitions guide).
 */
 ::view-transition-old(.page-exit) {
-  animation: 120ms ease-in both page-fade reverse;
+  animation: var(--duration-fast) var(--ease-exit) both page-fade reverse;
 }
 ::view-transition-new(.page-enter) {
-  animation: 180ms ease-out 60ms both page-fade, 240ms ease-out both page-rise;
+  animation: var(--duration-base) var(--ease-enter) 60ms both page-fade, var(--duration-slow) var(--ease-enter) both page-rise;
 }
 @keyframes page-fade {
   from {

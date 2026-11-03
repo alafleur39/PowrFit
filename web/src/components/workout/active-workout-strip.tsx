@@ -21,7 +21,7 @@ export function ActiveWorkoutStrip() {
   return (
     <Link
       href="/log"
-      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-between gap-3 border-t border-accent/40 bg-surface-active px-4 py-3 text-sm md:inset-x-auto md:bottom-6 md:left-1/2 md:w-[min(560px,calc(100vw-3rem))] md:-translate-x-1/2 md:rounded-full md:border"
+      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-between gap-3 border-t border-accent/40 bg-accent-muted px-4 py-3 text-footnote md:inset-x-auto md:bottom-6 md:left-1/2 md:w-[min(560px,calc(100vw-3rem))] md:-translate-x-1/2 md:rounded-full md:border"
     >
       <span className="flex min-w-0 items-center gap-2 font-semibold text-foreground">
         <Dumbbell className="size-4 shrink-0 text-accent" aria-hidden />
@@ -29,7 +29,7 @@ export function ActiveWorkoutStrip() {
           {draft.routineName ?? "Workout"} in progress
         </span>
       </span>
-      <span className="font-mono tabular-nums text-accent">
+      <span className="tabular-nums text-accent">
         {draft.rest && restRemaining(draft.rest, now) > 0
           ? `Rest ${formatRest(restRemaining(draft.rest, now))}`
           : formatElapsed(draft.startedAt, now)}

@@ -7,7 +7,7 @@ export function PrBadge({ label, className }: { label: string; className?: strin
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-xs font-bold text-accent",
+        "inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-caption font-bold text-accent",
         className
       )}
     >

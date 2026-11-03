@@ -71,14 +71,14 @@ export function ExerciseCard({
   return (
     <section
       aria-label={exercise.exerciseName}
-      className="rounded-2xl border border-border bg-surface p-3 sm:p-4"
+      className="rounded-card border border-border bg-surface p-3 sm:p-4"
     >
       <div className="flex items-start justify-between gap-3 px-1">
         <div className="min-w-0">
-          <h2 className="break-words text-base font-bold text-foreground">{exercise.exerciseName}</h2>
+          <h2 className="break-words text-body font-bold text-foreground">{exercise.exerciseName}</h2>
           {lastSets && lastSets.length > 0 && (
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Last: <span className="font-mono tabular-nums">{formatSetsLine(lastSets, unit)}</span>
+            <p className="mt-0.5 text-footnote text-muted-foreground">
+              Last: <span className="tabular-nums">{formatSetsLine(lastSets, unit)}</span>
             </p>
           )}
         </div>
@@ -86,7 +86,7 @@ export function ExerciseCard({
           type="button"
           onClick={onRemove}
           aria-label={`Remove ${exercise.exerciseName}`}
-          className="flex size-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
+          className="flex size-11 shrink-0 items-center justify-center rounded-input text-muted-foreground hover:bg-surface-raised hover:text-danger"
         >
           <Trash2 className="size-4" aria-hidden />
         </button>
@@ -94,7 +94,7 @@ export function ExerciseCard({
 
       {cardioFields ? (
         <div
-          className="mt-3 grid grid-cols-[2rem_1fr_3rem_2.75rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
+          className="mt-3 grid grid-cols-[2rem_1fr_3rem_2.75rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
           aria-hidden
         >
           <span className="text-center">Set</span>
@@ -104,7 +104,7 @@ export function ExerciseCard({
         </div>
       ) : (
         <div
-          className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
+          className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
           aria-hidden
         >
           <span className="text-center">Set</span>
@@ -145,7 +145,7 @@ export function ExerciseCard({
       <button
         type="button"
         onClick={onAddSet}
-        className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold text-accent hover:bg-surface-raised"
+        className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-tile text-footnote font-semibold text-accent hover:bg-surface-raised"
       >
         <Plus className="size-4" aria-hidden />
         Add set

@@ -28,7 +28,7 @@ export function ForYou({ className }: { className?: string }) {
 
   return (
     <section aria-labelledby={headingId} className={className}>
-      <h2 id={headingId} className="mb-2 text-sm font-bold">
+      <h2 id={headingId} className="mb-2 text-footnote font-bold">
         For you
       </h2>
       <ul className="flex flex-col gap-3">
@@ -65,9 +65,9 @@ function SuggestionCard({ suggestion, onPlay }: { suggestion: Suggestion; onPlay
   if (videos.length === 0) return <SearchLinkCard suggestion={suggestion} />;
 
   return (
-    <div className="rounded-2xl border border-border bg-surface p-4">
+    <div className="rounded-card border border-border bg-surface p-4">
       <p className="font-semibold">{suggestion.title}</p>
-      <p className="text-sm text-muted-foreground">{suggestion.reason}</p>
+      <p className="text-footnote text-muted-foreground">{suggestion.reason}</p>
       <ul
         aria-label={`Videos: ${suggestion.title}`}
         className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1"
@@ -75,19 +75,19 @@ function SuggestionCard({ suggestion, onPlay }: { suggestion: Suggestion; onPlay
         {videos.map((video) => (
           <li key={video.videoId} className="w-56 shrink-0 snap-start">
             <VideoLink video={video} onPlay={onPlay}>
-              <span className="relative block overflow-hidden rounded-xl bg-surface-raised">
+              <span className="relative block overflow-hidden rounded-tile bg-surface-raised">
                 {/* A plain img: YouTube's thumbnails are already sized, and next/image would proxy them. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={video.thumbnail} alt="" loading="lazy" width={320} height={180} className="aspect-video w-full object-cover" />
-                <PlayCircle className="absolute inset-0 m-auto size-10 text-white drop-shadow" aria-hidden />
+                <PlayCircle className="absolute inset-0 m-auto size-10 text-foreground drop-shadow" aria-hidden />
                 {video.durationSec > 0 && (
-                  <span className="absolute right-1.5 bottom-1.5 rounded bg-black/80 px-1 font-mono text-xs text-white">
+                  <span className="absolute right-1.5 bottom-1.5 rounded-input bg-scrim px-1 tabular-nums text-caption text-foreground">
                     {formatVideoLength(video.durationSec)}
                   </span>
                 )}
               </span>
-              <span className="mt-1.5 line-clamp-2 text-sm font-medium">{video.title}</span>
-              <span className="block truncate text-xs text-muted-foreground">{video.channel} · YouTube</span>
+              <span className="mt-1.5 line-clamp-2 text-footnote font-medium">{video.title}</span>
+              <span className="block truncate text-caption text-muted-foreground">{video.channel} · YouTube</span>
             </VideoLink>
           </li>
         ))}
@@ -96,7 +96,7 @@ function SuggestionCard({ suggestion, onPlay }: { suggestion: Suggestion; onPlay
         href={youtubeSearchUrl(suggestion.query)}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-accent"
+        className="mt-2 inline-flex min-h-11 items-center gap-2 text-footnote font-semibold text-accent"
       >
         <Search className="size-4" aria-hidden />
         More on YouTube
@@ -129,12 +129,12 @@ function SearchLinkCard({ suggestion }: { suggestion: Suggestion }) {
       href={videoLinkFor(suggestion)}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-surface p-4 hover:bg-surface-raised"
+      className="flex min-h-14 items-center gap-3 rounded-card border border-border bg-surface p-4 hover:bg-surface-raised"
     >
       <PlayCircle className="size-6 shrink-0 text-accent" aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">{suggestion.title}</span>
-        <span className="block text-sm text-muted-foreground">{suggestion.reason}</span>
+        <span className="block text-footnote text-muted-foreground">{suggestion.reason}</span>
       </span>
       <ExternalLink className="size-4 shrink-0 text-muted-foreground" aria-label="Opens YouTube" />
     </a>
@@ -153,14 +153,14 @@ function VideoPlayer({ video, onClose }: { video: Video | null; onClose: () => v
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
             allowFullScreen
             referrerPolicy="strict-origin-when-cross-origin"
-            className="aspect-video w-full rounded-xl bg-black"
+            className="aspect-video w-full rounded-tile bg-background"
           />
-          <p className="text-sm text-muted-foreground">{video.channel}</p>
+          <p className="text-footnote text-muted-foreground">{video.channel}</p>
           <a
             href={watchUrl(video.videoId)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-accent"
+            className="inline-flex min-h-11 items-center gap-2 text-footnote font-semibold text-accent"
           >
             <ExternalLink className="size-4" aria-hidden />
             Watch on YouTube

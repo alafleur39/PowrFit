@@ -52,7 +52,7 @@ export function Dialog({
         aria-label="Close"
         data-close
         tabIndex={-1}
-        className="absolute inset-0 bg-black/70"
+        className="absolute inset-0 bg-scrim"
         onClick={onClose}
       />
       <div
@@ -62,12 +62,12 @@ export function Dialog({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          "relative flex max-h-[85dvh] w-full flex-col rounded-t-[20px] border border-border bg-surface-raised pb-[env(safe-area-inset-bottom)] md:max-w-lg md:rounded-[20px] md:pb-0",
+          "relative flex max-h-[85dvh] w-full flex-col rounded-t-card border border-border bg-surface-raised pb-[env(safe-area-inset-bottom)] md:max-w-lg md:rounded-card md:pb-0",
           className
         )}
       >
         <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-2">
-          <h2 id={titleId} className="text-lg font-bold">
+          <h2 id={titleId} className="text-headline font-bold">
             {title}
           </h2>
           <button

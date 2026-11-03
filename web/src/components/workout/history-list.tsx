@@ -56,7 +56,7 @@ export function HistoryList() {
         {items.map((item) => {
           if (!("log" in item)) {
             return (
-              <li key={item.id} className="rounded-2xl border border-border bg-surface p-4 text-sm text-muted-foreground">
+              <li key={item.id} className="rounded-card border border-border bg-surface p-4 text-footnote text-muted-foreground">
                 {item.problem === "unsupported"
                   ? "Saved by a newer app version. Update PowrFit to view it."
                   : "This workout's data couldn't be read."}
@@ -66,16 +66,16 @@ export function HistoryList() {
           const totals = workoutTotals(item.log.exercises, unit);
           const prs = records.get(item.id)?.length ?? 0;
           return (
-            <li key={item.id} className="rounded-2xl border border-border bg-surface">
+            <li key={item.id} className="rounded-card border border-border bg-surface">
               <Link
                 href={workoutLogHref(item.id)}
                 className="flex items-center gap-3 p-4"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs text-muted-foreground">{formatDate(item.log.endedAt)}</p>
+                  <p className="text-caption text-muted-foreground">{formatDate(item.log.endedAt)}</p>
                   <p className="truncate font-bold">{item.log.routineName ?? "Workout"}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {plural(totals.sets, "set")} · <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
+                  <p className="text-footnote text-muted-foreground">
+                    {plural(totals.sets, "set")} · <span className="tabular-nums">{formatWeight(totals.volume, unit)}</span>
                     {formatCardioSuffix(totals.cardioSec)}
                   </p>
                   <div className="mt-1 flex flex-wrap items-center gap-2">

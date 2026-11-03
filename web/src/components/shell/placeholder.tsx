@@ -12,9 +12,9 @@ export function ScreenHeader({
 }) {
   return (
     <header className="px-4 pt-5 pb-4 sm:px-6">
-      <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+      <h1 className="text-title2 font-bold text-foreground">{title}</h1>
       {subtitle && (
-        <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+        <p className="mt-1 text-footnote text-muted-foreground">{subtitle}</p>
       )}
     </header>
   );
@@ -31,10 +31,10 @@ export function EmptyState({
 }) {
   return (
     <div className="px-4 py-6 sm:px-6">
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface px-6 py-16 text-center">
-        <p className="text-base font-semibold text-foreground">{title}</p>
+      <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-border bg-surface px-6 py-16 text-center">
+        <p className="text-body font-semibold text-foreground">{title}</p>
         {hint && (
-          <p className="mt-1 max-w-xs text-sm text-muted-foreground">{hint}</p>
+          <p className="mt-1 max-w-xs text-footnote text-muted-foreground">{hint}</p>
         )}
         {children}
       </div>

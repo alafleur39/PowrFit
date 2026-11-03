@@ -131,14 +131,14 @@ export default function LoginPage() {
 
   return (
     <main className="w-screen flex-1 overflow-x-hidden bg-background lg:grid lg:grid-cols-[1fr_0.95fr]">
-      <section className="energy-grid flex w-screen min-w-0 items-center justify-center px-4 py-10 lg:w-auto">
+      <section className="flex w-screen min-w-0 items-center justify-center px-4 py-10 lg:w-auto">
       <Card
-        className="glass-card rounded-2xl border"
+        className="rounded-card border"
         style={{ width: "calc(100vw - 2rem)", maxWidth: "22rem" }}
       >
         <CardHeader className="items-center text-center">
           <PowrFitLogo variant="wordmark" className="mb-2 justify-center" />
-          <CardTitle className="text-2xl text-white">Sign into PowrFit</CardTitle>
+          <CardTitle className="text-title2 text-foreground">Sign into PowrFit</CardTitle>
           <CardDescription>
             This is where fitness journeys start.
           </CardDescription>
@@ -177,19 +177,19 @@ export default function LoginPage() {
               type="button"
               onClick={handleReset}
               disabled={submitting !== null}
-              className="-mt-2 flex h-11 items-center gap-2 self-end text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+              className="-mt-2 flex h-11 items-center gap-2 self-end text-footnote font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
             >
               {submitting === "reset" && <Loader2 className="size-4 animate-spin" aria-hidden />}
               Forgot password?
             </button>
 
             {error && (
-              <p role="alert" className="text-destructive text-sm">
+              <p role="alert" className="text-destructive text-footnote">
                 {error}
               </p>
             )}
             {notice && (
-              <p role="status" className="text-sm text-success">
+              <p role="status" className="text-footnote text-success">
                 {notice}
               </p>
             )}
@@ -207,7 +207,7 @@ export default function LoginPage() {
             <Button
               type="button"
               variant="outline"
-              className="h-11 border-white/15 bg-white/[0.06] text-white hover:bg-white/10"
+              className="h-11 border-border bg-surface-raised text-foreground hover:bg-border"
               disabled={submitting !== null}
               onClick={() => handleAuth("signUp")}
             >
@@ -217,7 +217,7 @@ export default function LoginPage() {
               Create Account
             </Button>
           </form>
-          <p className="text-muted-foreground mx-auto mt-6 max-w-xs text-center text-xs">
+          <p className="text-muted-foreground mx-auto mt-6 max-w-xs text-center text-caption">
             Creating an account will sync your workouts and progress securely
             with PowrFit.{" "}
             <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
@@ -227,7 +227,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
       </section>
-      <section className="relative hidden overflow-hidden bg-[#080c12] lg:block">
+      <section className="relative hidden overflow-hidden bg-background lg:block">
         <Image
           src="https://images.unsplash.com/photo-1549060279-7e168fcee0c2?q=80&w=1400&auto=format&fit=crop"
           alt="Gym floor with strength training equipment"
@@ -235,10 +235,10 @@ export default function LoginPage() {
           sizes="50vw"
           className="object-cover opacity-75"
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_25%,rgba(217,255,45,0.18),transparent_24rem),linear-gradient(180deg,rgba(8,12,18,0.05),rgba(8,12,18,0.92))]" />
-        <div className="absolute inset-x-0 bottom-0 p-10 text-white">
+        <div className="absolute inset-0 bg-linear-to-b from-background/5 to-background/90" />
+        <div className="absolute inset-x-0 bottom-0 p-10 text-foreground">
           <PowrFitLogo variant="compact" className="mb-6" />
-          <p className="max-w-md text-4xl font-black uppercase leading-none tracking-normal">
+          <p className="max-w-md text-display font-black uppercase leading-none tracking-normal">
             Every rep, session, and goal in one focused training app.
           </p>
         </div>

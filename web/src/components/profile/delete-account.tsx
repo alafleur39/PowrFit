@@ -62,7 +62,7 @@ export function DeleteAccount() {
     <>
       <Button
         variant="outline"
-        className="h-12 w-full border-danger/50 bg-transparent text-base font-semibold text-danger hover:bg-surface sm:w-auto"
+        className="h-12 w-full border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface sm:w-auto"
         onClick={() => setOpen(true)}
       >
         Delete account
@@ -78,7 +78,7 @@ export function DeleteAccount() {
               Keep it
             </Button>
             <Button
-              className="h-12 flex-1 bg-danger text-white hover:bg-danger/90"
+              className="h-12 flex-1 bg-danger text-danger-foreground hover:bg-danger/90"
               disabled={busy}
               onClick={confirm}
             >
@@ -89,23 +89,23 @@ export function DeleteAccount() {
         }
       >
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-footnote text-muted-foreground">
             This deletes your workouts, routines and settings, and your login, on every device. It
             can&apos;t be undone.
           </p>
           <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Password</span>
+            <span className="text-footnote font-medium">Password</span>
             <input
               type="password"
               autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               disabled={busy}
-              className="h-11 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:border-ring focus-visible:outline-none"
+              className="h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none"
             />
           </label>
           {error && (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="text-footnote text-danger">
               {error}
             </p>
           )}

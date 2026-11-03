@@ -72,7 +72,7 @@ export function CardioStatFields({
         const info = FIELDS[field];
         const unit = field === "distance" ? ` in ${distanceUnit}` : field === "inclinePct" ? " in percent" : "";
         return (
-          <label key={field} className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+          <label key={field} className="flex flex-col gap-1 text-caption font-medium text-muted-foreground">
             <span aria-hidden>{info.label}</span>
             <NumberField
               value={values[field] ?? null}
@@ -112,9 +112,9 @@ export function CardioSetRow({
   const prefix = `${exerciseName} set ${number}`;
 
   return (
-    <li className={cn("flex flex-col gap-2 rounded-xl px-1 py-1", set.done && "bg-surface-active")}>
+    <li className={cn("flex flex-col gap-2 rounded-tile px-1 py-1", set.done && "bg-accent-muted")}>
       <div className="grid grid-cols-[2rem_1fr_3rem_2.75rem] items-center gap-2">
-        <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
+        <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
           {number}
         </span>
         <CardioTimeField
@@ -130,7 +130,7 @@ export function CardioSetRow({
           title={completable || set.done ? undefined : "Enter a time first"}
           disabled={!set.done && !completable}
           className={cn(
-            "flex size-12 items-center justify-center rounded-xl border transition-colors disabled:opacity-40",
+            "flex size-12 items-center justify-center rounded-tile border transition-colors disabled:opacity-40",
             set.done
               ? "border-accent bg-accent text-accent-foreground"
               : "border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -142,7 +142,7 @@ export function CardioSetRow({
           type="button"
           onClick={onRemove}
           aria-label={`Remove set ${number}`}
-          className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface hover:text-danger"
+          className="flex size-11 items-center justify-center rounded-input text-muted-foreground hover:bg-surface hover:text-danger"
         >
           <X className="size-4" aria-hidden />
         </button>

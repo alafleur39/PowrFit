@@ -22,7 +22,7 @@ import { ProfileAvatar } from "./profile-avatar";
 import { useProfile } from "./use-profile";
 
 const field =
-  "h-11 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:border-ring focus-visible:outline-none";
+  "h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 // The top of Profile (P6-13): who you are, your lifetime numbers and your
 // unit. Stats are worked out from history like Progress; nothing new is
@@ -69,16 +69,16 @@ export function ProfileCard() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <ProfileAvatar className="size-16 text-xl" />
+        <ProfileAvatar className="size-16 text-title3" />
         <div className="min-w-0 flex-1">
-          <h2 className="truncate text-xl font-bold">{profile.displayName}</h2>
-          <p className="truncate text-sm text-muted-foreground">{user?.email}</p>
+          <h2 className="truncate text-title3 font-bold">{profile.displayName}</h2>
+          <p className="truncate text-footnote text-muted-foreground">{user?.email}</p>
         </div>
         {!editing && (
           <button
             type="button"
             onClick={startEditing}
-            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface"
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface"
           >
             <Pencil className="size-4" aria-hidden />
             Edit
@@ -87,9 +87,9 @@ export function ProfileCard() {
       </div>
 
       {editing && (
-        <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
+        <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
           <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Display name</span>
+            <span className="text-footnote font-medium">Display name</span>
             <input
               value={name}
               maxLength={DISPLAY_NAME_MAX}
@@ -98,7 +98,7 @@ export function ProfileCard() {
             />
           </label>
           <div>
-            <p id="avatar-colour" className="text-sm font-medium">
+            <p id="avatar-colour" className="text-footnote font-medium">
               Avatar colour
             </p>
             <div role="radiogroup" aria-labelledby="avatar-colour" className="mt-2 flex flex-wrap gap-2">
@@ -116,13 +116,13 @@ export function ProfileCard() {
                     color === option && "ring-2 ring-foreground"
                   )}
                 >
-                  {color === option && <Check className="size-5 text-[#0a0a0a]" aria-hidden />}
+                  {color === option && <Check className="size-5 text-accent-foreground" aria-hidden />}
                 </button>
               ))}
             </div>
           </div>
           {problems.length > 0 && (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="text-footnote text-danger">
               {problems[0]}
             </p>
           )}
@@ -139,18 +139,18 @@ export function ProfileCard() {
 
       <dl aria-label="Lifetime" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-border bg-surface p-3">
-            <dt className="text-xs text-muted-foreground">{label}</dt>
-            <dd className="mt-1 truncate font-mono text-lg font-bold tabular-nums text-accent">{value}</dd>
+          <div key={label} className="rounded-tile border border-border bg-surface p-3">
+            <dt className="text-caption text-muted-foreground">{label}</dt>
+            <dd className="mt-1 truncate text-headline font-bold tabular-nums text-accent">{value}</dd>
           </div>
         ))}
       </dl>
 
       <section aria-labelledby="profile-unit" className="flex items-center justify-between gap-3">
-        <h2 id="profile-unit" className="text-sm font-bold">
+        <h2 id="profile-unit" className="text-footnote font-bold">
           Weight unit
         </h2>
-        <div role="radiogroup" aria-labelledby="profile-unit" className="grid grid-cols-2 gap-1 rounded-xl bg-surface p-1">
+        <div role="radiogroup" aria-labelledby="profile-unit" className="grid grid-cols-2 gap-1 rounded-tile bg-surface p-1">
           {WEIGHT_UNITS.map((option) => (
             <button
               key={option}
@@ -159,7 +159,7 @@ export function ProfileCard() {
               aria-checked={unit === option}
               onClick={() => setUnit(option)}
               className={cn(
-                "h-11 w-16 rounded-lg text-sm font-bold",
+                "h-11 w-16 rounded-input text-footnote font-bold",
                 unit === option ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >

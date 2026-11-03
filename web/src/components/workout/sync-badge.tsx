@@ -14,7 +14,7 @@ const STATUS = {
 export function SyncBadge({ status, className }: { status: DisplayStatus; className?: string }) {
   const { label, icon: Icon, className: tone } = STATUS[status];
   return (
-    <span className={cn("inline-flex items-center gap-1 text-xs font-medium", tone, className)}>
+    <span className={cn("inline-flex items-center gap-1 text-caption font-medium", tone, className)}>
       <Icon className="size-3.5" aria-hidden />
       {label}
     </span>

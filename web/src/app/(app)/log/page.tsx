@@ -70,8 +70,8 @@ export default function LogPage() {
           logId={finishedId}
           top={
             <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:px-6">
-              <p className="text-sm font-semibold text-success">Workout saved</p>
-              <Link href="/home" className="inline-flex h-11 items-center px-2 text-sm font-semibold text-accent">
+              <p className="text-footnote font-semibold text-success">Workout saved</p>
+              <Link href="/home" className="inline-flex h-11 items-center px-2 text-footnote font-semibold text-accent">
                 Done
               </Link>
             </div>
@@ -88,7 +88,7 @@ function Notice({ children }: { children: React.ReactNode }) {
   return (
     <p
       role="alert"
-      className="mx-4 mt-4 flex items-start gap-2 rounded-xl border border-danger/40 bg-surface p-3 text-sm sm:mx-6"
+      className="mx-4 mt-4 flex items-start gap-2 rounded-tile border border-danger/40 bg-surface p-3 text-footnote sm:mx-6"
     >
       <AlertTriangle className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
       <span>{children}</span>
@@ -102,10 +102,10 @@ function RoutineButton({ routine }: { routine: Routine }) {
     <button
       type="button"
       onClick={() => start(routine)}
-      className="rounded-2xl border border-border bg-surface p-4 text-left transition-colors hover:border-accent/60"
+      className="rounded-card border border-border bg-surface p-4 text-left transition-colors hover:border-accent/60"
     >
-      <span className="block text-lg font-bold text-foreground">{routine.name}</span>
-      <span className="mt-1 block text-sm text-muted-foreground">
+      <span className="block text-headline font-bold text-foreground">{routine.name}</span>
+      <span className="mt-1 block text-footnote text-muted-foreground">
         {routine.exercises.length} exercises
         {routine.notes ? ` · ${routine.notes}` : ""}
       </span>
@@ -122,20 +122,20 @@ function StartPanel() {
       <ScreenHeader title="Start a workout" subtitle="Pick a routine or build one as you go." />
       <div className="flex flex-col gap-3 px-4 sm:px-6">
         {routines.length > 0 && (
-          <h2 className="text-sm font-semibold text-muted-foreground">My routines</h2>
+          <h2 className="text-footnote font-semibold text-muted-foreground">My routines</h2>
         )}
         {routines.map(({ routine }) => (
           <RoutineButton key={routine.id} routine={routine} />
         ))}
         {routines.length > 0 && (
-          <h2 className="mt-2 text-sm font-semibold text-muted-foreground">Presets</h2>
+          <h2 className="mt-2 text-footnote font-semibold text-muted-foreground">Presets</h2>
         )}
         {PRESET_ROUTINES.map((routine) => (
           <RoutineButton key={routine.id} routine={routine} />
         ))}
         <Button
           variant="outline"
-          className="h-12 border-border bg-transparent text-base font-semibold text-foreground hover:bg-surface"
+          className="h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => start()}
         >
           <Plus className="size-4" aria-hidden />
@@ -187,11 +187,11 @@ function Logger({
   return (
     <div className={draft.rest ? "pb-36" : "pb-10"}>
       {draft.rest && <RestTimer rest={draft.rest} />}
-      <header className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur-xl sm:px-6 md:top-0">
+      <header className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 sm:px-6 md:top-0">
         <div className="min-w-0">
-          <h1 className="truncate text-xl font-bold">{draft.routineName ?? "Workout"}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono tabular-nums text-accent">
+          <h1 className="truncate text-title3 font-bold">{draft.routineName ?? "Workout"}</h1>
+          <p className="text-footnote text-muted-foreground">
+            <span className="tabular-nums text-accent">
               {formatElapsed(draft.startedAt, now)}
             </span>
             {" · "}
@@ -199,14 +199,14 @@ function Logger({
             {formatCardioSuffix(totals.cardioSec)}
           </p>
         </div>
-        <Button className="h-11 px-5 text-base font-bold" onClick={() => setFinishOpen(true)}>
+        <Button className="h-11 px-5 text-body font-bold" onClick={() => setFinishOpen(true)}>
           Finish
         </Button>
       </header>
 
       <div className="flex flex-col gap-3 px-4 pt-4 sm:px-6">
         {draft.exercises.length === 0 && (
-          <p className="rounded-2xl border border-dashed border-border bg-surface p-6 text-center text-sm text-muted-foreground">
+          <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-footnote text-muted-foreground">
             Add your first exercise to start logging sets.
           </p>
         )}
@@ -237,7 +237,7 @@ function Logger({
 
         <Button
           variant="outline"
-          className="h-12 border-border bg-transparent text-base font-semibold text-foreground hover:bg-surface"
+          className="h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => setPickerOpen(true)}
         >
           <Plus className="size-4" aria-hidden />
@@ -246,7 +246,7 @@ function Logger({
         <button
           type="button"
           onClick={() => setDiscardOpen(true)}
-          className="mx-auto mt-4 h-11 px-4 text-sm font-medium text-danger"
+          className="mx-auto mt-4 h-11 px-4 text-footnote font-medium text-danger"
         >
           Discard workout
         </button>
@@ -267,13 +267,13 @@ function Logger({
         footer={
           <div className="flex flex-col gap-2">
             {counts.done > 0 && (
-              <Button className="h-12 text-base font-bold" onClick={confirmFinish}>
+              <Button className="h-12 text-body font-bold" onClick={confirmFinish}>
                 Finish and save
               </Button>
             )}
             <Button
               variant="ghost"
-              className="h-12 text-base text-foreground hover:bg-surface hover:text-foreground"
+              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setFinishOpen(false)}
             >
               Keep logging
@@ -282,7 +282,7 @@ function Logger({
         }
       >
         {counts.done > 0 ? (
-          <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-col gap-2 text-footnote">
             <p>
               {counts.done} {counts.done === 1 ? "set" : "sets"} done ·{" "}
               {formatWeight(totals.volume, unit)} volume{formatCardioSuffix(totals.cardioSec)}.
@@ -295,7 +295,7 @@ function Logger({
             )}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-footnote text-muted-foreground">
             Tick at least one set to finish. To throw this workout away, use Discard workout.
           </p>
         )}
@@ -309,7 +309,7 @@ function Logger({
           <div className="flex flex-col gap-2">
             <Button
               variant="destructive"
-              className="h-12 text-base font-bold"
+              className="h-12 text-body font-bold"
               onClick={() => {
                 discard();
                 setDiscardOpen(false);
@@ -319,7 +319,7 @@ function Logger({
             </Button>
             <Button
               variant="ghost"
-              className="h-12 text-base text-foreground hover:bg-surface hover:text-foreground"
+              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setDiscardOpen(false)}
             >
               Keep logging
@@ -327,7 +327,7 @@ function Logger({
           </div>
         }
       >
-        <p className="text-sm text-muted-foreground">
+        <p className="text-footnote text-muted-foreground">
           Every set in this workout will be deleted. This can&apos;t be undone.
         </p>
       </Dialog>

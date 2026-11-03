@@ -25,7 +25,7 @@ const RANGES: { id: ProgressRange; label: string; period: string; per: string }[
 ];
 
 const field =
-  "h-11 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:border-ring focus-visible:outline-none";
+  "h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 function Loading() {
   return (
@@ -92,19 +92,19 @@ function VolumePanel({
     <section aria-label={`Volume ${range.period}`} className="px-4 py-5 sm:px-6">
       <dl className="mb-4 flex gap-6">
         <div>
-          <dt className="text-xs text-muted-foreground">Volume</dt>
-          <dd className="font-mono text-xl font-bold tabular-nums text-accent">
+          <dt className="text-caption text-muted-foreground">Volume</dt>
+          <dd className="text-title3 font-bold tabular-nums text-accent">
             {formatWeight(volume, unit)}
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-muted-foreground">Workouts</dt>
-          <dd className="font-mono text-xl font-bold tabular-nums">{workouts}</dd>
+          <dt className="text-caption text-muted-foreground">Workouts</dt>
+          <dd className="text-title3 font-bold tabular-nums">{workouts}</dd>
         </div>
         {cardioSec > 0 && (
           <div>
-            <dt className="text-xs text-muted-foreground">Cardio</dt>
-            <dd className="font-mono text-xl font-bold tabular-nums">{formatCardioMinutes(cardioSec)}</dd>
+            <dt className="text-caption text-muted-foreground">Cardio</dt>
+            <dd className="text-title3 font-bold tabular-nums">{formatCardioMinutes(cardioSec)}</dd>
           </div>
         )}
       </dl>
@@ -125,19 +125,19 @@ function TrendPanel({ logs, unit }: { logs: WorkoutLog[]; unit: WeightUnit }) {
 
   return (
     <section aria-labelledby="trend-heading" className="mt-2 border-t border-border px-4 py-5 sm:px-6">
-      <h2 id="trend-heading" className="text-lg font-bold">
+      <h2 id="trend-heading" className="text-headline font-bold">
         Exercise trend
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">Heaviest finished set in each workout.</p>
+      <p className="mt-1 text-footnote text-muted-foreground">Heaviest finished set in each workout.</p>
       {!current ? (
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="mt-4 text-footnote text-muted-foreground">
           Finish a workout to see how your lifts change over time.
         </p>
       ) : (
         <>
           {/* Not a wrapping label: that would add the chosen option to its name. */}
           <div className="mt-4 flex max-w-lg flex-col gap-1.5">
-            <label htmlFor="trend-exercise" className="text-sm font-medium">
+            <label htmlFor="trend-exercise" className="text-footnote font-medium">
               Exercise
             </label>
             <select
@@ -157,7 +157,7 @@ function TrendPanel({ logs, unit }: { logs: WorkoutLog[]; unit: WeightUnit }) {
             <TrendChart points={points} unit={unit} exerciseName={current.exerciseName} />
           </div>
           {points.length === 1 && (
-            <p className="mt-2 text-center text-sm text-muted-foreground">
+            <p className="mt-2 text-center text-footnote text-muted-foreground">
               Log {current.exerciseName} again to see a trend.
             </p>
           )}

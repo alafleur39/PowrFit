@@ -25,7 +25,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm text-muted-foreground">
+      <p className="text-footnote text-muted-foreground">
         The server didn&apos;t accept this workout{errorCode ? ` (${errorCode})` : ""}. It&apos;s
         still saved on this device.
       </p>
@@ -57,7 +57,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
           <div className="flex flex-col gap-2">
             <Button
               variant="destructive"
-              className="h-12 text-base font-bold"
+              className="h-12 text-body font-bold"
               onClick={() => {
                 setConfirmOpen(false);
                 discardReceipt(log.id);
@@ -67,7 +67,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
             </Button>
             <Button
               variant="ghost"
-              className="h-12 text-base text-foreground hover:bg-surface hover:text-foreground"
+              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setConfirmOpen(false)}
             >
               Keep it
@@ -75,7 +75,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
           </div>
         }
       >
-        <p className="text-sm text-muted-foreground">
+        <p className="text-footnote text-muted-foreground">
           It was never saved to your account, so discarding deletes it for good. Copy it first if
           you want a record.
         </p>

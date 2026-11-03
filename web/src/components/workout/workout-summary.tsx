@@ -28,7 +28,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
   const back = top ?? (
     <Link
       href="/workouts?tab=history"
-      className="inline-flex h-11 items-center gap-2 px-4 text-sm font-medium text-muted-foreground hover:text-foreground sm:px-6"
+      className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
     >
       <ArrowLeft className="size-4" aria-hidden />
       History
@@ -39,7 +39,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
     return (
       <div>
         {back}
-        <p role="status" className="px-4 py-16 text-center text-sm text-muted-foreground sm:px-6">
+        <p role="status" className="px-4 py-16 text-center text-footnote text-muted-foreground sm:px-6">
           Workout deleted.
         </p>
       </div>
@@ -54,7 +54,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
           {loading ? (
             <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-footnote text-muted-foreground">
               {error
                 ? "Couldn't load this workout. Check your connection and try again."
                 : "This workout isn't available on this device."}
@@ -69,7 +69,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
     return (
       <div>
         {back}
-        <p className="px-4 py-16 text-center text-sm text-muted-foreground sm:px-6">
+        <p className="px-4 py-16 text-center text-footnote text-muted-foreground sm:px-6">
           {item.problem === "unsupported"
             ? "This workout was saved by a newer version of PowrFit. Update the app to view it."
             : "This workout's data couldn't be read."}
@@ -98,13 +98,13 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
       <header className="px-4 pb-4 sm:px-6">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm text-muted-foreground">{formatDate(log.endedAt)}</p>
-            <h1 className="mt-1 text-2xl font-bold">{log.routineName ?? "Workout"}</h1>
+            <p className="text-footnote text-muted-foreground">{formatDate(log.endedAt)}</p>
+            <h1 className="mt-1 text-title2 font-bold">{log.routineName ?? "Workout"}</h1>
           </div>
           <button
             type="button"
             onClick={() => setMode("edit")}
-            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold text-foreground hover:bg-surface"
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold text-foreground hover:bg-surface"
           >
             <Pencil className="size-4" aria-hidden />
             Edit
@@ -119,7 +119,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
       </header>
 
       {item.status === "failed" && (
-        <div className="mx-4 mb-4 rounded-2xl border border-danger/40 bg-surface p-4 sm:mx-6">
+        <div className="mx-4 mb-4 rounded-card border border-danger/40 bg-surface p-4 sm:mx-6">
           <FailedSaveActions log={log} errorCode={item.errorCode} />
         </div>
       )}
@@ -132,9 +132,9 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
           ["Reps", String(totals.reps)],
           ...(totals.cardioSec > 0 ? [["Cardio", formatCardioMinutes(totals.cardioSec)]] : []),
         ].map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-border bg-surface p-3">
-            <dt className="text-xs text-muted-foreground">{label}</dt>
-            <dd className="mt-1 font-mono text-lg font-bold tabular-nums text-accent">{value}</dd>
+          <div key={label} className="rounded-tile border border-border bg-surface p-3">
+            <dt className="text-caption text-muted-foreground">{label}</dt>
+            <dd className="mt-1 text-headline font-bold tabular-nums text-accent">{value}</dd>
           </div>
         ))}
       </dl>
@@ -143,10 +143,10 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
 
       <ol className="mx-4 mt-4 flex flex-col gap-3 sm:mx-6">
         {log.exercises.map((exercise, index) => (
-          <li key={`${exercise.exerciseId}-${index}`} className="rounded-2xl border border-border bg-surface p-4">
+          <li key={`${exercise.exerciseId}-${index}`} className="rounded-card border border-border bg-surface p-4">
             <h2 className="font-bold">{exercise.exerciseName}</h2>
             {exercise.note && (
-              <p className="mt-1 whitespace-pre-line break-words text-sm text-muted-foreground italic">
+              <p className="mt-1 whitespace-pre-line break-words text-footnote text-muted-foreground italic">
                 {exercise.note}
               </p>
             )}
@@ -154,12 +154,12 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
               record={logRecords.find((record) => record.exerciseId === exercise.exerciseId)}
               unit={unit}
             />
-            <p className="text-xs text-muted-foreground">{unit} × reps</p>
-            <ol className="mt-2 flex flex-col gap-1 text-sm">
+            <p className="text-caption text-muted-foreground">{unit} × reps</p>
+            <ol className="mt-2 flex flex-col gap-1 text-footnote">
               {exercise.sets.map((set, setIndex) => (
                 <li key={setIndex} className="flex gap-3">
                   <span className="w-5 text-muted-foreground">{setIndex + 1}</span>
-                  <span className="font-mono tabular-nums">{formatSetsLine([set], unit)}</span>
+                  <span className="tabular-nums">{formatSetsLine([set], unit)}</span>
                 </li>
               ))}
             </ol>
@@ -173,9 +173,9 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
 function RecordLine({ record, unit }: { record?: PersonalRecord; unit: WeightUnit }) {
   if (!record) return null;
   return (
-    <p className="mt-1 flex items-center gap-2 text-sm">
+    <p className="mt-1 flex items-center gap-2 text-footnote">
       <PrBadge label="PR" />
-      <span className="font-mono tabular-nums">{formatSetsLine([{ ...record, done: true }], unit)}</span>
+      <span className="tabular-nums">{formatSetsLine([{ ...record, done: true }], unit)}</span>
     </p>
   );
 }

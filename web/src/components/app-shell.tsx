@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             draft ? "pb-40 md:pb-24" : "pb-24 md:pb-0"
           )}
         >
-          <header className="sticky top-0 z-20 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center pt-[env(safe-area-inset-top)] justify-between border-b border-border bg-surface/95 px-4 backdrop-blur-xl md:hidden">
+          <header className="sticky top-0 z-20 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center pt-[env(safe-area-inset-top)] justify-between border-b border-border bg-surface px-4 md:hidden">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -120,12 +120,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onClose={() => setSignOutWarning(false)}
         footer={
           <div className="flex flex-col gap-2">
-            <Button className="h-12 text-base font-bold" onClick={() => void finishSignOut()}>
+            <Button className="h-12 text-body font-bold" onClick={() => void finishSignOut()}>
               Keep on this device and sign out
             </Button>
             <Button
               variant="destructive"
-              className="h-12 text-base"
+              className="h-12 text-body"
               onClick={() => {
                 clearDevice();
                 void finishSignOut();
@@ -135,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Button>
             <Button
               variant="ghost"
-              className="h-12 text-base text-foreground hover:bg-surface hover:text-foreground"
+              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setSignOutWarning(false)}
             >
               Cancel
@@ -143,7 +143,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         }
       >
-        <p className="text-sm text-muted-foreground">
+        <p className="text-footnote text-muted-foreground">
           This device has a workout in progress or a finished workout that hasn&apos;t reached
           your account yet. If you keep it, it comes back when you sign in here again and is
           never shown to anyone else. If you discard it, it&apos;s gone for good.

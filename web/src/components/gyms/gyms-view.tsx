@@ -99,12 +99,12 @@ export function GymsView() {
 
   return (
     <div className="flex flex-col gap-4 px-4 pb-6 sm:px-6">
-      <section aria-label="Find gyms" className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
+      <section aria-label="Find gyms" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
         <button
           type="button"
           onClick={() => void run("near")}
           disabled={busy !== null}
-          className="brand-glow flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground disabled:opacity-70"
+          className="flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground disabled:opacity-70"
         >
           {busy === "near" ? (
             <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -132,14 +132,14 @@ export function GymsView() {
               maxLength={80}
               onChange={(event) => setPlace(event.target.value)}
               placeholder="City or zip code"
-              className="h-11 w-full rounded-lg border border-input bg-background pr-3 pl-9 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
+              className="h-11 w-full rounded-input border border-input bg-background pr-3 pl-9 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
             />
           </label>
           <button
             type="submit"
             disabled={busy !== null}
             aria-label="Search"
-            className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-border text-foreground hover:bg-surface-raised disabled:opacity-70"
+            className="flex size-11 shrink-0 items-center justify-center rounded-input border border-border text-foreground hover:bg-surface-raised disabled:opacity-70"
           >
             {busy === "place" ? (
               <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -148,11 +148,11 @@ export function GymsView() {
             )}
           </button>
         </form>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-caption text-muted-foreground">
           Near me sends only your rough area (about 1 km), never your exact spot.
         </p>
         {error && (
-          <p role="alert" className="text-sm text-danger">
+          <p role="alert" className="text-footnote text-danger">
             {error}
           </p>
         )}
@@ -161,7 +161,7 @@ export function GymsView() {
       {found && (
         <section aria-labelledby={resultsId} className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id={resultsId} className="text-sm font-bold">
+            <h2 id={resultsId} className="text-footnote font-bold">
               {found.gyms.length === 0 ? "No gyms found" : `Gyms ${found.label}`}
             </h2>
             <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export function GymsView() {
                     aria-pressed={sort === option}
                     onClick={() => setSort(option)}
                     className={cn(
-                      "h-10 rounded-full px-3 text-sm font-medium",
+                      "h-10 rounded-full px-3 text-footnote font-medium",
                       sort === option ? "bg-accent text-accent-foreground" : "text-muted-foreground"
                     )}
                   >
@@ -188,7 +188,7 @@ export function GymsView() {
                 id={`${resultsId}-budget`}
                 value={budget ?? ""}
                 onChange={(event) => setBudget(event.target.value ? Number(event.target.value) : undefined)}
-                className="h-11 rounded-lg border border-input bg-background px-2 text-sm text-foreground"
+                className="h-11 rounded-input border border-input bg-background px-2 text-footnote text-foreground"
               >
                 <option value="">Any price</option>
                 {BUDGETS.map((amount) => (
@@ -201,7 +201,7 @@ export function GymsView() {
           </div>
 
           {found.gyms.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-border bg-surface p-6 text-center text-sm text-muted-foreground">
+            <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-footnote text-muted-foreground">
               The map has no gyms within 5 km. Try a nearby town or zip code.
             </p>
           ) : (
@@ -212,11 +212,11 @@ export function GymsView() {
             </ul>
           )}
           {hidden > 0 && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-footnote text-muted-foreground">
               {hidden === 1 ? "1 gym costs" : `${hidden} gyms cost`} more than your budget.
             </p>
           )}
-          <p className="text-xs text-muted-foreground">
+          <p className="text-caption text-muted-foreground">
             Gym locations ©{" "}
             <a
               href="https://www.openstreetmap.org/copyright"
@@ -238,20 +238,20 @@ function GymRow({ item, unit }: { item: RankedGym; unit: "kg" | "lb" }) {
   const { gym, cheapest, distanceKm } = item;
   const directions = `https://maps.apple.com/?daddr=${gym.lat},${gym.lon}&q=${encodeURIComponent(gym.name)}`;
   return (
-    <li className="rounded-2xl border border-border bg-surface p-4">
+    <li className="rounded-card border border-border bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate font-bold">{gym.name}</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-footnote text-muted-foreground">
             {formatDistance(distanceKm, unit)}
             {gym.address && ` · ${gym.address}`}
           </p>
         </div>
-        <p className={cn("shrink-0 text-right", cheapest ? "font-mono font-bold text-accent" : "text-sm text-muted-foreground")}>
+        <p className={cn("shrink-0 text-right", cheapest ? "tabular-nums font-bold text-accent" : "text-footnote text-muted-foreground")}>
           {cheapest ? (
             <>
               {formatMonthly(cheapest)}
-              <span className="block font-sans text-xs font-normal text-muted-foreground">{cheapest.name}</span>
+              <span className="block font-sans text-caption font-normal text-muted-foreground">{cheapest.name}</span>
             </>
           ) : (
             "No price yet"
@@ -264,7 +264,7 @@ function GymRow({ item, unit }: { item: RankedGym; unit: "kg" | "lb" }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Directions to ${gym.name}`}
-          className="flex h-11 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface-raised"
+          className="flex h-11 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface-raised"
         >
           <Navigation className="size-4" aria-hidden />
           Directions

@@ -17,7 +17,7 @@ export function formatRest(seconds: number): string {
 }
 
 const control =
-  "flex h-11 min-w-11 items-center justify-center rounded-full border border-border px-3 text-sm font-semibold text-foreground hover:bg-surface-raised";
+  "flex h-11 min-w-11 items-center justify-center rounded-full border border-border px-3 text-footnote font-semibold text-foreground hover:bg-surface-raised";
 
 // Rest timer (P4-04, D23). Runs from the end time saved in the draft, so it
 // keeps counting through a reload or a locked phone. In-app only: iOS
@@ -43,7 +43,7 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
     <div
       role="region"
       aria-label="Rest timer"
-      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-accent/40 bg-surface-active px-4 py-3 md:inset-x-auto md:bottom-6 md:left-1/2 md:w-[min(560px,calc(100vw-3rem))] md:-translate-x-1/2 md:rounded-2xl md:border"
+      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-accent/40 bg-accent-muted px-4 py-3 md:inset-x-auto md:bottom-6 md:left-1/2 md:w-[min(560px,calc(100vw-3rem))] md:-translate-x-1/2 md:rounded-card md:border"
     >
       <div className="flex items-center gap-3">
         <Timer className="size-5 shrink-0 text-accent" aria-hidden />
@@ -52,8 +52,8 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
             <span className="font-bold text-accent">Rest over. Next set!</span>
           ) : (
             <>
-              <span className="text-sm text-muted-foreground">Rest </span>
-              <span className="font-mono text-xl font-bold tabular-nums text-accent">
+              <span className="text-footnote text-muted-foreground">Rest </span>
+              <span className="text-title3 font-bold tabular-nums text-accent">
                 {formatRest(remaining)}
               </span>
             </>
@@ -89,7 +89,7 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
       </div>
       <div className="mt-2 h-1 overflow-hidden rounded-full bg-border" aria-hidden>
         <div
-          className="h-full rounded-full bg-accent transition-[width] duration-300"
+          className="h-full rounded-full bg-accent transition-[width] duration-(--duration-slow)"
           style={{ width: `${Math.round(progress * 100)}%` }}
         />
       </div>

@@ -54,7 +54,7 @@ export function VolumeChart({
               strokeWidth={1}
               strokeDasharray="3 3"
             />
-            <text x={0} y={top - 4} className="fill-muted-foreground text-[10px]">
+            <text x={0} y={top - 4} className="fill-muted-foreground text-caption">
               {compact.format(max)} {unit}
             </text>
           </>
@@ -78,7 +78,7 @@ export function VolumeChart({
                 x={slot * i + slot / 2}
                 y={bottom + 16}
                 textAnchor="middle"
-                className="fill-muted-foreground text-[10px]"
+                className="fill-muted-foreground text-caption"
               >
                 {bucket.label}
               </text>
@@ -156,17 +156,17 @@ export function TrendChart({
       >
         <line x1={left} x2={right} y1={top} y2={top} className="stroke-border" strokeWidth={1} strokeDasharray="3 3" />
         <line x1={left} x2={right} y1={bottom} y2={bottom} className="stroke-border" strokeWidth={1} />
-        <text x={left - 6} y={top + 4} textAnchor="end" className="fill-muted-foreground text-[10px]">
+        <text x={left - 6} y={top + 4} textAnchor="end" className="fill-muted-foreground text-caption">
           {compact.format(high)}
         </text>
-        <text x={left - 6} y={bottom + 4} textAnchor="end" className="fill-muted-foreground text-[10px]">
+        <text x={left - 6} y={bottom + 4} textAnchor="end" className="fill-muted-foreground text-caption">
           {compact.format(low)}
         </text>
-        <text x={left} y={bottom + 18} className="fill-muted-foreground text-[10px]">
+        <text x={left} y={bottom + 18} className="fill-muted-foreground text-caption">
           {formatDate(points[0].endedAt)}
         </text>
         {formatDate(latest.endedAt) !== formatDate(points[0].endedAt) && (
-          <text x={right} y={bottom + 18} textAnchor="end" className="fill-muted-foreground text-[10px]">
+          <text x={right} y={bottom + 18} textAnchor="end" className="fill-muted-foreground text-caption">
             {formatDate(latest.endedAt)}
           </text>
         )}

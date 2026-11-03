@@ -18,19 +18,19 @@ export function InstallCard() {
   return (
     <section
       aria-labelledby="install-heading"
-      className="rounded-2xl border border-accent/40 bg-surface-active p-4"
+      className="rounded-card border border-accent/40 bg-accent-muted p-4"
     >
       <h2 id="install-heading" className="font-bold">
         Add PowrFit to your home screen
       </h2>
       {kind === "ios" ? (
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-footnote text-muted-foreground">
           It opens full screen, like an app. In Safari, tap{" "}
           <Share className="inline size-4 align-text-bottom text-foreground" aria-label="Share" /> Share,
           then <span className="font-semibold text-foreground">Add to Home Screen</span>.
         </p>
       ) : (
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-footnote text-muted-foreground">
           It opens in its own window, like an app, and works offline.
         </p>
       )}

@@ -40,7 +40,7 @@ export function ExercisePicker({
       onClose={close}
       footer={
         <Button
-          className="h-12 w-full text-base font-bold"
+          className="h-12 w-full text-body font-bold"
           disabled={selected.length === 0}
           onClick={() => {
             onAdd(selected);
@@ -56,7 +56,7 @@ export function ExercisePicker({
       </div>
 
       {results.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">No exercises match.</p>
+        <p className="py-10 text-center text-footnote text-muted-foreground">No exercises match.</p>
       ) : (
         <ul className="flex flex-col">
           {results.map((exercise) => {
@@ -68,11 +68,11 @@ export function ExercisePicker({
                   role="checkbox"
                   aria-checked={isSelected}
                   onClick={() => toggle(exercise.id)}
-                  className="flex min-h-14 w-full items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-surface"
+                  className="flex min-h-14 w-full items-center gap-3 rounded-input px-2 py-2 text-left hover:bg-surface"
                 >
                   <span
                     className={cn(
-                      "flex size-6 shrink-0 items-center justify-center rounded-md border",
+                      "flex size-6 shrink-0 items-center justify-center rounded-input border",
                       isSelected ? "border-accent bg-accent text-accent-foreground" : "border-border"
                     )}
                   >
@@ -80,7 +80,7 @@ export function ExercisePicker({
                   </span>
                   <span className="min-w-0">
                     <span className="block font-medium text-foreground">{exercise.name}</span>
-                    <span className="block text-sm text-muted-foreground">
+                    <span className="block text-footnote text-muted-foreground">
                       {exercise.cardio ? "Cardio" : catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
                     </span>
                   </span>

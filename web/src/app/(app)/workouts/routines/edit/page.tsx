@@ -31,7 +31,7 @@ function RoutineEditorForId() {
   if (entry) return <RoutineEditor key={entry.routine.id} initial={entry.routine} isNew={false} />;
 
   return (
-    <div className="flex justify-center px-4 py-20 text-center text-sm text-muted-foreground">
+    <div className="flex justify-center px-4 py-20 text-center text-footnote text-muted-foreground">
       {loading ? (
         <Loader2 className="size-6 animate-spin" aria-label="Loading" />
       ) : (

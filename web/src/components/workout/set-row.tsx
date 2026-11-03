@@ -58,7 +58,7 @@ export function NumberField({
         if (!invalid) setText(show(value));
       }}
       className={cn(
-        "h-12 w-full min-w-0 rounded-lg border border-input bg-background px-3 text-center font-mono text-base tabular-nums text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "h-12 w-full min-w-0 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
         invalid && "border-danger focus-visible:border-danger"
       )}
     />
@@ -89,18 +89,18 @@ export function SetRow({
   return (
     <li
       className={cn(
-        "grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] items-center gap-2 rounded-xl px-1 py-1",
-        set.done && "bg-surface-active"
+        "grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] items-center gap-2 rounded-tile px-1 py-1",
+        set.done && "bg-accent-muted"
       )}
     >
       {record ? (
         <span className="flex flex-col items-center leading-none" title="New personal record">
           <Trophy className="size-4 text-accent" aria-hidden />
-          <span className="mt-0.5 text-[10px] font-bold text-accent">PR</span>
+          <span className="mt-0.5 text-caption font-bold text-accent">PR</span>
           <span className="sr-only">Set {number} is a new personal record</span>
         </span>
       ) : (
-        <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
+        <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
           {number}
         </span>
       )}
@@ -128,7 +128,7 @@ export function SetRow({
         title={completable || set.done ? undefined : "Enter weight and reps first"}
         disabled={!set.done && !completable}
         className={cn(
-          "flex size-12 items-center justify-center rounded-xl border transition-colors disabled:opacity-40",
+          "flex size-12 items-center justify-center rounded-tile border transition-colors disabled:opacity-40",
           set.done
             ? "border-accent bg-accent text-accent-foreground"
             : "border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -140,7 +140,7 @@ export function SetRow({
         type="button"
         onClick={onRemove}
         aria-label={`Remove set ${number}`}
-        className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface hover:text-danger"
+        className="flex size-11 items-center justify-center rounded-input text-muted-foreground hover:bg-surface hover:text-danger"
       >
         <X className="size-4" aria-hidden />
       </button>

@@ -9,7 +9,7 @@ import { sendPriceReport } from "@/lib/gyms/gym-repo";
 import { CURRENCIES, PRICE_LIMITS, priceReportProblems, type Currency, type Gym } from "@/lib/gyms/gyms";
 
 const fieldClass =
-  "h-11 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:border-ring focus-visible:outline-none";
+  "h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 // "Add a price" (P6-06, D36, D42): a member says what they pay. The report
 // is anonymous and only shows once it's checked (P6-07). Offline, Firestore
@@ -46,7 +46,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
   };
 
   if (sent) {
-    return <p className="flex h-11 items-center text-sm text-muted-foreground">Thanks! It shows once it&apos;s checked.</p>;
+    return <p className="flex h-11 items-center text-footnote text-muted-foreground">Thanks! It shows once it&apos;s checked.</p>;
   }
 
   return (
@@ -55,7 +55,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`Add a price for ${gym.name}`}
-        className="flex h-11 items-center gap-2 rounded-full border border-border px-4 text-sm font-semibold hover:bg-surface-raised"
+        className="flex h-11 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface-raised"
       >
         <Plus className="size-4" aria-hidden />
         Add a price
@@ -83,11 +83,11 @@ export function AddPrice({ gym }: { gym: Gym }) {
             submit();
           }}
         >
-          <p className="text-sm text-muted-foreground">
+          <p className="text-footnote text-muted-foreground">
             Your name isn&apos;t sent with it. We check prices before they show to everyone.
           </p>
           <label className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Plan</span>
+            <span className="text-footnote font-medium">Plan</span>
             <input
               value={plan}
               maxLength={PRICE_LIMITS.plan}
@@ -98,7 +98,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
           </label>
           <div className="flex gap-3">
             <label className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="text-sm font-medium">Per month</span>
+              <span className="text-footnote font-medium">Per month</span>
               <input
                 inputMode="decimal"
                 value={price}
@@ -108,7 +108,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
               />
             </label>
             <div className="flex w-28 flex-col gap-1.5">
-              <label htmlFor={`${id}-currency`} className="text-sm font-medium">
+              <label htmlFor={`${id}-currency`} className="text-footnote font-medium">
                 Currency
               </label>
               <select
@@ -126,7 +126,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
             </div>
           </div>
           {problems.length > 0 && (
-            <ul role="alert" className="text-sm text-danger">
+            <ul role="alert" className="text-footnote text-danger">
               {problems.map((problem) => (
                 <li key={problem}>{problem}</li>
               ))}

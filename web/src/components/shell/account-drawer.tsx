@@ -90,7 +90,7 @@ export function AccountDrawer({
             type="button"
             aria-label="Close account menu"
             onClick={onClose}
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-scrim"
           />
           <motion.div
             ref={panelRef}
@@ -105,12 +105,12 @@ export function AccountDrawer({
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <ProfileAvatar className="size-11 text-base" />
+                <ProfileAvatar className="size-11 text-body" />
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-foreground">
                     {accountName}
                   </p>
-                  <p className="truncate text-sm text-muted-foreground">
+                  <p className="truncate text-footnote text-muted-foreground">
                     {accountEmail}
                   </p>
                 </div>
@@ -119,20 +119,20 @@ export function AccountDrawer({
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-surface-active hover:text-foreground"
+                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent-muted hover:text-foreground"
               >
                 <X className="size-5" aria-hidden />
               </button>
             </div>
 
             <section aria-labelledby="unit-label" className="mt-6">
-              <h2 id="unit-label" className="px-1 text-sm font-semibold text-foreground">
+              <h2 id="unit-label" className="px-1 text-footnote font-semibold text-foreground">
                 Weight unit
               </h2>
-              <p className="px-1 text-xs text-muted-foreground">
+              <p className="px-1 text-caption text-muted-foreground">
                 Used for new sets and every total. Sets keep the unit they were entered in.
               </p>
-              <div role="radiogroup" aria-labelledby="unit-label" className="mt-2 grid grid-cols-2 gap-1 rounded-xl bg-background p-1">
+              <div role="radiogroup" aria-labelledby="unit-label" className="mt-2 grid grid-cols-2 gap-1 rounded-tile bg-background p-1">
                 {(["lb", "kg"] as const).map((option) => (
                   <button
                     key={option}
@@ -141,7 +141,7 @@ export function AccountDrawer({
                     aria-checked={unit === option}
                     onClick={() => onUnitChange(option)}
                     className={cn(
-                      "h-11 rounded-lg text-sm font-bold transition-colors",
+                      "h-11 rounded-input text-footnote font-bold transition-colors",
                       unit === option
                         ? "bg-accent text-accent-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -156,7 +156,7 @@ export function AccountDrawer({
             <button
               type="button"
               onClick={onSignOut}
-              className="mt-auto flex h-12 items-center gap-3 rounded-xl px-3 text-left font-medium text-foreground transition-colors hover:bg-surface-active"
+              className="mt-auto flex h-12 items-center gap-3 rounded-tile px-3 text-left font-medium text-foreground transition-colors hover:bg-accent-muted"
             >
               <LogOut className="size-5 text-muted-foreground" aria-hidden />
               Sign out

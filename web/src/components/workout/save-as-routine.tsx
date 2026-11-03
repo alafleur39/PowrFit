@@ -42,7 +42,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
   return (
     <div className="mx-4 mt-4 sm:mx-6">
       {saved ? (
-        <p role="status" className="text-sm text-success">
+        <p role="status" className="text-footnote text-success">
           Saved to{" "}
           <Link href="/workouts" className="font-semibold underline underline-offset-2">
             My routines
@@ -60,7 +60,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
         </Button>
       )}
       {failed && (
-        <p role="alert" className="mt-2 text-sm text-danger">
+        <p role="alert" className="mt-2 text-footnote text-danger">
           Couldn&apos;t save the routine. Try again.
         </p>
       )}
@@ -70,21 +70,21 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
         title="Save as routine"
         onClose={() => setOpen(false)}
         footer={
-          <Button className="h-12 w-full text-base font-bold" disabled={name.trim() === ""} onClick={save}>
+          <Button className="h-12 w-full text-body font-bold" disabled={name.trim() === ""} onClick={save}>
             Save routine
           </Button>
         }
       >
         <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">Routine name</span>
+          <span className="text-footnote font-medium">Routine name</span>
           <input
             value={name}
             maxLength={ROUTINE_LIMITS.name}
             onChange={(event) => setName(event.target.value)}
-            className="h-11 w-full rounded-lg border border-input bg-background px-3 text-base text-foreground focus-visible:border-ring focus-visible:outline-none"
+            className="h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none"
           />
         </label>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-footnote text-muted-foreground">
           Uses this workout&apos;s exercises, in order, with one target set per finished set.
         </p>
       </Dialog>

@@ -24,11 +24,11 @@ export function Explore() {
   return (
     <div className="flex flex-col gap-3 px-4 py-4 sm:px-6">
       <ExerciseSearchControls search={search} />
-      <p className="text-xs text-muted-foreground" aria-live="polite">
+      <p className="text-caption text-muted-foreground" aria-live="polite">
         {search.results.length} {search.results.length === 1 ? "exercise" : "exercises"}
       </p>
       {search.results.length === 0 ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">No exercises match.</p>
+        <p className="py-10 text-center text-footnote text-muted-foreground">No exercises match.</p>
       ) : (
         <ul className="flex flex-col" aria-label="Exercises">
           {search.results.map((exercise) => (
@@ -36,11 +36,11 @@ export function Explore() {
               <button
                 type="button"
                 onClick={() => setOpenId(exercise.id)}
-                className="flex min-h-14 w-full items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-surface"
+                className="flex min-h-14 w-full items-center gap-3 rounded-input px-2 py-2 text-left hover:bg-surface"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium text-foreground">{exercise.name}</span>
-                  <span className="block text-sm text-muted-foreground">
+                  <span className="block text-footnote text-muted-foreground">
                     {exercise.cardio ? "Cardio" : catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
                   </span>
                 </span>
@@ -78,31 +78,31 @@ function ExerciseDetail({ exercise, onBack }: { exercise: Exercise; onBack: () =
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex h-11 items-center gap-2 px-4 text-sm font-medium text-muted-foreground hover:text-foreground sm:px-6"
+        className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
         <ArrowLeft className="size-4" aria-hidden />
         All exercises
       </button>
       <div className="flex flex-col gap-4 px-4 sm:px-6">
-        <h2 className="text-2xl font-bold">{exercise.name}</h2>
+        <h2 className="text-title2 font-bold">{exercise.name}</h2>
 
         <dl className="grid grid-cols-2 gap-3">
           {facts.map(([label, value]) => (
-            <div key={label} className="rounded-xl border border-border bg-surface p-3">
-              <dt className="text-xs text-muted-foreground">{label}</dt>
-              <dd className="mt-1 text-sm font-semibold">{value}</dd>
+            <div key={label} className="rounded-tile border border-border bg-surface p-3">
+              <dt className="text-caption text-muted-foreground">{label}</dt>
+              <dd className="mt-1 text-footnote font-semibold">{value}</dd>
             </div>
           ))}
         </dl>
 
         <section aria-labelledby="your-numbers" className="flex flex-col gap-3">
-          <h3 id="your-numbers" className="text-lg font-bold">
+          <h3 id="your-numbers" className="text-headline font-bold">
             Your numbers
           </h3>
           {loading ? (
-            <p className="text-sm text-muted-foreground">Loading your history…</p>
+            <p className="text-footnote text-muted-foreground">Loading your history…</p>
           ) : !best || !last ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-footnote text-muted-foreground">
               You haven&apos;t logged {exercise.name} yet. Your best set and trend will show here.
             </p>
           ) : (
@@ -113,9 +113,9 @@ function ExerciseDetail({ exercise, onBack }: { exercise: Exercise; onBack: () =
                   ["Workouts", String(points.length)],
                   ["Last", formatDate(last.endedAt)],
                 ].map(([label, value]) => (
-                  <div key={label} className="rounded-xl border border-border bg-surface p-3">
-                    <dt className="text-xs text-muted-foreground">{label}</dt>
-                    <dd className="mt-1 truncate font-mono text-base font-bold tabular-nums text-accent">
+                  <div key={label} className="rounded-tile border border-border bg-surface p-3">
+                    <dt className="text-caption text-muted-foreground">{label}</dt>
+                    <dd className="mt-1 truncate text-body font-bold tabular-nums text-accent">
                       {value}
                     </dd>
                   </div>

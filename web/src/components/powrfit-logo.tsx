@@ -26,13 +26,13 @@ function LightningMark(props: SVGProps<SVGSVGElement>) {
       />
       <path
         d="M28.8 3.8 8.6 27.3c-1.3 1.5-.2 3.8 1.8 3.8h10.8l-2.4 13.2c-.4 2.2 2.4 3.5 3.8 1.8l19.9-24.6c1.2-1.5.1-3.7-1.8-3.7H30.3l2.1-12.1c.4-2.2-2.2-3.6-3.6-1.9Z"
-        className="stroke-black/[0.30]"
+        className="stroke-accent-foreground/30"
         strokeWidth="2"
         strokeLinejoin="round"
       />
       <path
         d="M27 8.8 13.7 24.4h12.2l-2 10.7 10.5-13H23.1L27 8.8Z"
-        className="fill-white/[0.28]"
+        className="fill-foreground/30"
       />
     </svg>
   );
@@ -56,8 +56,8 @@ export function PowrFitLogo({
     >
       <span
         className={cn(
-          "brand-glow flex size-11 shrink-0 items-center justify-center rounded-xl border border-primary/35 bg-primary text-primary-foreground shadow-[0_0_32px_rgba(217,255,45,0.28)]",
-          compact && "size-9 rounded-lg",
+          "flex size-11 shrink-0 items-center justify-center rounded-tile bg-primary text-primary-foreground",
+          compact && "size-9 rounded-input",
           iconOnly && "size-10",
           markClassName
         )}
@@ -68,14 +68,14 @@ export function PowrFitLogo({
         <span className="min-w-0">
           <span
             className={cn(
-              "block font-black uppercase leading-none tracking-normal text-white",
-              compact ? "text-base" : "text-xl"
+              "block font-black uppercase leading-none tracking-normal text-foreground",
+              compact ? "text-body" : "text-title3"
             )}
           >
             Powr<span className="text-primary">Fit</span>
           </span>
           {!compact && (
-            <span className="mt-1 block text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <span className="mt-1 block text-caption font-semibold uppercase tracking-widest text-muted-foreground">
               Charge training
             </span>
           )}

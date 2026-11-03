@@ -41,9 +41,9 @@ export function Sidebar({
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex h-12 items-center gap-3 rounded-xl px-3 text-base font-semibold transition-colors",
+                "flex h-12 items-center gap-3 rounded-tile px-3 text-body font-semibold transition-colors",
                 active
-                  ? "bg-surface-active text-accent"
+                  ? "bg-accent-muted text-accent"
                   : "text-foreground hover:bg-surface"
               )}
             >
@@ -57,7 +57,7 @@ export function Sidebar({
       <button
         type="button"
         onClick={onLogWorkout}
-        className="brand-glow mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-base font-bold text-background transition-transform hover:scale-[1.02] active:scale-95"
+        className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent text-body font-bold text-background transition-transform hover:scale-[1.02] active:scale-95"
       >
         <Plus className="size-5" aria-hidden />
         Log workout
@@ -70,10 +70,10 @@ export function Sidebar({
       >
         <ProfileAvatar />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold text-foreground">
+          <span className="block truncate text-footnote font-semibold text-foreground">
             {accountName}
           </span>
-          <span className="block truncate text-xs text-muted-foreground">
+          <span className="block truncate text-caption text-muted-foreground">
             {accountEmail}
           </span>
         </span>
