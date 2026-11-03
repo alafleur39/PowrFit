@@ -179,7 +179,7 @@ test("regular lifter (5 weeks of history)", async ({ page }) => {
   await page.goto("/progress");
   await page.waitForTimeout(800);
   await shot(page, "progress-week");
-  await page.getByRole("tab", { name: "Month" }).click();
+  await page.getByRole("radio", { name: "Month" }).click();
   await shot(page, "progress-month");
   await shotBottom(page, "progress-month-bottom");
 

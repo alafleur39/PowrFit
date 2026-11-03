@@ -78,12 +78,12 @@ function StartOrResume() {
   // Why this one (UI playbook Phase 4): what came before it in the rotation.
   const reason =
     lastIndex >= 0 && lastRoutine && "log" in lastRoutine
-      ? `You did ${PRESET_ROUTINES[lastIndex].name} on ${formatDate(lastRoutine.log.endedAt)}. Next in the ${rotation} rotation.`
-      : `First of the ${rotation} rotation.`;
+      ? `After ${PRESET_ROUTINES[lastIndex].name} on ${formatDate(lastRoutine.log.endedAt)} (${rotation}).`
+      : `First of ${rotation}.`;
 
   return (
     <div className="rounded-card border border-border bg-surface p-4">
-      <p className="text-caption font-semibold tracking-wide text-muted-foreground uppercase">
+      <p className="text-footnote font-semibold text-muted-foreground">
         {isFirst ? "Start your first workout" : "Up next"}
       </p>
       <p className="mt-1 text-headline font-bold">{next.name}</p>
@@ -159,7 +159,7 @@ function WeekChips() {
         </p>
         <p className="mt-1 text-footnote text-muted-foreground">
           {logs.length === 0
-            ? "Workouts, sets and volume for the week (from Monday) show up here."
+            ? "This week's workouts, sets and volume show up here. Weeks start on Monday."
             : `Last week: ${plural(lastWeek, "workout")}.${
                 streak > 0 ? ` One this week keeps your ${streak}-week streak going.` : ""
               }`}
@@ -186,7 +186,7 @@ function GymsCard() {
       <MapPin className="size-6 shrink-0 text-muted-foreground" aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">Gyms near you</span>
-        <span className="block text-footnote text-muted-foreground">Compare monthly prices nearby</span>
+        <span className="block text-footnote text-muted-foreground">Compare monthly prices</span>
       </span>
       <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
     </Link>

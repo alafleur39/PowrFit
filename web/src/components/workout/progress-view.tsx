@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+import { ChartContainer } from "@/components/ui/chart-container";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Tabs } from "@/components/ui/tabs";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import type { WeightUnit, WorkoutLog } from "@/lib/strength";
-import { formatCardioMinutes, formatWeight } from "@/lib/workout/format";
+import { formatCardioMinutes, formatWeight, formatWeightAmount } from "@/lib/workout/format";
 import {
   exerciseTrend,
   trendExercises,
@@ -42,20 +43,20 @@ export function ProgressView() {
   // The calendar period is fixed when the page opens.
   const [now] = useState(() => new Date());
 
+  const [rangeId, setRangeId] = useState<ProgressRange>("week");
+  const range = RANGES.find((option) => option.id === rangeId) ?? RANGES[0];
+
   return (
     <div className="pb-10">
-      <Tabs
+      {/* A filter on one view, so a segmented control, not tabs (UI playbook Phase 4). */}
+      <SegmentedControl
         ariaLabel="Progress range"
-        tabs={RANGES.map((range) => ({
-          id: range.id,
-          label: range.label,
-          content: loading ? (
-            <Loading />
-          ) : (
-            <VolumePanel logs={logs} range={range} unit={unit} now={now} />
-          ),
-        }))}
+        segments={RANGES.map((option) => ({ value: option.id, label: option.label }))}
+        value={rangeId}
+        onChange={setRangeId}
+        className="mx-4 sm:mx-6"
       />
+      {loading ? <Loading /> : <VolumePanel logs={logs} range={range} unit={unit} now={now} />}
       {!loading && <TrendPanel logs={logs} unit={unit} />}
     </div>
   );
@@ -91,7 +92,7 @@ function VolumePanel({
       <dl className="mb-4 flex gap-6">
         <div>
           <dt className="text-caption text-muted-foreground">Volume</dt>
-          <dd className="text-title3 font-bold tabular-nums text-accent">
+          <dd className="text-title3 font-bold tabular-nums">
             {formatWeight(volume, unit)}
           </dd>
         </div>
@@ -124,9 +125,11 @@ function TrendPanel({ logs, unit }: { logs: WorkoutLog[]; unit: WeightUnit }) {
   return (
     <section aria-labelledby="trend-heading" className="mt-2 border-t border-border px-4 py-5 sm:px-6">
       <h2 id="trend-heading" className="text-headline font-bold">
-        Exercise trend
+        Exercise trend <span className="font-normal text-muted-foreground">· all time</span>
       </h2>
-      <p className="mt-1 text-footnote text-muted-foreground">Heaviest finished set in each workout.</p>
+      <p className="mt-1 text-footnote text-muted-foreground">
+        Heaviest finished set in each workout, across all your history (not just the range above).
+      </p>
       {!current ? (
         <p className="mt-4 text-footnote text-muted-foreground">
           Finish a workout to see how your lifts change over time.
@@ -151,14 +154,24 @@ function TrendPanel({ logs, unit }: { logs: WorkoutLog[]; unit: WeightUnit }) {
               ))}
             </select>
           </div>
-          <div className="mt-4">
-            <TrendChart points={points} unit={unit} exerciseName={current.exerciseName} />
-          </div>
-          {points.length === 1 && (
-            <p className="mt-2 text-center text-footnote text-muted-foreground">
-              Log {current.exerciseName} again to see a trend.
-            </p>
-          )}
+          <ChartContainer
+            className="mt-4"
+            title={`${current.exerciseName}, top set`}
+            unit={unit}
+            count={points.length}
+            emptyText="Finish a workout with this lift to see its trend."
+            singleText={`Log ${current.exerciseName} once more to see a trend.`}
+            single={
+              points[0] && (
+                <p className="text-title2 font-bold tabular-nums">
+                  {formatWeightAmount(points[0].weight, unit)}{" "}
+                  <span className="text-footnote font-semibold text-muted-foreground">{unit}</span>
+                </p>
+              )
+            }
+          >
+            <TrendChart key={current.exerciseId} points={points} unit={unit} exerciseName={current.exerciseName} />
+          </ChartContainer>
         </>
       )}
     </section>

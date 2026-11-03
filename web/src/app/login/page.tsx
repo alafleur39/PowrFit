@@ -138,9 +138,9 @@ export default function LoginPage() {
       >
         <CardHeader className="items-center text-center">
           <PowrFitLogo className="mx-auto mb-2 h-9" />
-          <CardTitle className="text-title2 text-foreground">Sign into PowrFit</CardTitle>
+          <CardTitle className="text-title2 text-foreground">Sign in or create an account</CardTitle>
           <CardDescription>
-            This is where fitness journeys start.
+            Log your sets, see your progress and find cheap gyms near you.
           </CardDescription>
         </CardHeader>
         <CardContent>

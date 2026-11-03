@@ -4,7 +4,7 @@ import { ScreenHeader } from "@/components/ui/screen-header";
 export default function GymsPage() {
   return (
     <div>
-      <ScreenHeader title="Gyms near you" subtitle="Cheapest monthly price first." />
+      <ScreenHeader title="Gyms near you" />
       <GymsView />
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import type { WeightUnit } from "@/lib/strength";
 import { formatDate, formatWeight } from "@/lib/workout/format";
 import type { TrendPoint, VolumeBucket } from "@/lib/workout/progress";
@@ -118,7 +120,8 @@ export function TrendChart({
   unit: WeightUnit;
   exerciseName: string;
 }) {
-  const left = 44;
+  const [selected, setSelected] = useState(points.length - 1);
+  const left = 56;
   const right = WIDTH - 8;
   const top = 12;
   const bottom = 150;
@@ -139,9 +142,15 @@ export function TrendChart({
   }));
   const latest = points[points.length - 1];
   const change = latest.weight - points[0].weight;
+  const shown = points[selected] ?? latest;
 
   return (
     <figure className="mx-auto w-full max-w-lg">
+      {/* Tap a point to read it (UI playbook Phase 4); the latest shows first. */}
+      <p aria-live="polite" className="mb-1 text-footnote text-muted-foreground">
+        {formatDate(shown.endedAt)} ·{" "}
+        <span className="font-semibold tabular-nums text-foreground">{formatWeight(shown.weight, unit)}</span>
+      </p>
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         role="img"
@@ -157,10 +166,10 @@ export function TrendChart({
         <line x1={left} x2={right} y1={top} y2={top} className="stroke-border" strokeWidth={1} strokeDasharray="3 3" />
         <line x1={left} x2={right} y1={bottom} y2={bottom} className="stroke-border" strokeWidth={1} />
         <text x={left - 6} y={top + 4} textAnchor="end" className="fill-muted-foreground text-caption">
-          {compact.format(high)}
+          {compact.format(high)} {unit}
         </text>
         <text x={left - 6} y={bottom + 4} textAnchor="end" className="fill-muted-foreground text-caption">
-          {compact.format(low)}
+          {compact.format(low)} {unit}
         </text>
         <text x={left} y={bottom + 18} className="fill-muted-foreground text-caption">
           {formatDate(points[0].endedAt)}
@@ -181,7 +190,16 @@ export function TrendChart({
           />
         )}
         {xy.map(({ x, y }, i) => (
-          <circle key={points[i].logId} cx={x} cy={y} r={3} className="fill-accent" />
+          <g key={points[i].logId} onClick={() => setSelected(i)} className="cursor-pointer">
+            {/* A 44pt-ish invisible target around each small dot. */}
+            <circle cx={x} cy={y} r={14} className="fill-transparent" />
+            <circle
+              cx={x}
+              cy={y}
+              r={i === (points[selected] ? selected : points.length - 1) ? 5 : 3}
+              className={i === (points[selected] ? selected : points.length - 1) ? "fill-foreground" : "fill-accent"}
+            />
+          </g>
         ))}
       </svg>
       <table className="sr-only">

@@ -13,6 +13,7 @@ import {
   AVATAR_COLORS,
   AVATAR_SWATCH,
   DISPLAY_NAME_MAX,
+  defaultProfile,
   profileProblems,
   type AvatarColor,
 } from "@/lib/profile";
@@ -52,6 +53,9 @@ export function ProfileCard() {
       ["Week streak", String(streak)],
     ];
   }, [logs, records, unit, now]);
+
+  // Still the name made from the email (D41): nudge for a real one.
+  const namedFromEmail = profile.displayName === defaultProfile(user?.email, "").displayName;
 
   const startEditing = () => {
     setName(profile.displayName);
@@ -139,14 +143,37 @@ export function ProfileCard() {
         </div>
       )}
 
-      <StatGrid label="Lifetime" columns={4}>
-        {stats.map(([label, value]) => (
-          <StatTile key={label} label={label} value={value} />
-        ))}
-      </StatGrid>
+      {!editing && namedFromEmail && (
+        <div className="flex items-center justify-between gap-3 rounded-card border border-border bg-surface p-4">
+          <p className="min-w-0 text-footnote text-muted-foreground">
+            <span className="block text-body font-semibold text-foreground">What should we call you?</span>
+            Your name shows on your profile instead of your email.
+          </p>
+          <Button variant="secondary" onClick={startEditing}>
+            Add name
+          </Button>
+        </div>
+      )}
 
-      <section aria-labelledby="profile-unit" className="flex items-center justify-between gap-3">
-        <h2 id="profile-unit" className="text-footnote font-bold">
+      <section aria-labelledby="profile-all-time" className="flex flex-col gap-2">
+        <h2 id="profile-all-time" className="px-1 text-footnote font-semibold text-muted-foreground">
+          All time
+        </h2>
+        <StatGrid label="Lifetime" columns={4}>
+          {stats.map(([label, value]) => (
+            <StatTile key={label} label={label} value={value} />
+          ))}
+        </StatGrid>
+        <p className="px-1 text-caption text-muted-foreground">
+          A PR is a set heavier than any earlier workout&apos;s best on that lift.
+        </p>
+      </section>
+
+      <section
+        aria-labelledby="profile-unit"
+        className="flex items-center justify-between gap-3 rounded-card border border-border bg-surface px-4 py-2"
+      >
+        <h2 id="profile-unit" className="text-body font-semibold">
           Weight unit
         </h2>
         <SegmentedControl

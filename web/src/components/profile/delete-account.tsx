@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import { ListRow } from "@/components/ui/list-row";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { Sheet } from "@/components/ui/sheet";
 import { deleteAccount } from "@/lib/account";
@@ -59,9 +61,13 @@ export function DeleteAccount() {
 
   return (
     <>
-      <Button variant="destructive" size="lg" block className="sm:w-auto" onClick={() => setOpen(true)}>
-        Delete account
-      </Button>
+      <ListRow
+        variant="destructive"
+        icon={<Trash2 />}
+        title="Delete account"
+        description="Removes your workouts, routines, settings and login for good."
+        onClick={() => setOpen(true)}
+      />
 
       <Sheet
         open={open}

@@ -55,7 +55,7 @@ test("Progress charts volume per range and an exercise's top set", async ({ page
     ["Month", "Volume this month"],
     ["Year", "Volume this year"],
   ]) {
-    await page.getByRole("tab", { name: tab }).click();
+    await page.getByRole("radio", { name: tab }).click();
     await expect(
       page.getByRole("region", { name: region }).getByRole("definition").filter({ hasText: "1,610 lb" })
     ).toBeVisible();
@@ -69,6 +69,9 @@ test("Progress charts volume per range and an exercise's top set", async ({ page
   ).toBeVisible();
 
   await exercise.selectOption({ label: "Incline dumbbell press" });
-  await expect(page.getByText("Log Incline dumbbell press again to see a trend.")).toBeVisible();
+  // One point: no line to draw, so the value and what's needed (UI playbook Phase 4).
+  const trend = page.getByRole("region", { name: "Incline dumbbell press, top set" });
+  await expect(trend.getByText("Log Incline dumbbell press once more to see a trend.")).toBeVisible();
+  await expect(trend.getByText("50 lb")).toBeVisible();
   await expectNoSidewaysScroll(page, "Progress trend");
 });

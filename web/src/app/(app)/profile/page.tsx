@@ -14,8 +14,8 @@ const FEEDBACK_URL = process.env.NEXT_PUBLIC_FEEDBACK_URL?.startsWith("https://"
   ? process.env.NEXT_PUBLIC_FEEDBACK_URL
   : undefined;
 
-// Profile (P5-05, P6-13): who you are and your lifetime numbers, then
-// feedback, privacy and deleting the account.
+// Profile (P5-05, P6-13; UI playbook Phase 4): who you are, your all-time
+// numbers and settings, then Help and Account sections like iOS Settings.
 export default function ProfilePage() {
   const signOut = useSignOut();
   return (
@@ -23,8 +23,7 @@ export default function ProfilePage() {
       <ScreenHeader title="Profile" />
       <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 sm:px-6">
         <ProfileCard />
-        <div className="mt-3" />
-        <ListGroup>
+        <ListGroup title="Help" className="mt-3">
           {FEEDBACK_URL && (
             <ListRow
               href={FEEDBACK_URL}
@@ -35,18 +34,13 @@ export default function ProfilePage() {
             />
           )}
           <ListRow href="/privacy" icon={<Shield />} title="Privacy" description="What PowrFit stores and why." />
-          <ListRow icon={<LogOut />} title="Sign out" onClick={signOut} />
         </ListGroup>
 
-        <section aria-labelledby="danger-zone" className="mt-6 flex flex-col gap-2">
-          <h2 id="danger-zone" className="text-footnote font-bold">
-            Delete account
-          </h2>
-          <p className="text-footnote text-muted-foreground">
-            Removes your workouts, routines, settings and login for good.
-          </p>
+        {/* Account deletion stays one tap from Profile (App Store rule), and confirms. */}
+        <ListGroup title="Account">
+          <ListRow icon={<LogOut />} title="Sign out" onClick={signOut} />
           <DeleteAccount />
-        </section>
+        </ListGroup>
       </div>
     </div>
   );

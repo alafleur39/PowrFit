@@ -60,6 +60,8 @@ test("finds gyms, cheapest first, with a budget and price reports", async ({ pag
   // Near me sends a six-letter cell, never the position.
   const request = page.waitForRequest((req) => req.url().includes("/api/gyms"));
   await page.getByRole("button", { name: "Near me" }).click();
+  // The first time, PowrFit says why before the system location prompt.
+  await page.getByRole("dialog", { name: "Find gyms near you" }).getByRole("button", { name: "Continue" }).click();
   const url = new URL((await request).url());
   expect([...url.searchParams.keys()]).toEqual(["cell"]);
   expect(url.searchParams.get("cell")).toMatch(/^[0-9b-hjkmnp-z]{6}$/);

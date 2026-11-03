@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { Loader2, LocateFixed, MapPin, Navigation, Search } from "lucide-react";
+import { ArrowDownWideNarrow, Loader2, LocateFixed, Map as MapIcon, MapPin, Navigation, Search, Users } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
@@ -10,6 +10,7 @@ import { loadGymPrices } from "@/lib/gyms/gym-repo";
 import type { GymPrices } from "@/lib/gyms/gyms";
 import { formatDistance, formatMonthly, rankGyms, type GymSort, type RankedGym } from "@/lib/gyms/rank";
 import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { AddPrice } from "./add-price";
 
@@ -24,6 +25,8 @@ type Found = GymSearchResult & {
 // back to the screen shows it again without asking for location. Never
 // written to storage, so no position is left on the device.
 let lastFound: Found | null = null;
+
+const LOCATION_EXPLAINED = "powrfit:location-explained";
 
 const BUDGETS = [25, 50, 75, 100] as const;
 
@@ -91,6 +94,14 @@ export function GymsView() {
     }
   };
 
+  // Say why before iOS asks (UI playbook Phase 4): the first Near me opens a
+  // sheet, and only Continue triggers the system location prompt.
+  const [explainOpen, setExplainOpen] = useState(false);
+  const nearMe = () => {
+    if (localStorage.getItem(LOCATION_EXPLAINED) === "1") return void run("near");
+    setExplainOpen(true);
+  };
+
   const ranked = useMemo(
     () => (found ? rankGyms(found.gyms, found.prices, found.origin, { sort, maxMonthly: budget }) : []),
     [found, sort, budget]
@@ -101,7 +112,7 @@ export function GymsView() {
   return (
     <div className="flex flex-col gap-4 px-4 pb-6 sm:px-6">
       <section aria-label="Find gyms" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
-        <Button size="lg" block loading={busy === "near"} disabled={busy !== null} onClick={() => void run("near")}>
+        <Button size="lg" block loading={busy === "near"} disabled={busy !== null} onClick={nearMe}>
           {busy !== "near" && <LocateFixed aria-hidden />}
           Near me
         </Button>
@@ -150,6 +161,55 @@ export function GymsView() {
         )}
       </section>
 
+      {!found && !busy && (
+        <section aria-label="How gym prices work" className="rounded-card border border-border bg-surface p-4">
+          <h2 className="text-body font-semibold">How it works</h2>
+          <ul className="mt-2 flex flex-col gap-2 text-footnote text-muted-foreground">
+            <li className="flex gap-2">
+              <ArrowDownWideNarrow className="mt-0.5 size-4 shrink-0" aria-hidden />
+              Gyms within 5 km, cheapest monthly price first. Gyms without a price come after.
+            </li>
+            <li className="flex gap-2">
+              <Users className="mt-0.5 size-4 shrink-0" aria-hidden />
+              Prices come from PowrFit members. Know one? Add it from a gym&apos;s card.
+            </li>
+            <li className="flex gap-2">
+              <MapIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
+              Gym names and places come from OpenStreetMap.
+            </li>
+          </ul>
+        </section>
+      )}
+
+      <Sheet
+        open={explainOpen}
+        title="Find gyms near you"
+        onClose={() => setExplainOpen(false)}
+        footer={
+          <div className="flex flex-col gap-2">
+            <Button
+              size="lg"
+              onClick={() => {
+                localStorage.setItem(LOCATION_EXPLAINED, "1");
+                setExplainOpen(false);
+                void run("near");
+              }}
+            >
+              Continue
+            </Button>
+            <Button variant="ghost" size="lg" onClick={() => setExplainOpen(false)}>
+              Not now
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-footnote text-muted-foreground">
+          Next, your phone asks to share your location. PowrFit uses it once, rounds it to an area about 1 km
+          wide, and sends only that to find gyms. It&apos;s never stored. You can search by city or zip code
+          instead.
+        </p>
+      </Sheet>
+
       {found && (
         <section aria-labelledby={resultsId} className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -165,8 +225,8 @@ export function GymsView() {
                     aria-pressed={sort === option}
                     onClick={() => setSort(option)}
                     className={cn(
-                      "h-10 rounded-full px-3 text-footnote font-medium",
-                      sort === option ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                      "h-11 rounded-full px-3 text-footnote font-semibold",
+                      sort === option ? "bg-surface-raised text-foreground" : "text-muted-foreground"
                     )}
                   >
                     {option === "price" ? "Cheapest" : "Nearest"}

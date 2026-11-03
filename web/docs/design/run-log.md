@@ -9,7 +9,9 @@ only when asked.
 | 0 Recon | 55e1571 | audit.md, screenshot loop, design rules, design-critic agent |
 | 1 Tokens | c51e51c | pushed and deployed Nov 3 |
 | 2 Components | c130edb | components/ui/*, /dev/components |
-| 3 App shell | (this commit) | wordmark, large-title header, no "+", tab re-tap, new icon |
+| 3 App shell | a5af8a5 | wordmark, large-title header, no "+", tab re-tap, new icon |
+| 4 Screens (logger, Home) | 22252d2 | critic blocking issues fixed |
+| 4 Screens (Workouts, Progress, Profile, Gyms, sign-in) | (this commit) | critic run; see below |
 
 ## Pending decisions (temporary defaults, easy to undo)
 
@@ -38,3 +40,27 @@ only when asked.
 ## Logic issues (not touched)
 
 See `audit.md` → "Logic issues" (L1–L3).
+
+## Phase 4 critic follow-ups (second review)
+
+The second review saw a mix of old and new screenshots: the capture script
+still clicked the old Progress "Month" tab and stopped partway, so some
+images were from before the changes. Its one real blocking issue was fixed:
+the exercise trend now says "all time", so it no longer looks like it
+follows Week/Month/Year. Also fixed: shorter "Up next" reason,
+sentence-case eyebrows, the Gyms subtitle, and some wording.
+
+Still open (should-fix and nits):
+- Workouts sections use underline tabs. The critic wants a segmented
+  control. They swipe, so I kept them.
+- Progress Month chart shows future weeks.
+- Profile's yellow avatar default.
+- "Saved" badge on every History card.
+- Explore list inset and chips have no "All" or selected state.
+- Login card width and no show/hide toggle on the password field.
+
+Stopped Nov 3 around 3:40 AM because the Mac was heavily loaded (load
+average 8, a screenshot run took 19 minutes instead of 35 seconds). The
+last copy tweaks passed typecheck, lint and unit tests, but the browser
+tests weren't rerun for them. Next session: a fresh `SHOTS_PHASE=phase4`
+capture, a quick critic pass, then Phases 5–7.

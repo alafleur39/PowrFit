@@ -107,14 +107,17 @@ test("screens reopen without a loading state", async ({ page }) => {
   await expect(page.getByText("Loading your routines…")).toHaveCount(0);
 });
 
-test("Progress tabs swipe between week, month and year", async ({ page }) => {
-  await signUp(page, testEmail("swipe-progress"));
+test("Progress picks week, month or year with a segmented control", async ({ page }) => {
+  await signUp(page, testEmail("range-progress"));
   await page.goto("/progress");
-  await expectSelected(page, "Week");
-  await swipe(page, 1);
-  await expectSelected(page, "Month");
+  const range = (name: string) => page.getByRole("radio", { name, exact: true });
+  await expect(range("Week")).toHaveAttribute("aria-checked", "true");
+  await range("Month").click();
+  await expect(range("Month")).toHaveAttribute("aria-checked", "true");
   await expect(page.getByText("No workouts this month")).toBeVisible();
-  await swipe(page, 1);
-  await expectSelected(page, "Year");
-  await expectNoSidewaysScroll(page, "Progress after swiping");
+  // Arrow keys move along, like a native radio group.
+  await range("Month").press("ArrowRight");
+  await expect(range("Year")).toHaveAttribute("aria-checked", "true");
+  await expect(range("Year")).toBeFocused();
+  await expectNoSidewaysScroll(page, "Progress range");
 });

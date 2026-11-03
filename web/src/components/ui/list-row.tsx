@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -20,16 +20,22 @@ type DestructiveRow = Common & { variant: "destructive"; onClick: () => void };
 const rowClass =
   "flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-raised focus-visible:bg-surface-raised focus-visible:outline-none";
 
-function Text({ title, description, tone }: { title: string; description?: string; tone?: "danger" }) {
+function Text({ ids, title, description, tone }: { ids: Ids; title: string; description?: string; tone?: "danger" }) {
   return (
     <span className="min-w-0 flex-1">
-      <span className={cn("block text-body font-semibold", tone === "danger" ? "text-danger" : "text-foreground")}>
+      <span id={ids.title} className={cn("block text-body font-semibold", tone === "danger" ? "text-danger" : "text-foreground")}>
         {title}
       </span>
-      {description && <span className="mt-0.5 block text-footnote text-muted-foreground">{description}</span>}
+      {description && (
+        <span id={ids.description} className="mt-0.5 block text-footnote text-muted-foreground">
+          {description}
+        </span>
+      )}
     </span>
   );
 }
+
+type Ids = { title: string; description: string };
 
 function Icon({ icon, tone }: { icon?: ReactNode; tone?: "danger" }) {
   if (!icon) return null;
@@ -48,6 +54,10 @@ function Icon({ icon, tone }: { icon?: ReactNode; tone?: "danger" }) {
 // must still confirm).
 export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
   const { title, description, icon, className } = props;
+  const id = useId();
+  const ids = { title: `${id}-title`, description: `${id}-description` };
+  // The row's name is its title; the description is read after it, as a hint.
+  const a11y = { "aria-labelledby": ids.title, "aria-describedby": description ? ids.description : undefined };
 
   if (props.variant === "toggle") {
     return (
@@ -55,11 +65,12 @@ export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
         type="button"
         role="switch"
         aria-checked={props.checked}
+        {...a11y}
         onClick={() => props.onCheckedChange(!props.checked)}
         className={cn(rowClass, className)}
       >
         <Icon icon={icon} />
-        <Text title={title} description={description} />
+        <Text ids={ids} title={title} description={description} />
         <span
           aria-hidden
           className={cn(
@@ -80,9 +91,9 @@ export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
 
   if (props.variant === "destructive") {
     return (
-      <button type="button" onClick={props.onClick} className={cn(rowClass, className)}>
+      <button type="button" onClick={props.onClick} className={cn(rowClass, className)} {...a11y}>
         <Icon icon={icon} tone="danger" />
-        <Text title={title} description={description} tone="danger" />
+        <Text ids={ids} title={title} description={description} tone="danger" />
       </button>
     );
   }
@@ -90,23 +101,23 @@ export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
   const content = (
     <>
       <Icon icon={icon} />
-      <Text title={title} description={description} />
+      <Text ids={ids} title={title} description={description} />
       {props.href && <ChevronRight className="size-5 shrink-0 text-tertiary-foreground" aria-hidden />}
     </>
   );
   if (props.href) {
     return props.external ? (
-      <a href={props.href} target="_blank" rel="noopener noreferrer" className={cn(rowClass, className)}>
+      <a href={props.href} target="_blank" rel="noopener noreferrer" className={cn(rowClass, className)} {...a11y}>
         {content}
       </a>
     ) : (
-      <Link href={props.href} className={cn(rowClass, className)}>
+      <Link href={props.href} className={cn(rowClass, className)} {...a11y}>
         {content}
       </Link>
     );
   }
   return (
-    <button type="button" onClick={props.onClick} className={cn(rowClass, className)}>
+    <button type="button" onClick={props.onClick} className={cn(rowClass, className)} {...a11y}>
       {content}
     </button>
   );

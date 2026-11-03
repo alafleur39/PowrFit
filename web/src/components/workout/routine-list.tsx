@@ -7,6 +7,7 @@ import { Copy, Pencil, Plus } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PRESET_ROUTINES, copyRoutine, type Routine } from "@/lib/strength";
 import { saveRoutine } from "@/lib/workout/routine-repo";
 import { NEW_ROUTINE_HREF, routineHref } from "@/lib/routes";
@@ -27,19 +28,15 @@ function RoutineCard({
 }) {
   return (
     <li className="rounded-card border border-border bg-surface p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-headline font-bold">{routine.name}</h3>
-          {routine.notes && (
-            <p className="line-clamp-2 text-footnote text-muted-foreground">{routine.notes}</p>
-          )}
-        </div>
+      <h3 className="truncate text-headline font-bold">{routine.name}</h3>
+      {routine.notes && <p className="line-clamp-2 text-footnote text-muted-foreground">{routine.notes}</p>}
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <p className="min-w-0 text-footnote text-muted-foreground">
+          {plural(routine.exercises.length, "exercise")} · {plural(setCount(routine), "set")}
+          {pending && " · Not synced yet"}
+        </p>
         <div className="flex shrink-0 items-center gap-2">{actions}</div>
       </div>
-      <p className="mt-2 text-footnote text-muted-foreground">
-        {plural(routine.exercises.length, "exercise")} · {plural(setCount(routine), "set")}
-        {pending && " · Not synced yet"}
-      </p>
     </li>
   );
 }
@@ -100,13 +97,12 @@ export function RoutineList() {
           <h2 id="my-routines" className="text-body font-bold">
             My routines
           </h2>
-          <Link
-            href={NEW_ROUTINE_HREF}
-            className="flex h-11 items-center gap-1.5 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface"
-          >
-            <Plus className="size-4" aria-hidden />
-            New routine
-          </Link>
+          <Button asChild variant="secondary">
+            <Link href={NEW_ROUTINE_HREF}>
+              <Plus aria-hidden />
+              New routine
+            </Link>
+          </Button>
         </div>
         {copyError && (
           <p role="alert" className="text-footnote text-danger">
@@ -118,11 +114,14 @@ export function RoutineList() {
             Couldn&apos;t load your routines. Check your connection.
           </p>
         ) : routines.length === 0 ? (
-          <p className="rounded-card border border-dashed border-border bg-surface p-5 text-center text-footnote text-muted-foreground">
-            {loading
-              ? "Loading your routines…"
-              : "No routines yet. Create one, copy a preset below, or save a finished workout as a routine."}
-          </p>
+          loading ? (
+            <Skeleton className="h-24" />
+          ) : (
+            <p className="rounded-card border border-border bg-surface p-4 text-footnote text-muted-foreground">
+              No routines yet. Start with New routine, copy a preset below, or save a finished workout as a
+              routine.
+            </p>
+          )
         ) : (
           <ul className="flex flex-col gap-3">
             {routines.map(({ routine, status }) => (
@@ -159,14 +158,16 @@ export function RoutineList() {
               routine={routine}
               actions={
                 <>
-                  <button
-                    type="button"
+                  {/* Copies into My routines and opens it to edit. */}
+                  <Button
+                    variant="ghost"
                     aria-label={`Copy ${routine.name} to my routines`}
                     onClick={() => copy(routine)}
-                    className={iconButton}
+                    className="px-3 text-muted-foreground"
                   >
-                    <Copy className="size-4" aria-hidden />
-                  </button>
+                    <Copy aria-hidden />
+                    Copy
+                  </Button>
                   <StartButton routine={routine} disabled={busy} />
                 </>
               }
