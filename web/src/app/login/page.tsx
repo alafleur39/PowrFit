@@ -137,7 +137,7 @@ export default function LoginPage() {
         style={{ width: "calc(100vw - 2rem)", maxWidth: "22rem" }}
       >
         <CardHeader className="items-center text-center">
-          <PowrFitLogo variant="wordmark" className="mb-2 justify-center" />
+          <PowrFitLogo className="mx-auto mb-2 h-9" />
           <CardTitle className="text-title2 text-foreground">Sign into PowrFit</CardTitle>
           <CardDescription>
             This is where fitness journeys start.
@@ -227,7 +227,7 @@ export default function LoginPage() {
         />
         <div className="absolute inset-0 bg-linear-to-b from-background/5 to-background/90" />
         <div className="absolute inset-x-0 bottom-0 p-10 text-foreground">
-          <PowrFitLogo variant="compact" className="mb-6" />
+          <PowrFitLogo className="mb-6 h-8" />
           <p className="max-w-md text-display font-black uppercase leading-none tracking-normal">
             Every rep, session, and goal in one focused training app.
           </p>

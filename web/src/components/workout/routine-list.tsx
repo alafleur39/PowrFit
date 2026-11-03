@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Copy, Pencil, Plus } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
+import { Button } from "@/components/ui/button";
 import { PRESET_ROUTINES, copyRoutine, type Routine } from "@/lib/strength";
 import { saveRoutine } from "@/lib/workout/routine-repo";
 import { NEW_ROUTINE_HREF, routineHref } from "@/lib/routes";
@@ -47,18 +48,18 @@ function StartButton({ routine, disabled }: { routine: Routine; disabled: boolea
   const router = useRouter();
   const { start } = useActiveWorkout();
   return (
-    <button
-      type="button"
+    <Button
+      variant="secondary"
       disabled={disabled}
       aria-label={`Start ${routine.name}`}
       onClick={() => {
         start(routine);
         router.push("/log");
       }}
-      className="h-11 rounded-full bg-accent px-4 text-footnote font-bold text-accent-foreground disabled:opacity-40"
+      className="px-4"
     >
       Start
-    </button>
+    </Button>
   );
 }
 

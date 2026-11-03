@@ -38,7 +38,6 @@ test("polish: tap targets, wording and fit", async ({ page, isMobile }) => {
   await expect44(page.getByLabel("Email address"), "Email field");
 
   await signUp(page, testEmail("polish"));
-  if (isMobile) await expect44(button(page, "Open account menu"), "Account menu");
 
   await page.getByRole("button", { name: "Start Push day" }).click();
   const bench = page.getByRole("region", { name: "Barbell bench press" });

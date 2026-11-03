@@ -1,8 +1,9 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
+import { Button } from "@/components/ui/button";
 import { ScreenHeader } from "@/components/ui/screen-header";
 import { WorkoutsTabs } from "@/components/workout/workouts-tabs";
 
@@ -15,9 +16,16 @@ function Tabs() {
 }
 
 export default function WorkoutsPage() {
+  const router = useRouter();
   return (
     <div>
-      <ScreenHeader title="Workouts" />
+      <ScreenHeader
+        title="Workouts"
+        action={
+          // The way into the logger (it resumes a workout in progress), now that there's no "+".
+          <Button onClick={() => router.push("/log")}>Start workout</Button>
+        }
+      />
       <Suspense>
         <Tabs />
       </Suspense>

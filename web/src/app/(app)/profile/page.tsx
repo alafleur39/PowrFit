@@ -1,6 +1,8 @@
 "use client";
 
-import { MessageSquare, Shield } from "lucide-react";
+import { LogOut, MessageSquare, Shield } from "lucide-react";
+
+import { useSignOut } from "@/components/app-shell";
 
 import { DeleteAccount } from "@/components/profile/delete-account";
 import { ProfileCard } from "@/components/profile/profile-card";
@@ -15,6 +17,7 @@ const FEEDBACK_URL = process.env.NEXT_PUBLIC_FEEDBACK_URL?.startsWith("https://"
 // Profile (P5-05, P6-13): who you are and your lifetime numbers, then
 // feedback, privacy and deleting the account.
 export default function ProfilePage() {
+  const signOut = useSignOut();
   return (
     <div className="pb-10">
       <ScreenHeader title="Profile" />
@@ -32,6 +35,7 @@ export default function ProfilePage() {
             />
           )}
           <ListRow href="/privacy" icon={<Shield />} title="Privacy" description="What PowrFit stores and why." />
+          <ListRow icon={<LogOut />} title="Sign out" onClick={signOut} />
         </ListGroup>
 
         <section aria-labelledby="danger-zone" className="mt-6 flex flex-col gap-2">

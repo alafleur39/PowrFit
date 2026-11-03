@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- PowrFit app icon: original yellow bolt on black. Kept inside the
-       maskable safe zone (centre 80% circle) so one design serves both. -->
+  <!-- PowrFit app icon (UI playbook Phase 3): the wordmark's slanted bolt,
+       yellow on near-black, flat. Inside the maskable safe zone (centre 80%
+       circle) so one design serves both. Generated from BOLT_MARK in
+       src/components/wordmark-paths.ts. -->
   <rect width="512" height="512" fill="#0A0A0A"/>
-  <path d="M296 72 136 280h108l-28 160 160-216H268z" fill="#FFD60A" stroke="#FFD60A" stroke-width="12" stroke-linejoin="round"/>
+  <path transform="translate(136.0 106.0) scale(300.00)" d="M0.6,0 L0.1,0.6 L0.4,0.6 L0.2,1 L0.7,0.4 L0.5,0.4 L0.7,0 Z" fill="#FFD60A"/>
 </svg>

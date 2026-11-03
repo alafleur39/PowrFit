@@ -29,8 +29,8 @@ export function Sidebar({
 
   return (
     <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border px-3 py-5 md:flex">
-      <Link href="/home" className="px-2">
-        <PowrFitLogo variant="wordmark" />
+      <Link href="/home" aria-label="PowrFit home" className="px-2">
+        <PowrFitLogo className="h-7" title="" />
       </Link>
 
       <nav aria-label="Primary" className="mt-6 flex flex-col gap-1">

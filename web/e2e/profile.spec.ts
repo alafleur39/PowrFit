@@ -42,7 +42,7 @@ test("edit your name and avatar, and see lifetime stats", async ({ page, isMobil
   await expectLabelledControls(page, "Profile editor");
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Andy Lafleur" })).toBeVisible();
-  if (isMobile) await expect(page.getByRole("button", { name: "Open account menu" })).toHaveText("AL");
+  if (isMobile) await expect(page.getByRole("main").getByText("AL", { exact: true })).toBeVisible();
   await expect
     .poll(async () => JSON.stringify((await listDocuments("settings")).map((d) => d.fields)))
     .toContain("Andy Lafleur");

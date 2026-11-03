@@ -187,7 +187,7 @@ function Logger({
   return (
     <div className={draft.rest ? "pb-36" : "pb-10"}>
       {draft.rest && <RestTimer rest={draft.rest} />}
-      <header className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 sm:px-6 md:top-0">
+      <header className="sticky top-[env(safe-area-inset-top)] z-10 flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 sm:px-6 md:top-0">
         <div className="min-w-0">
           <h1 className="truncate text-title3 font-bold">{draft.routineName ?? "Workout"}</h1>
           <p className="text-footnote text-muted-foreground">

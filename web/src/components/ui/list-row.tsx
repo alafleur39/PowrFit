@@ -42,7 +42,8 @@ function Icon({ icon, tone }: { icon?: ReactNode; tone?: "danger" }) {
 
 // A row in a settings-style list (UI playbook Phase 2). Group rows in
 // <ListGroup>, which draws one card with hairlines between rows, like iOS
-// Settings. Variants: chevron (goes somewhere), toggle (a switch) and
+// Settings. Variants: chevron (a link shows a chevron; with onClick it's an
+// action and doesn't), toggle (a switch) and
 // destructive (red, for actions such as Delete account; the action itself
 // must still confirm).
 export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
@@ -90,7 +91,7 @@ export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
     <>
       <Icon icon={icon} />
       <Text title={title} description={description} />
-      <ChevronRight className="size-5 shrink-0 text-tertiary-foreground" aria-hidden />
+      {props.href && <ChevronRight className="size-5 shrink-0 text-tertiary-foreground" aria-hidden />}
     </>
   );
   if (props.href) {

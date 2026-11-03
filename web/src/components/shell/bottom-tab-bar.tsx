@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import { DESTINATIONS, isDestinationActive } from "./nav-config";
 
 // Mobile-only bottom tab bar (POWRFIT_NAV_SPEC §5). Folds away at md, where the
-// Sidebar takes over. Active destination = yellow icon + label.
+// Sidebar takes over. Active destination = yellow icon + label (the iOS tint).
+// Tapping the tab you're on scrolls back to the top, as in iOS apps.
 export function BottomTabBar() {
   const pathname = usePathname();
 
@@ -24,6 +25,12 @@ export function BottomTabBar() {
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
+                onClick={(event) => {
+                  if (pathname !== item.href) return;
+                  event.preventDefault();
+                  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                  window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+                }}
                 className={cn(
                   "flex h-16 flex-col items-center justify-center gap-1 text-caption font-semibold transition-colors",
                   active

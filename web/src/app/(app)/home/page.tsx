@@ -24,7 +24,7 @@ import { workoutLogHref } from "@/lib/routes";
 export default function HomePage() {
   return (
     <div className="pb-6">
-      <ScreenHeader title="Home" subtitle="Your training at a glance." />
+      <ScreenHeader title="Home" brand />
       <div className="flex flex-col gap-4 px-4 sm:px-6">
         <StartOrResume />
         <WeekChips />

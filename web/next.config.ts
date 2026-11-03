@@ -48,6 +48,9 @@ const SECURITY_HEADERS = [
 const STATIC_EXPORT = process.env.NEXT_OUTPUT === "export";
 
 const nextConfig: NextConfig = {
+  // No dev-mode badge: it sits over the Home tab, catching taps in tests and
+  // showing in screenshots. Build and runtime errors still show.
+  devIndicators: false,
   // Pin the workspace root so Next ignores the Expo app's lockfile one level up.
   turbopack: {
     root: __dirname,

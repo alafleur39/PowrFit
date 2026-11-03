@@ -1,17 +1,13 @@
 "use client";
 
-import { useCallback, useState, ViewTransition } from "react";
-import Link from "next/link";
+import { createContext, useCallback, useContext, useState, ViewTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/auth-provider";
 import { cn } from "@/lib/utils";
-import { PowrFitLogo } from "@/components/powrfit-logo";
-import { ProfileAvatar } from "@/components/profile/profile-avatar";
 import { useProfile } from "@/components/profile/use-profile";
 import { AccountDrawer } from "@/components/shell/account-drawer";
 import { BottomTabBar } from "@/components/shell/bottom-tab-bar";
-import { Fab } from "@/components/shell/fab";
 import { Sidebar } from "@/components/shell/sidebar";
 import { StatsRail } from "@/components/shell/stats-rail";
 import { Button } from "@/components/ui/button";
@@ -19,9 +15,17 @@ import { ActiveWorkoutStrip } from "@/components/workout/active-workout-strip";
 import { Sheet } from "@/components/ui/sheet";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 
+const ShellContext = createContext({ signOut: () => {} });
+
+/** Signs out, warning first when a workout hasn't synced (P2-14). */
+export const useSignOut = () => useContext(ShellContext).signOut;
+
 // The navigation shell (POWRFIT_NAV_SPEC §5). X/Twitter layout: a left sidebar
-// + right stats rail flank a centered, width-capped content column on desktop;
-// on mobile that collapses to a top bar, bottom tab bar, and a floating FAB.
+// + right stats rail flank a centered, width-capped content column on desktop.
+// On phones (UI playbook Phase 3) there is no top bar: each screen has an iOS
+// large title (ScreenHeader) and the bottom tab bar does the navigating.
+// Starting a workout is a button on Home and Workouts, not a floating "+".
+// Account things (unit, sign out) live on Profile.
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -70,37 +74,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <main
           className={cn(
-            "min-h-dvh w-full min-w-0 flex-1 md:border-x md:border-border",
+            "min-h-dvh w-full min-w-0 flex-1 pt-[env(safe-area-inset-top)] md:border-x md:border-border md:pt-0",
             draft ? "pb-40 md:pb-24" : "pb-24 md:pb-0"
           )}
         >
-          <header className="sticky top-0 z-20 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center pt-[env(safe-area-inset-top)] justify-between border-b border-border bg-surface px-4 md:hidden">
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(true)}
-              aria-label="Open account menu"
-              className="flex size-11 items-center justify-center rounded-full"
-            >
-              <ProfileAvatar className="size-10" />
-            </button>
-            <Link href="/home" aria-label="PowrFit home">
-              <PowrFitLogo variant="compact" />
-            </Link>
-            <span className="size-9" aria-hidden />
-          </header>
-
           {/* A short crossfade between screens (P6-10). Keyed by path, so
               in-page tab switches (?tab=) don't trigger it. */}
           <ViewTransition key={pathname} enter="page-enter" exit="page-exit" default="none">
-            <div>{children}</div>
+            <div>
+              <ShellContext value={{ signOut: handleSignOut }}>{children}</ShellContext>
+            </div>
           </ViewTransition>
         </main>
 
         <StatsRail />
       </div>
 
-      {/* While a workout is open, the strip replaces the FAB as the way back in. */}
-      {!draft && <Fab onClick={handleLogWorkout} />}
+      {/* Behind the iOS status bar, so content scrolling up doesn't show through it. */}
+      <div aria-hidden className="fixed inset-x-0 top-0 z-30 h-[env(safe-area-inset-top)] bg-background md:hidden" />
       <ActiveWorkoutStrip />
       <BottomTabBar />
 

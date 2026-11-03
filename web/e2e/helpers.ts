@@ -110,10 +110,17 @@ export async function restoreFirestoreRules(): Promise<void> {
   await setFirestoreRules(readFileSync("firestore.rules", "utf8"));
 }
 
-/** Opens the account menu from the mobile top bar or the desktop sidebar. */
+/**
+ * Opens where the unit switch and Sign out live: Profile on phones (no top
+ * bar since UI playbook Phase 3), the account menu from the desktop sidebar.
+ */
 export async function openAccountMenu(page: Page, isMobile: boolean): Promise<void> {
-  if (isMobile) await page.getByRole("button", { name: "Open account menu" }).click();
-  else await page.getByRole("button", { name: /@powrfit\.test/ }).click();
+  if (isMobile) {
+    await page.getByRole("link", { name: "Profile" }).click();
+    await expect(page.getByRole("heading", { name: "Profile", level: 1 })).toBeVisible();
+    return;
+  }
+  await page.getByRole("button", { name: /@powrfit\.test/ }).click();
   await expect(page.getByRole("dialog", { name: "Account" })).toBeVisible();
 }
 
