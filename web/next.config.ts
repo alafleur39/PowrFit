@@ -5,13 +5,16 @@ const EMULATORS = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true";
 
 // Content Security Policy for every page. The browser only talks to this
 // site and to Firebase Auth and Firestore; the gyms map lookups happen on the
-// server, and Unsplash photos come through /_next/image. Next needs inline
+// server, and Unsplash photos come through /_next/image. "For you" videos
+// (V-03) show YouTube thumbnails and play in YouTube's privacy-enhanced
+// player. Next needs inline
 // scripts to start the page (and eval in dev). Pages can't be framed.
 const CSP = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${DEV ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://i.ytimg.com",
+  "frame-src https://www.youtube-nocookie.com",
   "font-src 'self'",
   [
     "connect-src 'self'",
