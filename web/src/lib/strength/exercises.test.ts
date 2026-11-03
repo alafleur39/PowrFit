@@ -11,8 +11,8 @@ import {
 const names = (list: { name: string }[]) => list.map((exercise) => exercise.name);
 
 describe("EXERCISES catalog", () => {
-  it("has the 52 exercises approved under D7, plus 2 added for presets", () => {
-    expect(EXERCISES).toHaveLength(54);
+  it("has the 52 exercises approved under D7, 2 added for presets and 71 for more gyms", () => {
+    expect(EXERCISES).toHaveLength(125);
   });
 
   it("has unique, kebab-case ids", () => {
@@ -71,24 +71,29 @@ describe("searchExercises", () => {
   it("matches partial names regardless of case", () => {
     expect(names(searchExercises("SQUAT"))).toEqual([
       "Barbell back squat",
+      "Bodyweight squat",
       "Bulgarian split squat",
       "Front squat",
       "Goblet squat",
+      "Hack squat",
+      "Smith machine squat",
     ]);
-    expect(names(searchExercises("pulld"))).toEqual(["Lat pulldown"]);
+    expect(names(searchExercises("pulld"))).toEqual(["Close-grip lat pulldown", "Lat pulldown", "Straight-arm pulldown"]);
   });
 
   it("matches every word in any order", () => {
     expect(names(searchExercises("press bench"))).toEqual([
       "Barbell bench press",
       "Close-grip bench press",
+      "Decline barbell bench press",
       "Dumbbell bench press",
       "Incline barbell bench press",
+      "Smith machine bench press",
     ]);
   });
 
   it("ignores punctuation", () => {
-    expect(names(searchExercises("pull up"))).toEqual(["Pull-up"]);
+    expect(names(searchExercises("pull up"))).toEqual(["Assisted pull-up", "Pull-up"]);
     expect(names(searchExercises("farmers"))).toEqual(["Farmer's carry"]);
     expect(names(searchExercises("farmer’s"))).toEqual(["Farmer's carry"]);
   });
@@ -97,7 +102,9 @@ describe("searchExercises", () => {
     const calves = searchExercises("", { muscle: "calves" });
     expect(names(calves)).toEqual([
       "Dumbbell calf raise",
+      "Leg press calf raise",
       "Seated calf raise",
+      "Smith machine calf raise",
       "Standing calf raise",
     ]);
   });
@@ -105,17 +112,24 @@ describe("searchExercises", () => {
   it("filters by equipment", () => {
     expect(names(searchExercises("", { equipment: "kettlebell" }))).toEqual([
       "Goblet squat",
+      "Kettlebell clean and press",
       "Kettlebell swing",
     ]);
   });
 
   it("combines query and filters", () => {
     expect(names(searchExercises("curl", { muscle: "biceps", equipment: "dumbbell" }))).toEqual([
+      "Concentration curl",
       "Dumbbell curl",
       "Hammer curl",
+      "Incline dumbbell curl",
     ]);
     expect(names(searchExercises("", { muscle: "chest", equipment: "machine" }))).toEqual([
+      "Incline machine chest press",
       "Machine chest press",
+      "Pec deck",
+      "Smith machine bench press",
+      "Smith machine incline press",
     ]);
   });
 
