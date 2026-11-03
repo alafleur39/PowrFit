@@ -6,7 +6,9 @@ import {
   EXERCISES,
   beatsBest,
   convertWeight,
+  isCardioSet,
   isDraftCardioSet,
+  roundWeight,
   type DraftExercise,
   type DraftSetPatch,
   type LoggedSet,
@@ -15,7 +17,7 @@ import {
 import { formatSetsLine } from "@/lib/workout/format";
 import { CardioSetRow } from "./cardio-set-row";
 import { ExerciseNote } from "./exercise-note";
-import { SetRow } from "./set-row";
+import { SetRow, type SetSuggestion } from "./set-row";
 
 const CARDIO_FIELDS = new Map(
   EXERCISES.flatMap((exercise) => (exercise.cardio ? [[exercise.id, exercise.cardio.fields] as const] : []))
@@ -40,6 +42,25 @@ function recordIndex(exercise: DraftExercise, bestKg: number | undefined): numbe
   const set = exercise.sets[index];
   if (isDraftCardioSet(set)) return -1;
   return beatsBest({ weight: set.weight ?? 0, unit: set.unit }, bestKg) ? index : -1;
+}
+
+/**
+ * What ✓ fills in for each set: the set above it in this workout if it has
+ * both numbers, else last session's set in the same place (or its last set),
+ * converted to this set's unit.
+ */
+function suggestions(exercise: DraftExercise, lastSets: readonly LoggedSet[] | undefined): (SetSuggestion | undefined)[] {
+  const previous = (lastSets ?? []).filter((set) => !isCardioSet(set));
+  return exercise.sets.map((set, index) => {
+    if (isDraftCardioSet(set)) return undefined;
+    const above = exercise.sets[index - 1];
+    if (above && !isDraftCardioSet(above) && above.weight !== null && above.reps !== null) {
+      return { weight: roundWeight(convertWeight(above.weight, above.unit, set.unit), set.unit), reps: above.reps };
+    }
+    const last = previous[index] ?? previous.at(-1);
+    if (!last || isCardioSet(last)) return undefined;
+    return { weight: roundWeight(convertWeight(last.weight, last.unit, set.unit), set.unit), reps: last.reps };
+  });
 }
 
 export function ExerciseCard({
@@ -67,6 +88,7 @@ export function ExerciseCard({
   onNoteChange: (note: string) => void;
 }) {
   const record = recordIndex(exercise, bestKg);
+  const suggested = suggestions(exercise, lastSets);
   const cardioFields = CARDIO_FIELDS.get(exercise.exerciseId);
   return (
     <section
@@ -104,14 +126,13 @@ export function ExerciseCard({
         </div>
       ) : (
         <div
-          className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
+          className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
           aria-hidden
         >
           <span className="text-center">Set</span>
-          <span className="text-center">Weight</span>
+          <span className="text-center">Weight ({unit})</span>
           <span className="text-center">Reps</span>
           <span className="text-center">Done</span>
-          <span />
         </div>
       )}
       <ol className="mt-1 flex flex-col gap-1">
@@ -133,6 +154,7 @@ export function ExerciseCard({
               index={index}
               set={set}
               targetReps={exercise.targetReps}
+              suggestion={suggested[index]}
               record={index === record}
               onChange={(patch) => onChangeSet(index, patch)}
               onToggle={() => onToggleSet(index)}

@@ -144,6 +144,13 @@ test("first use (new account)", async ({ page }) => {
   await page.goto("/profile");
   await shot(page, "profile-empty");
 
+  await page.goto("/home");
+  await page.getByRole("button", { name: "Empty workout" }).click();
+  await expect(page).toHaveURL(/\/log$/);
+  await shot(page, "logger-empty");
+  await page.getByRole("button", { name: "Discard workout" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Discard workout" }).click();
+
   // The dev-only Components screen (Phase 2), whole page, then a sheet.
   await page.goto("/dev/components");
   await expect(page.getByRole("heading", { name: "Components" })).toBeVisible();
@@ -187,6 +194,9 @@ test("regular lifter (5 weeks of history)", async ({ page }) => {
   await shot(page, "logger-start");
   await logSet(page, "Barbell bench press", 0, "190", "5");
   await shot(page, "logger-set-done");
+  await page.getByRole("region", { name: "Barbell bench press" }).getByLabel(/^Set 2 weight/).focus();
+  await shot(page, "logger-stepper");
+  await page.getByRole("region", { name: "Barbell bench press" }).getByRole("button", { name: "Set 2 not done" }).click();
   await shotBottom(page, "logger-bottom");
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await shot(page, "logger-finish-dialog");

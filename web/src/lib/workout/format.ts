@@ -23,6 +23,7 @@ export function formatElapsed(startIso: string, nowMs: number): string {
 /** Whole minutes between two ISO times, e.g. "36 min" or "1 h 5 min". */
 export function formatDuration(startIso: string, endIso: string): string {
   const minutes = Math.max(0, Math.round((Date.parse(endIso) - Date.parse(startIso)) / 60000));
+  if (minutes < 1) return "<1 min";
   if (minutes < 60) return `${minutes} min`;
   const rest = minutes % 60;
   return rest === 0 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 60)} h ${rest} min`;
@@ -73,6 +74,7 @@ export function formatCardioTime(seconds: number): string {
 /** Total cardio time for summaries: "25 min", "1 h 5 min". Rounded to the minute. */
 export function formatCardioMinutes(seconds: number): string {
   const minutes = Math.round(seconds / 60);
+  if (minutes < 1) return "<1 min";
   if (minutes < 60) return `${minutes} min`;
   const rest = minutes % 60;
   return rest === 0 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 60)} h ${rest} min`;

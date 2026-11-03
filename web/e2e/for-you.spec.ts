@@ -25,7 +25,12 @@ async function finishFirstWorkout(page: Page, label: string) {
 test("a new lifter gets videos with the reason, and one plays inside PowrFit", async ({ page }) => {
   await finishFirstWorkout(page, "for-you");
 
-  for (const path of ["/home", "/progress"]) {
+  // Home only (decided Nov 3): Progress no longer repeats the cards.
+  await page.goto("/progress");
+  await expect(page.getByRole("heading", { name: "Progress", level: 1 })).toBeVisible();
+  await expect(page.getByRole("region", { name: "For you" })).toHaveCount(0);
+
+  for (const path of ["/home"]) {
     await page.goto(path);
     const card = page.getByRole("region", { name: "For you" });
     await expect(card.getByText("Strength training basics")).toBeVisible();

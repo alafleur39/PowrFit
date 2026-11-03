@@ -28,7 +28,7 @@ test("a heavier set than ever before is marked as a PR", async ({ page }) => {
   await logSet(page, "Barbell bench press", 0, "135", "5");
   await expect(page.getByText(/is a new personal record/)).toHaveCount(0);
   await finishWorkout(page);
-  await expect(page.getByText(/new PR/)).toHaveCount(0);
+  await expect(page.getByText(/new personal record/i)).toHaveCount(0);
 
   // Heavier next time: marked while logging, then on the summary.
   await startPushDay(page);
@@ -40,7 +40,7 @@ test("a heavier set than ever before is marked as a PR", async ({ page }) => {
   await expect(bench.getByText("Set 2 is a new personal record")).toBeAttached();
   await expectNoSidewaysScroll(page, "Logger with a PR");
   await finishWorkout(page);
-  await expect(page.getByText("1 new PR")).toBeVisible();
+  await expect(page.getByText("New personal record!")).toBeVisible();
   await expect(page.getByText("145 × 3").first()).toBeVisible();
 
   // History shows which workout set it.

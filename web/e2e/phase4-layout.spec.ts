@@ -69,7 +69,7 @@ test("every Phase 4 screen fits and is usable", async ({ page }) => {
   await page.getByRole("button", { name: "Start Push day" }).click();
   await logSet(page, "Barbell bench press", 0, "155", "3");
   await finish(page);
-  await expect(page.getByText(/new PR/).first()).toBeVisible();
+  await expect(page.getByText(/new personal record/i).first()).toBeVisible();
   await check(page, "Summary with PR", ["Edit", "Save as routine"]);
 
   // Edit and delete (P4-05).

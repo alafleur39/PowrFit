@@ -2,21 +2,25 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ChevronRight, Dumbbell, MapPin, Plus } from "lucide-react";
 
 import { InstallCard } from "@/components/install-card";
 import { ForYou } from "@/components/workout/for-you";
 import { Button } from "@/components/ui/button";
 import { ScreenHeader } from "@/components/ui/screen-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { StatGrid, StatTile } from "@/components/ui/stat-tile";
+import { useHistoryLogs } from "@/components/workout/use-records";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { SyncBadge } from "@/components/workout/sync-badge";
 import { useNow } from "@/components/workout/use-now";
 import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
 import { useWeekStats } from "@/components/workout/use-week-stats";
 import { PRESET_ROUTINES, workoutTotals } from "@/lib/strength";
-import { formatCardioMinutes, formatCardioSuffix, formatDate, formatElapsed, formatWeight, formatWeightAmount, plural } from "@/lib/workout/format";
+import { formatCardioMinutes, formatCardioSuffix, formatDate, formatElapsed, formatWeight, formatWeightAmount, plural, weekStart } from "@/lib/workout/format";
 import { workoutLogHref } from "@/lib/routes";
+import { weekStreak } from "@/lib/workout/week-stats";
 
 // Home is a training dashboard (D13, design spec §6.1): resume or start a
 // workout, this week's numbers, and the last workout. From the 2nd workout,
@@ -70,6 +74,12 @@ function StartOrResume() {
   );
   const next = PRESET_ROUTINES[(lastIndex + 1) % PRESET_ROUTINES.length];
   const isFirst = items.length === 0;
+  const rotation = PRESET_ROUTINES.map((routine) => routine.name.replace(/ day$/, "")).join(" → ");
+  // Why this one (UI playbook Phase 4): what came before it in the rotation.
+  const reason =
+    lastIndex >= 0 && lastRoutine && "log" in lastRoutine
+      ? `You did ${PRESET_ROUTINES[lastIndex].name} on ${formatDate(lastRoutine.log.endedAt)}. Next in the ${rotation} rotation.`
+      : `First of the ${rotation} rotation.`;
 
   return (
     <div className="rounded-card border border-border bg-surface p-4">
@@ -78,6 +88,7 @@ function StartOrResume() {
       </p>
       <p className="mt-1 text-headline font-bold">{next.name}</p>
       <p className="text-footnote text-muted-foreground">{next.notes}</p>
+      <p className="mt-1 text-footnote text-muted-foreground">{reason}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button
           onClick={() => {
@@ -104,8 +115,12 @@ function StartOrResume() {
 }
 
 // Inline on phones and tablets; at lg the StatsRail shows the same numbers.
+// A week with nothing yet says so and keeps the streak in view, instead of
+// three zeros (UI playbook Phase 4).
 function WeekChips() {
-  const { stats } = useWeekStats();
+  const { stats, loading } = useWeekStats();
+  const { logs, loading: historyLoading } = useHistoryLogs();
+  const [now] = useState(() => new Date());
   const chips = [
     { label: "Workouts", value: String(stats.workouts) },
     { label: "Sets", value: String(stats.sets) },
@@ -113,14 +128,50 @@ function WeekChips() {
     { label: "Volume", value: formatWeightAmount(stats.volume, stats.unit), unit: stats.unit },
     ...(stats.cardioSec > 0 ? [{ label: "Cardio", value: formatCardioMinutes(stats.cardioSec) }] : []),
   ];
+
+  let body;
+  if (loading || historyLoading) {
+    body = <Skeleton className="h-20" />;
+  } else if (stats.workouts > 0) {
+    body = (
+      <StatGrid label="This week's totals" columns={chips.length === 4 ? 2 : 3}>
+        {chips.map((chip) => (
+          <StatTile key={chip.label} label={chip.label} value={chip.value} unit={chip.unit} />
+        ))}
+      </StatGrid>
+    );
+  } else {
+    const thisWeek = weekStart(now);
+    const lastWeekStart = new Date(thisWeek);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    const lastWeek = logs.filter((log) => {
+      const ended = new Date(log.endedAt);
+      return ended >= lastWeekStart && ended < thisWeek;
+    }).length;
+    const streak = weekStreak(
+      logs.map((log) => log.endedAt),
+      now
+    );
+    body = (
+      <div className="rounded-card border border-border bg-surface p-4">
+        <p className="text-body font-semibold">
+          {logs.length === 0 ? "Your week starts with your first workout" : "New week, nothing logged yet"}
+        </p>
+        <p className="mt-1 text-footnote text-muted-foreground">
+          {logs.length === 0
+            ? "Workouts, sets and volume for the week (from Monday) show up here."
+            : `Last week: ${plural(lastWeek, "workout")}.${
+                streak > 0 ? ` One this week keeps your ${streak}-week streak going.` : ""
+              }`}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <section aria-label="This week" className="lg:hidden">
       <h2 className="mb-2 text-footnote font-bold">This week</h2>
-      <StatGrid label="This week's totals" columns={chips.length === 4 ? 2 : 3}>
-        {chips.map((chip) => (
-          <StatTile key={chip.label} label={chip.label} value={chip.value} unit={chip.unit} highlight />
-        ))}
-      </StatGrid>
+      {body}
     </section>
   );
 }
@@ -132,7 +183,7 @@ function GymsCard() {
       href="/gyms"
       className="flex min-h-14 items-center gap-3 rounded-card border border-border bg-surface p-4 hover:bg-surface-raised"
     >
-      <MapPin className="size-6 shrink-0 text-accent" aria-hidden />
+      <MapPin className="size-6 shrink-0 text-muted-foreground" aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">Gyms near you</span>
         <span className="block text-footnote text-muted-foreground">Compare monthly prices nearby</span>
@@ -161,8 +212,12 @@ function LastWorkout() {
     <section aria-label="Last workout">
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-footnote font-bold">Last workout</h2>
-        <Link href="/workouts?tab=history" className="text-footnote font-medium text-accent">
+        <Link
+          href="/workouts?tab=history"
+          className="-my-3 flex h-11 items-center gap-0.5 text-footnote font-medium text-muted-foreground hover:text-foreground"
+        >
           All history
+          <ChevronRight className="size-4" aria-hidden />
         </Link>
       </div>
       <Link

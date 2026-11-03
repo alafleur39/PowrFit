@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, Loader2, Plus } from "lucide-react";
+import { AlertTriangle, Dumbbell, Loader2, Plus } from "lucide-react";
 
+import { EmptyState } from "@/components/ui/empty-state";
 import { ScreenHeader } from "@/components/ui/screen-header";
 import { Button } from "@/components/ui/button";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
@@ -199,16 +200,26 @@ function Logger({
             {formatCardioSuffix(totals.cardioSec)}
           </p>
         </div>
-        <Button className="h-11 px-5 text-body font-bold" onClick={() => setFinishOpen(true)}>
+        {/* Primary (yellow) only once there's something to save. */}
+        <Button variant={counts.done > 0 ? "primary" : "secondary"} onClick={() => setFinishOpen(true)}>
           Finish
         </Button>
       </header>
 
       <div className="flex flex-col gap-3 px-4 pt-4 sm:px-6">
         {draft.exercises.length === 0 && (
-          <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-footnote text-muted-foreground">
-            Add your first exercise to start logging sets.
-          </p>
+          <EmptyState
+            className="p-0 sm:p-0"
+            icon={<Dumbbell />}
+            title="No exercises yet"
+            description="Add one to start logging sets."
+            action={
+              <Button onClick={() => setPickerOpen(true)}>
+                <Plus aria-hidden />
+                Add exercise
+              </Button>
+            }
+          />
         )}
 
         {draft.exercises.map((exercise) => (
@@ -235,14 +246,12 @@ function Logger({
           />
         ))}
 
-        <Button
-          variant="secondary"
-          className="h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
-          onClick={() => setPickerOpen(true)}
-        >
-          <Plus className="size-4" aria-hidden />
-          Add exercise
-        </Button>
+        {draft.exercises.length > 0 && (
+          <Button variant="secondary" size="lg" onClick={() => setPickerOpen(true)}>
+            <Plus aria-hidden />
+            Add exercise
+          </Button>
+        )}
         <button
           type="button"
           onClick={() => setDiscardOpen(true)}
@@ -288,7 +297,7 @@ function Logger({
               {formatWeight(totals.volume, unit)} volume{formatCardioSuffix(totals.cardioSec)}.
             </p>
             {counts.notDone > 0 && (
-              <p className="text-muted-foreground">
+              <p className="font-semibold text-warning">
                 {counts.notDone} unticked {counts.notDone === 1 ? "set" : "sets"} will be
                 discarded. Only ticked sets are saved.
               </p>

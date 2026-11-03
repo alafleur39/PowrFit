@@ -18,7 +18,7 @@ export function InstallCard() {
   return (
     <section
       aria-labelledby="install-heading"
-      className="rounded-card border border-accent/40 bg-accent-muted p-4"
+      className="rounded-card border border-border bg-surface p-4"
     >
       <h2 id="install-heading" className="font-bold">
         Add PowrFit to your home screen

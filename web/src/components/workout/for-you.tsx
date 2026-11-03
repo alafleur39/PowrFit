@@ -96,7 +96,7 @@ function SuggestionCard({ suggestion, onPlay }: { suggestion: Suggestion; onPlay
         href={youtubeSearchUrl(suggestion.query)}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex min-h-11 items-center gap-2 text-footnote font-semibold text-accent"
+        className="mt-2 inline-flex min-h-11 items-center gap-2 text-footnote font-semibold text-foreground"
       >
         <Search className="size-4" aria-hidden />
         More on YouTube
@@ -131,7 +131,7 @@ function SearchLinkCard({ suggestion }: { suggestion: Suggestion }) {
       rel="noopener noreferrer"
       className="flex min-h-14 items-center gap-3 rounded-card border border-border bg-surface p-4 hover:bg-surface-raised"
     >
-      <PlayCircle className="size-6 shrink-0 text-accent" aria-hidden />
+      <PlayCircle className="size-6 shrink-0 text-muted-foreground" aria-hidden />
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">{suggestion.title}</span>
         <span className="block text-footnote text-muted-foreground">{suggestion.reason}</span>
@@ -160,7 +160,7 @@ function VideoPlayer({ video, onClose }: { video: Video | null; onClose: () => v
             href={watchUrl(video.videoId)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 text-footnote font-semibold text-accent"
+            className="inline-flex min-h-11 items-center gap-2 text-footnote font-semibold text-foreground"
           >
             <ExternalLink className="size-4" aria-hidden />
             Watch on YouTube

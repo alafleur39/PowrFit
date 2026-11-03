@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { ArrowLeft, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, Loader2, Pencil, Trophy } from "lucide-react";
 
+import { StatGrid, StatTile } from "@/components/ui/stat-tile";
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
 import { PrBadge } from "./pr-badge";
@@ -112,9 +113,6 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <SyncBadge status={item.status} />
-          {logRecords.length > 0 && (
-            <PrBadge label={`${logRecords.length} new ${logRecords.length === 1 ? "PR" : "PRs"}`} />
-          )}
         </div>
       </header>
 
@@ -124,7 +122,9 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         </div>
       )}
 
-      <dl className="mx-4 grid grid-cols-2 gap-3 sm:mx-6 sm:grid-cols-4">
+      {logRecords.length > 0 && <RecordsCard records={logRecords} unit={unit} />}
+
+      <StatGrid label="Workout totals" columns={4} className="mx-4 sm:mx-6">
         {[
           ["Duration", formatDuration(log.startedAt, log.endedAt)],
           ["Volume", formatWeight(totals.volume, unit)],
@@ -132,12 +132,9 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
           ["Reps", String(totals.reps)],
           ...(totals.cardioSec > 0 ? [["Cardio", formatCardioMinutes(totals.cardioSec)]] : []),
         ].map(([label, value]) => (
-          <div key={label} className="rounded-tile border border-border bg-surface p-3">
-            <dt className="text-caption text-muted-foreground">{label}</dt>
-            <dd className="mt-1 text-headline font-bold tabular-nums text-accent">{value}</dd>
-          </div>
+          <StatTile key={label} label={label} value={value} />
         ))}
-      </dl>
+      </StatGrid>
 
       <SaveAsRoutine log={log} />
 
@@ -167,6 +164,32 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         ))}
       </ol>
     </div>
+  );
+}
+
+/** The celebration: every PR from this workout, big, before the totals. */
+function RecordsCard({ records, unit }: { records: readonly PersonalRecord[]; unit: WeightUnit }) {
+  return (
+    <section
+      aria-label="New personal records"
+      className="mx-4 mb-4 flex flex-col gap-3 rounded-card border border-accent/40 bg-accent-muted p-4 sm:mx-6"
+    >
+      <p className="flex items-center gap-2 text-headline font-bold">
+        <Trophy className="size-6 text-accent" aria-hidden />
+        {records.length === 1 ? "New personal record!" : `${records.length} new personal records!`}
+      </p>
+      <ul className="flex flex-col gap-1">
+        {records.map((record) => (
+          <li key={record.exerciseId} className="flex items-baseline justify-between gap-3 text-body">
+            <span className="min-w-0 truncate">{record.exerciseName}</span>
+            <span className="shrink-0 font-bold tabular-nums text-accent">
+              {formatSetsLine([{ ...record, done: true }], unit)}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="text-footnote text-muted-foreground">Heavier than any earlier workout. Nice lifting.</p>
+    </section>
   );
 }
 

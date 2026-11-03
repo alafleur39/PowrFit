@@ -42,7 +42,8 @@ test("polish: tap targets, wording and fit", async ({ page, isMobile }) => {
   await page.getByRole("button", { name: "Start Push day" }).click();
   const bench = page.getByRole("region", { name: "Barbell bench press" });
   await expect(bench.getByLabel("Set 2 reps")).toHaveAttribute("placeholder", "6–8");
-  await expect44(bench.getByRole("button", { name: "Remove set 1" }), "Remove set");
+  await bench.getByLabel("Set 1 reps").focus();
+  await expect44(page.getByRole("button", { name: "Remove set 1" }), "Remove set");
   await expect44(bench.getByRole("button", { name: "Remove Barbell bench press" }), "Remove exercise");
   await logSet(page, "Barbell bench press", 0, "135", "5");
   await expect(page.getByText(/· 1 set ·/)).toBeVisible();
