@@ -8,6 +8,7 @@
 import { EXERCISES } from "./exercises";
 import { convertWeight } from "./units";
 import { isCardioSet, type MuscleGroup, type WorkoutLog } from "./types";
+import { videoQuery } from "./video-topics";
 
 export type SuggestionKind = "comeback" | "plateau" | "new-exercise" | "balance" | "beginner";
 
@@ -19,7 +20,7 @@ export type Suggestion = {
   title: string;
   /** Why it was picked, in the user's terms. */
   reason: string;
-  /** Words for a YouTube search when the library has no pick. */
+  /** Words for a YouTube search when the library has no pick (video-topics.ts). */
   query: string;
 };
 
@@ -36,6 +37,15 @@ const PULL: readonly MuscleGroup[] = ["back", "biceps"];
 const MUSCLE = new Map(EXERCISES.map((exercise) => [exercise.id, exercise.primaryMuscle]));
 
 const time = (iso: string) => Date.parse(iso);
+
+/**
+ * The topic's search words from video-topics.ts, so the phone and the server
+ * agree. `fallback` covers an exercise that has left the catalog since it was
+ * logged; the server won't have videos for it, but the search link still works.
+ */
+function queryFor(topic: string, fallback = ""): string {
+  return videoQuery(topic) ?? fallback;
+}
 const lower = (name: string) => name.charAt(0).toLowerCase() + name.slice(1);
 
 function dateLabel(iso: string): string {
@@ -66,7 +76,7 @@ function comeback(logs: readonly WorkoutLog[], now: number): Suggestion | null {
     topic: "comeback",
     title: "Ease back into training",
     reason: `Your last workout was ${days} days ago`,
-    query: "how to get back into lifting after a break",
+    query: queryFor("comeback"),
   };
 }
 
@@ -103,7 +113,7 @@ function plateaus(logs: readonly WorkoutLog[], now: number): Suggestion[] {
       topic: `plateau:${id}`,
       title: `Break your ${lower(name)} plateau`,
       reason: `Your best ${lower(name)} hasn't gone up since ${dateLabel(earlierBestAt)}`,
-      query: `how to break a ${lower(name)} plateau`,
+      query: queryFor(`plateau:${id}`, `how to break a ${lower(name)} plateau`),
     });
   }
   return result;
@@ -121,7 +131,7 @@ function newExercises(logs: readonly WorkoutLog[], now: number): Suggestion[] {
       topic: `form:${exercise.exerciseId}`,
       title: `${exercise.exerciseName} form`,
       reason: `New to ${lower(exercise.exerciseName)}`,
-      query: `${lower(exercise.exerciseName)} proper form tutorial`,
+      query: queryFor(`form:${exercise.exerciseId}`, `${lower(exercise.exerciseName)} proper form tutorial`),
     }));
 }
 
@@ -146,7 +156,7 @@ function balance(logs: readonly WorkoutLog[], now: number): Suggestion | null {
     topic: "balance:push-pull",
     title: "Balance pushing and pulling",
     reason: `${ratio.charAt(0).toUpperCase()}${ratio.slice(1)} pushing than pulling in the last 4 weeks`,
-    query: "balancing push and pull exercises for shoulder health",
+    query: queryFor("balance:push-pull"),
   };
 }
 
@@ -157,7 +167,7 @@ function beginner(logs: readonly WorkoutLog[]): Suggestion | null {
     topic: "beginner",
     title: "Strength training basics",
     reason: "You're just getting started",
-    query: "beginner strength training program explained",
+    query: queryFor("beginner"),
   };
 }
 

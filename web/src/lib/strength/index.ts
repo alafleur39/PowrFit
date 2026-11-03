@@ -10,3 +10,4 @@ export * from "./records";
 export * from "./edit-log";
 export * from "./insights";
 export * from "./videos";
+export * from "./video-topics";

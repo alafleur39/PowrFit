@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { suggestTopics, type LoggedExercise, type WorkoutLog } from "@/lib/strength";
+import { isVideoTopic, suggestTopics, videoQuery, type LoggedExercise, type WorkoutLog } from "@/lib/strength";
 
 const NOW = new Date("2026-10-19T18:00:00.000Z");
 const daysAgo = (days: number) => new Date(NOW.getTime() - days * 86_400_000).toISOString();
@@ -84,5 +84,22 @@ describe("suggestTopics", () => {
   it("returns at most `limit`, most useful first", () => {
     const logs = [log(11, [bench(135, 6), row(95)]), log(13, [bench(135, 6)])];
     expect(suggestTopics(logs, NOW).map((s) => s.kind)).toEqual(["comeback", "new-exercise"]);
+  });
+
+  it("only suggests topics the video server accepts, with the server's search words (V-01)", () => {
+    const plateau = [log(2, [bench(180)]), log(9, [bench(180)]), log(40, [bench(185)])];
+    const mixed = [log(11, [bench(135, 6), row(95)]), log(13, [bench(135, 6)])];
+    const suggestions = [
+      ...suggestTopics(plateau, NOW, 10),
+      ...suggestTopics(mixed, NOW, 10),
+      ...suggestTopics([log(1, [bench(95)])], NOW, 10),
+    ];
+    expect(new Set(suggestions.map((s) => s.kind))).toEqual(
+      new Set(["plateau", "comeback", "new-exercise", "balance", "beginner"])
+    );
+    for (const suggestion of suggestions) {
+      expect(isVideoTopic(suggestion.topic), suggestion.topic).toBe(true);
+      expect(suggestion.query).toBe(videoQuery(suggestion.topic));
+    }
   });
 });
