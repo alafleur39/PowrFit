@@ -32,7 +32,7 @@ import {
   type WorkoutDraft,
   type WorkoutLog,
 } from "@/lib/strength";
-import { formatElapsed, formatWeight, plural } from "@/lib/workout/format";
+import { formatCardioSuffix, formatElapsed, formatWeight, plural } from "@/lib/workout/format";
 
 // The live workout logger (design spec §6.5, Phase 2 P2-08 to P2-10).
 export default function LogPage() {
@@ -196,6 +196,7 @@ function Logger({
             </span>
             {" · "}
             {plural(totals.sets, "set")} · {formatWeight(totals.volume, unit)}
+            {formatCardioSuffix(totals.cardioSec)}
           </p>
         </div>
         <Button className="h-11 px-5 text-base font-bold" onClick={() => setFinishOpen(true)}>
@@ -284,7 +285,7 @@ function Logger({
           <div className="flex flex-col gap-2 text-sm">
             <p>
               {counts.done} {counts.done === 1 ? "set" : "sets"} done ·{" "}
-              {formatWeight(totals.volume, unit)} volume.
+              {formatWeight(totals.volume, unit)} volume{formatCardioSuffix(totals.cardioSec)}.
             </p>
             {counts.notDone > 0 && (
               <p className="text-muted-foreground">

@@ -19,13 +19,13 @@ function log(days: number, exercises: LoggedExercise[]): WorkoutLog {
   const at = daysAgo(days);
   return {
     id: `w${next}`,
-    schemaVersion: 1,
+    schemaVersion: 2,
     startedAt: at,
     endedAt: at,
     updatedAt: at,
     exercises,
     exerciseIds: exercises.map((e) => e.exerciseId),
-    totals: { sets: 0, reps: 0, volume: 0, unit: "lb" },
+    totals: { sets: 0, reps: 0, volume: 0, unit: "lb", cardioSec: 0 },
   };
 }
 

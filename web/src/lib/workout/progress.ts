@@ -2,7 +2,7 @@
 // be tested without a browser. Buckets use the device's local calendar, like
 // weekStart: a workout belongs to the day it ended on, where the user is.
 
-import { convertWeight, roundWeight, workoutTotals, type WeightUnit, type WorkoutLog } from "@/lib/strength";
+import { convertWeight, isCardioSet, roundWeight, workoutTotals, type WeightUnit, type WorkoutLog } from "@/lib/strength";
 import { weekStart } from "./format";
 
 export type ProgressRange = "week" | "month" | "year";
@@ -16,6 +16,8 @@ export type VolumeBucket = {
   workouts: number;
   /** Total volume in the chart's unit, rounded once. */
   volume: number;
+  /** Time on cardio sets. */
+  cardioSec: number;
 };
 
 const addDays = (date: Date, days: number) =>
@@ -82,15 +84,19 @@ export function volumeBuckets(
     grouped[index].push(log);
   }
 
-  return starts.map((start, i) => ({
-    ...labels(range, start),
-    start,
-    workouts: grouped[i].length,
-    volume: workoutTotals(
+  return starts.map((start, i) => {
+    const totals = workoutTotals(
       grouped[i].flatMap((log) => log.exercises),
       unit
-    ).volume,
-  }));
+    );
+    return {
+      ...labels(range, start),
+      start,
+      workouts: grouped[i].length,
+      volume: totals.volume,
+      cardioSec: totals.cardioSec,
+    };
+  });
 }
 
 export type TrendPoint = { logId: string; endedAt: string; weight: number };
@@ -110,7 +116,7 @@ export function exerciseTrend(
     for (const exercise of log.exercises) {
       if (exercise.exerciseId !== exerciseId) continue;
       for (const set of exercise.sets) {
-        if (!set.done) continue;
+        if (!set.done || isCardioSet(set)) continue;
         const weight = convertWeight(set.weight, set.unit, unit);
         if (best === null || weight > best) best = weight;
       }
@@ -128,7 +134,8 @@ export function trendExercises(logs: readonly WorkoutLog[]): TrendExercise[] {
   for (const log of logs) {
     const seen = new Set<string>();
     for (const exercise of log.exercises) {
-      if (seen.has(exercise.exerciseId) || !exercise.sets.some((set) => set.done)) continue;
+      // Cardio has no weight to chart.
+      if (seen.has(exercise.exerciseId) || !exercise.sets.some((set) => set.done && !isCardioSet(set))) continue;
       seen.add(exercise.exerciseId);
       const entry = byId.get(exercise.exerciseId) ?? {
         exerciseId: exercise.exerciseId,

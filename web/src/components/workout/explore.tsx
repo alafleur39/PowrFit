@@ -41,7 +41,7 @@ export function Explore() {
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium text-foreground">{exercise.name}</span>
                   <span className="block text-sm text-muted-foreground">
-                    {catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
+                    {exercise.cardio ? "Cardio" : catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
                   </span>
                 </span>
                 <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />

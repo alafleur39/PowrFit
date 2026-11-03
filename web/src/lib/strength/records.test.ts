@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { beatsBest, bestWeightsKg, recordsByLog, type LoggedSet, type WorkoutLog } from "@/lib/strength";
+import { beatsBest, bestWeightsKg, recordsByLog, type StrengthSet, type WorkoutLog } from "@/lib/strength";
 
 let n = 0;
-function workout(day: number, exercises: Record<string, LoggedSet[]>): WorkoutLog {
+function workout(day: number, exercises: Record<string, StrengthSet[]>): WorkoutLog {
   n += 1;
   const at = `2026-10-${String(day).padStart(2, "0")}T18:00:00.000Z`;
   return {
     id: `w${n}`,
-    schemaVersion: 1,
+    schemaVersion: 2,
     startedAt: at,
     endedAt: at,
     updatedAt: at,
@@ -18,11 +18,11 @@ function workout(day: number, exercises: Record<string, LoggedSet[]>): WorkoutLo
       sets,
     })),
     exerciseIds: Object.keys(exercises),
-    totals: { sets: 0, reps: 0, volume: 0, unit: "lb" },
+    totals: { sets: 0, reps: 0, volume: 0, unit: "lb", cardioSec: 0 },
   };
 }
-const lb = (weight: number, reps = 5, done = true): LoggedSet => ({ weight, reps, unit: "lb", done });
-const kg = (weight: number, reps = 5): LoggedSet => ({ weight, reps, unit: "kg", done: true });
+const lb = (weight: number, reps = 5, done = true): StrengthSet => ({ weight, reps, unit: "lb", done });
+const kg = (weight: number, reps = 5): StrengthSet => ({ weight, reps, unit: "kg", done: true });
 
 describe("personal records", () => {
   it("doesn't count the first time an exercise is done", () => {

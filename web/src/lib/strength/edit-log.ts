@@ -1,14 +1,19 @@
 // Editing a finished workout (Phase 4, P4-05, decision D24).
 //
 // Pure, like draft.ts: every function returns a new log and timestamps are
-// passed in. Weights and reps can change and sets or exercises can be
+// passed in. Weights and reps (or a cardio set's time and stats) can change and sets or exercises can be
 // removed; start and end times never change. While editing, a log may be
 // invalid (an exercise with no sets left); logProblems says what to fix and
 // cleanEditedLog drops the empty exercises and recomputes what's derived.
 
 import { EXERCISE_NOTE_LIMIT } from "./draft";
 import { workoutTotals } from "./totals";
-import type { LoggedExercise, LoggedSet, WorkoutLog } from "./types";
+import { isCardioSet, type CardioSet, type LoggedExercise, type LoggedSet, type StrengthSet, type WorkoutLog } from "./types";
+
+/** What an edit can change: weight and reps, or a cardio set's time and stats. */
+export type LogSetPatch =
+  | Partial<Pick<StrengthSet, "weight" | "reps">>
+  | Partial<Omit<CardioSet, "done">>;
 
 function assertExercise(log: WorkoutLog, index: number): LoggedExercise {
   const exercise = log.exercises[index];
@@ -26,12 +31,15 @@ const touched = (log: WorkoutLog, now: string, exercises: LoggedExercise[]): Wor
   updatedAt: now,
 });
 
-/** Changes a set's weight (in the set's own unit) or reps. */
+/**
+ * Changes a set's weight (in the set's own unit) or reps, or a cardio set's
+ * time and stats. A stat set to undefined is removed.
+ */
 export function editLogSet(
   log: WorkoutLog,
   exerciseIndex: number,
   setIndex: number,
-  patch: { weight?: number; reps?: number },
+  patch: LogSetPatch,
   now: string
 ): WorkoutLog {
   const exercise = assertExercise(log, exerciseIndex);
@@ -44,7 +52,12 @@ export function editLogSet(
         ? item
         : {
             ...item,
-            sets: item.sets.map((set, j): LoggedSet => (j === setIndex ? { ...set, ...patch } : set)),
+            sets: item.sets.map((set, j): LoggedSet => {
+              if (j !== setIndex) return set;
+              const next = { ...set, ...patch } as Record<string, unknown>;
+              for (const key of Object.keys(next)) if (next[key] === undefined) delete next[key];
+              return next as LoggedSet;
+            }),
           }
     )
   );
@@ -105,11 +118,16 @@ export function logProblems(log: WorkoutLog): string[] {
   if (sets.length === 0) {
     problems.push("Keep at least one set, or delete the workout instead.");
   }
-  if (sets.some((set) => !Number.isInteger(set.reps) || set.reps < 1)) {
+  const strength = sets.filter((set): set is StrengthSet => !isCardioSet(set));
+  const cardio = sets.filter(isCardioSet);
+  if (strength.some((set) => !Number.isInteger(set.reps) || set.reps < 1)) {
     problems.push("Every set needs at least 1 rep.");
   }
-  if (sets.some((set) => !Number.isFinite(set.weight) || set.weight < 0)) {
+  if (strength.some((set) => !Number.isFinite(set.weight) || set.weight < 0)) {
     problems.push("Weights can't be negative or empty.");
+  }
+  if (cardio.some((set) => !Number.isInteger(set.durationSec) || set.durationSec < 1)) {
+    problems.push("Every cardio set needs a time.");
   }
   return problems;
 }

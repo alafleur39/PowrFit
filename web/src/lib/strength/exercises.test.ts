@@ -11,8 +11,9 @@ import {
 const names = (list: { name: string }[]) => list.map((exercise) => exercise.name);
 
 describe("EXERCISES catalog", () => {
-  it("has the 52 exercises approved under D7, 2 added for presets and 71 for more gyms", () => {
-    expect(EXERCISES).toHaveLength(125);
+  it("has the 52 exercises approved under D7, 2 added for presets, 71 for more gyms and 11 cardio", () => {
+    expect(EXERCISES).toHaveLength(136);
+    expect(EXERCISES.filter((exercise) => exercise.cardio)).toHaveLength(11);
   });
 
   it("has unique, kebab-case ids", () => {
@@ -131,6 +132,13 @@ describe("searchExercises", () => {
       "Smith machine bench press",
       "Smith machine incline press",
     ]);
+  });
+
+  it("finds cardio machines by their other names", () => {
+    expect(names(searchExercises("stairmaster"))).toEqual(["Stair climber"]);
+    expect(names(searchExercises("assault"))).toEqual(["Air bike"]);
+    expect(names(searchExercises("rower"))).toEqual(["Rowing machine"]);
+    expect(names(searchExercises("cross trainer"))).toEqual(["Elliptical"]);
   });
 
   it("returns [] when nothing matches", () => {

@@ -13,7 +13,7 @@ import { useRecords } from "./use-records";
 import { useWorkout } from "./use-workout-logs";
 import { WorkoutEditor } from "./workout-editor";
 import { workoutTotals, type PersonalRecord, type WeightUnit } from "@/lib/strength";
-import { formatDate, formatDuration, formatSetsLine, formatWeight } from "@/lib/workout/format";
+import { formatCardioMinutes, formatDate, formatDuration, formatSetsLine, formatWeight } from "@/lib/workout/format";
 
 // Workout summary (design spec §6.6). Totals are recomputed with
 // workoutTotals in the user's unit, the same way Home and History do it.
@@ -130,6 +130,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
           ["Volume", formatWeight(totals.volume, unit)],
           ["Sets", String(totals.sets)],
           ["Reps", String(totals.reps)],
+          ...(totals.cardioSec > 0 ? [["Cardio", formatCardioMinutes(totals.cardioSec)]] : []),
         ].map(([label, value]) => (
           <div key={label} className="rounded-xl border border-border bg-surface p-3">
             <dt className="text-xs text-muted-foreground">{label}</dt>

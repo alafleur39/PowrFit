@@ -44,9 +44,20 @@ export type Equipment = (typeof EQUIPMENT)[number];
 export const MECHANICS = ["compound", "isolation"] as const;
 export type Mechanic = (typeof MECHANICS)[number];
 
+export const DISTANCE_UNITS = ["km", "mi"] as const;
+export type DistanceUnit = (typeof DISTANCE_UNITS)[number];
+
+/**
+ * What a cardio set can record besides its time (2026-11-02). Each cardio
+ * exercise lists the ones its machine shows, in display order.
+ */
+export const CARDIO_FIELDS = ["distance", "level", "floors", "inclinePct", "calories"] as const;
+export type CardioField = (typeof CARDIO_FIELDS)[number];
+
 // Bump when the stored WorkoutLog shape changes so old documents can be
-// migrated on read.
-export const WORKOUT_LOG_SCHEMA_VERSION = 1;
+// migrated on read. 2 (2026-11-02): sets may be cardio sets, and totals
+// have cardioSec. Version 1 documents are still read.
+export const WORKOUT_LOG_SCHEMA_VERSION = 2;
 
 export type Exercise = {
   /** Stable kebab-case slug, e.g. "barbell-back-squat". */
@@ -56,6 +67,10 @@ export type Exercise = {
   secondaryMuscles: readonly MuscleGroup[];
   equipment: Equipment;
   mechanic: Mechanic;
+  /** Other names search should find it by, e.g. "StairMaster". */
+  aliases?: readonly string[];
+  /** Set on cardio exercises: logged by time, not weight × reps. */
+  cardio?: { fields: readonly CardioField[] };
 };
 
 export type RoutineExercise = {
@@ -77,13 +92,32 @@ export type Routine = {
   updatedAt: string;
 };
 
-export type LoggedSet = {
+export type StrengthSet = {
   reps: number;
   /** Stored as entered, in `unit`; analytics convert. */
   weight: number;
   unit: WeightUnit;
   done: boolean;
 };
+
+/** A stretch on a cardio machine. Only the time is required. */
+export type CardioSet = {
+  durationSec: number;
+  distance?: number;
+  /** Present whenever `distance` is. */
+  distanceUnit?: DistanceUnit;
+  level?: number;
+  floors?: number;
+  inclinePct?: number;
+  calories?: number;
+  done: boolean;
+};
+
+export type LoggedSet = StrengthSet | CardioSet;
+
+export function isCardioSet(set: LoggedSet): set is CardioSet {
+  return "durationSec" in set;
+}
 
 export type LoggedExercise = {
   exerciseId: string;
@@ -99,6 +133,8 @@ export type WorkoutTotals = {
   volume: number;
   /** Unit `volume` is expressed in. */
   unit: WeightUnit;
+  /** Time on cardio sets; 0 in version 1 workouts. */
+  cardioSec: number;
 };
 
 export type WorkoutLog = {

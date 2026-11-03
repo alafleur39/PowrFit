@@ -7,7 +7,7 @@
 // same limits are enforced by firestore.rules.
 
 import { EXERCISES } from "./exercises";
-import type { Routine, RoutineExercise, WorkoutLog } from "./types";
+import { isCardioSet, type Routine, type RoutineExercise, type StrengthSet, type WorkoutLog } from "./types";
 
 export const ROUTINE_LIMITS = {
   name: 60,
@@ -70,7 +70,10 @@ export function routineFromWorkout(
         {
           exerciseId: log.exercises[index].exerciseId,
           targetSets: Math.min(done.length, ROUTINE_LIMITS.targetSets),
-          targetReps: repsTarget(done.map((set) => set.reps)),
+          // Cardio sets have no reps, so they get no reps target.
+          ...(done.every((set) => !isCardioSet(set)) && {
+            targetReps: repsTarget(done.map((set) => (set as StrengthSet).reps)),
+          }),
         },
       ];
     })

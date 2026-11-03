@@ -8,7 +8,7 @@ import type { LogEntry } from "./workout-repo";
 function log(id: string, endedAt: string): WorkoutLog {
   return {
     id,
-    schemaVersion: 1,
+    schemaVersion: 2,
     startedAt: endedAt,
     endedAt,
     updatedAt: endedAt,
@@ -16,7 +16,7 @@ function log(id: string, endedAt: string): WorkoutLog {
       { exerciseId: "pull-up", exerciseName: "Pull-up", sets: [{ reps: 8, weight: 0, unit: "lb", done: true }] },
     ],
     exerciseIds: ["pull-up"],
-    totals: { sets: 1, reps: 8, volume: 0, unit: "lb" },
+    totals: { sets: 1, reps: 8, volume: 0, unit: "lb", cardioSec: 0 },
   };
 }
 

@@ -16,7 +16,7 @@ const T2 = "2026-10-20T09:00:00.000Z";
 
 const log: WorkoutLog = {
   id: "w1",
-  schemaVersion: 1,
+  schemaVersion: 2,
   routineName: "Pull day",
   startedAt: T0,
   endedAt: T1,
@@ -37,7 +37,7 @@ const log: WorkoutLog = {
     },
   ],
   exerciseIds: ["barbell-row", "hammer-curl"],
-  totals: { sets: 3, reps: 24, volume: 2338.7, unit: "lb" },
+  totals: { sets: 3, reps: 24, volume: 2338.7, unit: "lb", cardioSec: 0 },
 };
 
 describe("editing a finished workout", () => {
@@ -47,7 +47,7 @@ describe("editing a finished workout", () => {
     expect(edited.exercises[0].sets[0]).toBe(log.exercises[0].sets[0]);
     expect(edited.exercises[1]).toBe(log.exercises[1]);
     expect(edited).toMatchObject({ startedAt: T0, endedAt: T1, updatedAt: T2 });
-    expect(log.exercises[0].sets[1].weight).toBe(155);
+    expect(log.exercises[0].sets[1]).toMatchObject({ weight: 155 });
   });
 
   it("removes a set and an exercise", () => {
@@ -79,7 +79,7 @@ describe("editing a finished workout", () => {
     const cleaned = cleanEditedLog(emptied);
     expect(cleaned.exercises.map((e) => e.exerciseId)).toEqual(["barbell-row"]);
     expect(cleaned.exerciseIds).toEqual(["barbell-row"]);
-    expect(cleaned.totals).toEqual({ sets: 2, reps: 14, volume: 2010, unit: "lb" });
+    expect(cleaned.totals).toEqual({ sets: 2, reps: 14, volume: 2010, unit: "lb", cardioSec: 0 });
   });
 
   it("says what's wrong before saving", () => {

@@ -4,11 +4,15 @@
 // Ids and timestamps are passed in, so callers own randomness and time and
 // tests stay deterministic. finishDraft turns a draft into the WorkoutLog that
 // gets saved; only sets marked done survive it (Phase 2 plan, section B).
+// Cardio exercises (2026-11-02) get cardio sets: a time plus optional stats,
+// and no rest timer.
 
 import { EXERCISES } from "./exercises";
 import { workoutTotals } from "./totals";
 import {
   WORKOUT_LOG_SCHEMA_VERSION,
+  type CardioSet,
+  type DistanceUnit,
   type LoggedExercise,
   type LoggedSet,
   type Routine,
@@ -18,12 +22,37 @@ import {
 } from "./types";
 
 /** A set as typed so far; null means the field is still empty. */
-export type DraftSet = {
+export type DraftStrengthSet = {
   reps: number | null;
   weight: number | null;
   unit: WeightUnit;
   done: boolean;
 };
+
+/** A cardio set as typed so far; only the time is needed to finish it. */
+export type DraftCardioSet = {
+  durationSec: number | null;
+  distance: number | null;
+  distanceUnit: DistanceUnit;
+  level: number | null;
+  floors: number | null;
+  inclinePct: number | null;
+  calories: number | null;
+  done: boolean;
+};
+
+export type DraftSet = DraftStrengthSet | DraftCardioSet;
+
+export function isDraftCardioSet(set: DraftSet): set is DraftCardioSet {
+  return "durationSec" in set;
+}
+
+/** What updateSet can change. */
+export type DraftSetPatch =
+  | Partial<Pick<DraftStrengthSet, "weight" | "reps">>
+  | Partial<Omit<DraftCardioSet, "done" | "distanceUnit">>;
+
+const CARDIO_STATS = ["distance", "level", "floors", "inclinePct", "calories"] as const;
 
 export type DraftExercise = {
   /** Stable within the draft, so the same exercise can appear twice. */
@@ -66,15 +95,35 @@ export type WorkoutDraft = {
   rest?: DraftRest;
 };
 
-const EXERCISE_NAMES = new Map(EXERCISES.map((exercise) => [exercise.id, exercise.name]));
+const EXERCISES_BY_ID = new Map(EXERCISES.map((exercise) => [exercise.id, exercise]));
 
 function exerciseName(exerciseId: string): string {
-  const name = EXERCISE_NAMES.get(exerciseId);
-  if (!name) throw new RangeError(`Unknown exercise: ${exerciseId}`);
-  return name;
+  const exercise = EXERCISES_BY_ID.get(exerciseId);
+  if (!exercise) throw new RangeError(`Unknown exercise: ${exerciseId}`);
+  return exercise.name;
 }
 
-function emptySet(unit: WeightUnit): DraftSet {
+/** True for treadmill, stair climber and the other cardio machines. */
+export function isCardioExercise(exerciseId: string): boolean {
+  return EXERCISES_BY_ID.get(exerciseId)?.cardio !== undefined;
+}
+
+/** Distances follow the weight unit: miles with lb, kilometres with kg. */
+export const distanceUnitFor = (unit: WeightUnit): DistanceUnit => (unit === "lb" ? "mi" : "km");
+
+function emptySet(exerciseId: string, unit: WeightUnit): DraftSet {
+  if (isCardioExercise(exerciseId)) {
+    return {
+      durationSec: null,
+      distance: null,
+      distanceUnit: distanceUnitFor(unit),
+      level: null,
+      floors: null,
+      inclinePct: null,
+      calories: null,
+      done: false,
+    };
+  }
   return { reps: null, weight: null, unit, done: false };
 }
 
@@ -91,7 +140,7 @@ export function createDraft(options: {
     exerciseName: exerciseName(item.exerciseId),
     targetReps: item.targetReps,
     ...(item.restSec !== undefined && { restSec: item.restSec }),
-    sets: Array.from({ length: item.targetSets }, () => emptySet(unit)),
+    sets: Array.from({ length: item.targetSets }, () => emptySet(item.exerciseId, unit)),
   }));
 
   return {
@@ -153,7 +202,7 @@ export function addExercise(draft: WorkoutDraft, exerciseId: string, now: string
     key: `e${draft.nextKey}`,
     exerciseId,
     exerciseName: exerciseName(exerciseId),
-    sets: [emptySet(draft.unit)],
+    sets: [emptySet(exerciseId, draft.unit)],
   };
   return {
     ...draft,
@@ -174,13 +223,13 @@ export function removeExercise(draft: WorkoutDraft, key: string, now: string): W
   };
 }
 
-/** Adds a set that copies the previous set's weight and reps (not done). */
+/** Adds a set that copies the previous set's numbers (not done). */
 export function addSet(draft: WorkoutDraft, key: string, now: string): WorkoutDraft {
   return updateExercise(draft, key, now, (exercise) => {
     const previous = exercise.sets.at(-1);
     const next: DraftSet = previous
-      ? { reps: previous.reps, weight: previous.weight, unit: previous.unit, done: false }
-      : emptySet(draft.unit);
+      ? { ...previous, done: false }
+      : emptySet(exercise.exerciseId, draft.unit);
     return { ...exercise, sets: [...exercise.sets, next] };
   });
 }
@@ -209,24 +258,40 @@ function assertReps(reps: number | null): void {
   }
 }
 
-/** A set can be marked done once it has a weight (0 is fine) and at least 1 rep. */
+/**
+ * A set can be marked done once it has a weight (0 is fine) and at least 1
+ * rep; a cardio set once it has a time.
+ */
 export function canCompleteSet(set: DraftSet): boolean {
+  if (isDraftCardioSet(set)) return set.durationSec !== null && set.durationSec >= 1;
   return set.weight !== null && set.reps !== null && set.reps >= 1;
 }
 
+function assertCardioPatch(patch: DraftSetPatch): void {
+  for (const [key, value] of Object.entries(patch)) {
+    if (key === "weight" || key === "reps" || value === null || value === undefined) continue;
+    const whole = key === "durationSec" || key === "floors" || key === "calories";
+    if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || (whole && !Number.isInteger(value))) {
+      throw new RangeError(`Invalid ${key}: ${value}`);
+    }
+  }
+}
+
 /**
- * Changes a set's weight or reps. A done set that stops being completable
- * (for example its reps are cleared) is unmarked.
+ * Changes a set's weight or reps, or a cardio set's time and stats. A done
+ * set that stops being completable (for example its reps are cleared) is
+ * unmarked.
  */
 export function updateSet(
   draft: WorkoutDraft,
   key: string,
   index: number,
-  patch: { weight?: number | null; reps?: number | null },
+  patch: DraftSetPatch,
   now: string
 ): WorkoutDraft {
   if ("weight" in patch) assertWeight(patch.weight ?? null);
   if ("reps" in patch) assertReps(patch.reps ?? null);
+  assertCardioPatch(patch);
 
   return updateExercise(draft, key, now, (exercise) => {
     assertSetIndex(exercise, index);
@@ -234,7 +299,7 @@ export function updateSet(
       ...exercise,
       sets: exercise.sets.map((set, i) => {
         if (i !== index) return set;
-        const next = { ...set, ...patch };
+        const next = { ...set, ...patch } as DraftSet;
         return { ...next, done: next.done && canCompleteSet(next) };
       }),
     };
@@ -264,7 +329,7 @@ export function toggleSetDone(
     ...current,
     sets: current.sets.map((item, i) => (i === index ? { ...item, done: !item.done } : item)),
   }));
-  if (set.done) return next;
+  if (set.done || isDraftCardioSet(set)) return next;
   const durationSec = exercise.restSec ?? DEFAULT_REST_SEC;
   if (durationSec === 0) return next;
   return { ...next, rest: { endsAt: addSeconds(now, durationSec), durationSec } };
@@ -297,6 +362,20 @@ export function setDraftUnit(draft: WorkoutDraft, unit: WeightUnit, now: string)
   return { ...draft, unit, updatedAt: now };
 }
 
+/** A finished draft set as it's saved: empty cardio stats are left out. */
+function toLoggedSet(set: DraftSet): LoggedSet {
+  if (!isDraftCardioSet(set)) {
+    return { reps: set.reps as number, weight: set.weight as number, unit: set.unit, done: true };
+  }
+  const logged: CardioSet = { durationSec: set.durationSec as number, done: true };
+  for (const stat of CARDIO_STATS) {
+    const value = set[stat];
+    if (value !== null) logged[stat] = value;
+  }
+  if (logged.distance !== undefined) logged.distanceUnit = set.distanceUnit;
+  return logged;
+}
+
 function doneLoggedExercises(draft: WorkoutDraft): LoggedExercise[] {
   return draft.exercises
     .map((exercise) => ({
@@ -305,14 +384,7 @@ function doneLoggedExercises(draft: WorkoutDraft): LoggedExercise[] {
       ...(exercise.note?.trim() && { note: exercise.note.trim() }),
       sets: exercise.sets
         .filter((set) => set.done && canCompleteSet(set))
-        .map(
-          (set): LoggedSet => ({
-            reps: set.reps as number,
-            weight: set.weight as number,
-            unit: set.unit,
-            done: true,
-          })
-        ),
+        .map(toLoggedSet),
     }))
     .filter((exercise) => exercise.sets.length > 0);
 }

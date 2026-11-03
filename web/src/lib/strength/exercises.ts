@@ -159,6 +159,19 @@ export const EXERCISES: readonly Exercise[] = [
   { id: "kettlebell-clean-and-press", name: "Kettlebell clean and press", primaryMuscle: "full-body", secondaryMuscles: ["shoulders", "glutes"], equipment: "kettlebell", mechanic: "compound" },
   { id: "medicine-ball-slam", name: "Medicine ball slam", primaryMuscle: "full-body", secondaryMuscles: ["core", "shoulders"], equipment: "other", mechanic: "compound" },
   { id: "sled-push", name: "Sled push", primaryMuscle: "full-body", secondaryMuscles: ["quads", "glutes"], equipment: "other", mechanic: "compound" },
+
+  // Cardio (2026-11-02): logged by time plus what each machine shows.
+  { id: "treadmill", name: "Treadmill", primaryMuscle: "full-body", secondaryMuscles: ["quads", "hamstrings", "calves"], equipment: "machine", mechanic: "compound", cardio: { fields: ["distance", "inclinePct", "calories"] } },
+  { id: "stair-climber", name: "Stair climber", aliases: ["StairMaster", "stepmill", "stairs"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "glutes", "calves"], equipment: "machine", mechanic: "compound", cardio: { fields: ["level", "floors", "calories"] } },
+  { id: "elliptical", name: "Elliptical", aliases: ["cross trainer"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "glutes"], equipment: "machine", mechanic: "compound", cardio: { fields: ["level", "distance", "calories"] } },
+  { id: "exercise-bike", name: "Exercise bike", aliases: ["stationary bike", "upright bike", "spin bike", "cycling"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "calves"], equipment: "machine", mechanic: "compound", cardio: { fields: ["level", "distance", "calories"] } },
+  { id: "recumbent-bike", name: "Recumbent bike", aliases: ["cycling"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "glutes"], equipment: "machine", mechanic: "compound", cardio: { fields: ["level", "distance", "calories"] } },
+  { id: "air-bike", name: "Air bike", aliases: ["assault bike", "fan bike", "echo bike"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "shoulders"], equipment: "machine", mechanic: "compound", cardio: { fields: ["distance", "calories"] } },
+  { id: "rowing-machine", name: "Rowing machine", aliases: ["rower", "erg"], primaryMuscle: "full-body", secondaryMuscles: ["back", "quads", "biceps"], equipment: "machine", mechanic: "compound", cardio: { fields: ["distance", "calories"] } },
+  { id: "ski-erg", name: "Ski erg", primaryMuscle: "full-body", secondaryMuscles: ["back", "triceps", "core"], equipment: "machine", mechanic: "compound", cardio: { fields: ["distance", "calories"] } },
+  { id: "outdoor-run", name: "Outdoor run", aliases: ["running", "jog"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "hamstrings", "calves"], equipment: "bodyweight", mechanic: "compound", cardio: { fields: ["distance"] } },
+  { id: "walk", name: "Walk", aliases: ["walking", "hike"], primaryMuscle: "full-body", secondaryMuscles: ["quads", "calves"], equipment: "bodyweight", mechanic: "compound", cardio: { fields: ["distance"] } },
+  { id: "jump-rope", name: "Jump rope", aliases: ["skipping"], primaryMuscle: "full-body", secondaryMuscles: ["calves", "shoulders"], equipment: "other", mechanic: "compound", cardio: { fields: ["calories"] } },
 ];
 
 export type ExerciseFilters = {
@@ -180,9 +193,10 @@ function normalize(text: string): string {
 }
 
 /**
- * Case-insensitive search on name. Every word in `query` must appear, in any
- * order ("press bench" finds "Barbell bench press"). An empty query returns
- * every exercise that passes the filters. Results are sorted by name.
+ * Case-insensitive search on the name and aliases. Every word in `query`
+ * must appear in one of them, in any order ("press bench" finds "Barbell
+ * bench press", "stairmaster" finds "Stair climber"). An empty query
+ * returns every exercise that passes the filters. Results are sorted by name.
  */
 export function searchExercises(
   query: string,
@@ -195,8 +209,10 @@ export function searchExercises(
     .filter((exercise) => {
       if (filters.muscle && exercise.primaryMuscle !== filters.muscle) return false;
       if (filters.equipment && exercise.equipment !== filters.equipment) return false;
-      const name = normalize(exercise.name);
-      return words.every((word) => name.includes(word));
+      return [exercise.name, ...(exercise.aliases ?? [])].some((text) => {
+        const name = normalize(text);
+        return words.every((word) => name.includes(word));
+      });
     })
     .sort((a, b) => a.name.localeCompare(b.name, "en"));
 }

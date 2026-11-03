@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  formatCardioMinutes,
+  formatCardioSet,
+  formatCardioTime,
   formatDuration,
   formatElapsed,
   formatSetsLine,
   formatWeight,
   formatWeightAmount,
   plural,
+  parseDecimalInput,
+  parseDurationInput,
   parseRepsInput,
   parseWeightInput,
   weekStart,
@@ -112,5 +117,43 @@ describe("formatWeightAmount", () => {
   it("is formatWeight without the unit", () => {
     expect(formatWeightAmount(1140, "lb")).toBe("1,140");
     expect(formatWeight(1140, "lb")).toBe("1,140 lb");
+  });
+});
+
+describe("cardio", () => {
+  it("formats times and totals", () => {
+    expect(formatCardioTime(1200)).toBe("20:00");
+    expect(formatCardioTime(2730)).toBe("45:30");
+    expect(formatCardioTime(3900)).toBe("1:05:00");
+    expect(formatCardioMinutes(1530)).toBe("26 min");
+    expect(formatCardioMinutes(3900)).toBe("1 h 5 min");
+  });
+
+  it("formats a cardio set, leaving out what wasn't entered", () => {
+    expect(formatCardioSet({ durationSec: 1200, level: 8, floors: 95, calories: 210, done: true })).toBe(
+      "20:00 · level 8 · 95 floors · 210 cal"
+    );
+    expect(
+      formatCardioSet({ durationSec: 900, distance: 1.5, distanceUnit: "mi", inclinePct: 3, done: true })
+    ).toBe("15:00 · 1.5 mi · 3% incline");
+    expect(formatSetsLine([{ durationSec: 600, floors: 1, done: true }], "lb")).toBe("10:00 · 1 floor");
+  });
+
+  it("parses minutes, m:ss and h:mm:ss", () => {
+    expect(parseDurationInput("")).toBeNull();
+    expect(parseDurationInput("20")).toBe(1200);
+    expect(parseDurationInput("12.5")).toBe(750);
+    expect(parseDurationInput("20:30")).toBe(1230);
+    expect(parseDurationInput("1:05:00")).toBe(3900);
+    expect(parseDurationInput("0")).toBeUndefined();
+    expect(parseDurationInput("20:75")).toBeUndefined();
+    expect(parseDurationInput("abc")).toBeUndefined();
+    expect(parseDurationInput("25:00:00")).toBeUndefined();
+  });
+
+  it("parses optional decimal stats up to a limit", () => {
+    expect(parseDecimalInput("", 40)).toBeNull();
+    expect(parseDecimalInput("3,5", 40)).toBe(3.5);
+    expect(parseDecimalInput("41", 40)).toBeUndefined();
   });
 });

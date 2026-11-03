@@ -13,6 +13,8 @@ service cloud.firestore {
 
     // Mirrors decodeWorkoutLog in src/lib/workout/workout-codec.ts. Rules
     // can't loop over lists, so individual sets are checked by the app.
+    // Version 2 (2026-11-02) adds cardio sets and totals.cardioSec; version 1
+    // is still accepted from older copies of the app.
     function isValidWorkoutLog(logId) {
       let data = request.resource.data;
       let totals = data.totals;
@@ -21,7 +23,7 @@ service cloud.firestore {
         && data.keys().hasOnly(['id', 'schemaVersion', 'routineId', 'routineName', 'startedAt',
                                 'endedAt', 'updatedAt', 'exercises', 'exerciseIds', 'totals'])
         && data.id == logId
-        && data.schemaVersion == 1
+        && data.schemaVersion in [1, 2]
         && data.startedAt is string && data.startedAt.size() <= 40
         && data.endedAt is string && data.endedAt.size() <= 40
         && data.updatedAt is string && data.updatedAt.size() <= 40
@@ -30,7 +32,8 @@ service cloud.firestore {
         && data.exercises is list && data.exercises.size() >= 1 && data.exercises.size() <= 30
         && data.exerciseIds is list && data.exerciseIds.size() >= 1 && data.exerciseIds.size() <= 30
         && totals is map
-        && totals.keys().hasOnly(['sets', 'reps', 'volume', 'unit'])
+        && totals.keys().hasOnly(['sets', 'reps', 'volume', 'unit', 'cardioSec'])
+        && (!('cardioSec' in totals) || (totals.cardioSec is int && totals.cardioSec >= 0))
         && totals.sets is int && totals.sets >= 0
         && totals.reps is int && totals.reps >= 0
         && totals.volume is number && totals.volume >= 0

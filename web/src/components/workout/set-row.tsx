@@ -3,20 +3,20 @@
 import { useState } from "react";
 import { Check, Trophy, X } from "lucide-react";
 
-import { canCompleteSet, type DraftSet } from "@/lib/strength";
+import { canCompleteSet, type DraftStrengthSet } from "@/lib/strength";
 import { cn } from "@/lib/utils";
 import { parseRepsInput, parseWeightInput } from "@/lib/workout/format";
-
-const show = (value: number | null) => (value === null ? "" : String(value));
 
 /**
  * A number field that keeps what the user is typing ("62.", "62,5") while
  * only sending valid numbers to the draft. Invalid text is flagged, not
- * silently replaced.
+ * silently replaced. `format` turns a value back into text (cardio times
+ * show as "20:00").
  */
 export function NumberField({
   value,
   parse,
+  format = String,
   onValue,
   label,
   placeholder,
@@ -24,11 +24,13 @@ export function NumberField({
 }: {
   value: number | null;
   parse: (text: string) => number | null | undefined;
+  format?: (value: number) => string;
   onValue: (value: number | null) => void;
   label: string;
   placeholder?: string;
-  inputMode: "decimal" | "numeric";
+  inputMode: "decimal" | "numeric" | "text";
 }) {
+  const show = (shown: number | null) => (shown === null ? "" : format(shown));
   const [text, setText] = useState(show(value));
   const [lastValue, setLastValue] = useState(value);
   // Follow changes made elsewhere (for example a copied set).
@@ -73,7 +75,7 @@ export function SetRow({
   onRemove,
 }: {
   index: number;
-  set: DraftSet;
+  set: DraftStrengthSet;
   targetReps?: string;
   /** This set is a new personal record (P4-03). */
   record?: boolean;

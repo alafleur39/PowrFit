@@ -41,7 +41,7 @@ const fullLog: WorkoutLog = {
     },
   ],
   exerciseIds: ["barbell-bench-press"],
-  totals: { sets: 1, reps: 5, volume: 500, unit: "kg" },
+  totals: { sets: 1, reps: 5, volume: 500, unit: "kg", cardioSec: 0 },
 };
 
 describe("enum-like value lists", () => {
@@ -67,7 +67,7 @@ describe("enum-like value lists", () => {
 describe("domain types", () => {
   it("accepts a fully populated workout log", () => {
     expectTypeOf(fullLog).toEqualTypeOf<WorkoutLog>();
-    expect(fullLog.schemaVersion).toBe(1);
+    expect(fullLog.schemaVersion).toBe(2);
   });
 
   it("keeps optional fields optional", () => {
@@ -90,7 +90,7 @@ describe("domain types", () => {
 
   it("requires a device-generated id and schema version on every log", () => {
     expectTypeOf<WorkoutLog["id"]>().toEqualTypeOf<string>();
-    expectTypeOf<WorkoutLog["schemaVersion"]>().toEqualTypeOf<1>();
+    expectTypeOf<WorkoutLog["schemaVersion"]>().toEqualTypeOf<2>();
   });
 
   it("rejects values outside the enums", () => {

@@ -3,15 +3,23 @@
 import { Plus, Trash2 } from "lucide-react";
 
 import {
+  EXERCISES,
   beatsBest,
   convertWeight,
+  isDraftCardioSet,
   type DraftExercise,
+  type DraftSetPatch,
   type LoggedSet,
   type WeightUnit,
 } from "@/lib/strength";
 import { formatSetsLine } from "@/lib/workout/format";
+import { CardioSetRow } from "./cardio-set-row";
 import { ExerciseNote } from "./exercise-note";
 import { SetRow } from "./set-row";
+
+const CARDIO_FIELDS = new Map(
+  EXERCISES.flatMap((exercise) => (exercise.cardio ? [[exercise.id, exercise.cardio.fields] as const] : []))
+);
 
 /**
  * The set to mark as a PR (D22): the heaviest finished set, if it beats the
@@ -21,7 +29,7 @@ function recordIndex(exercise: DraftExercise, bestKg: number | undefined): numbe
   let index = -1;
   let heaviest = -1;
   exercise.sets.forEach((set, i) => {
-    if (!set.done || set.weight === null) return;
+    if (!set.done || isDraftCardioSet(set) || set.weight === null) return;
     const kg = convertWeight(set.weight, set.unit, "kg");
     if (kg > heaviest) {
       heaviest = kg;
@@ -30,6 +38,7 @@ function recordIndex(exercise: DraftExercise, bestKg: number | undefined): numbe
   });
   if (index === -1) return -1;
   const set = exercise.sets[index];
+  if (isDraftCardioSet(set)) return -1;
   return beatsBest({ weight: set.weight ?? 0, unit: set.unit }, bestKg) ? index : -1;
 }
 
@@ -50,7 +59,7 @@ export function ExerciseCard({
   /** Heaviest earlier set of this exercise in kg; undefined if never done. */
   bestKg?: number;
   unit: WeightUnit;
-  onChangeSet: (index: number, patch: { weight?: number | null; reps?: number | null }) => void;
+  onChangeSet: (index: number, patch: DraftSetPatch) => void;
   onToggleSet: (index: number) => void;
   onRemoveSet: (index: number) => void;
   onAddSet: () => void;
@@ -58,6 +67,7 @@ export function ExerciseCard({
   onNoteChange: (note: string) => void;
 }) {
   const record = recordIndex(exercise, bestKg);
+  const cardioFields = CARDIO_FIELDS.get(exercise.exerciseId);
   return (
     <section
       aria-label={exercise.exerciseName}
@@ -82,29 +92,54 @@ export function ExerciseCard({
         </button>
       </div>
 
-      <div
-        className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
-        aria-hidden
-      >
-        <span className="text-center">Set</span>
-        <span className="text-center">Weight</span>
-        <span className="text-center">Reps</span>
-        <span className="text-center">Done</span>
-        <span />
-      </div>
+      {cardioFields ? (
+        <div
+          className="mt-3 grid grid-cols-[2rem_1fr_3rem_2.75rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
+          aria-hidden
+        >
+          <span className="text-center">Set</span>
+          <span className="text-center">Time</span>
+          <span className="text-center">Done</span>
+          <span />
+        </div>
+      ) : (
+        <div
+          className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem_2.75rem] gap-2 px-1 text-xs font-medium text-muted-foreground"
+          aria-hidden
+        >
+          <span className="text-center">Set</span>
+          <span className="text-center">Weight</span>
+          <span className="text-center">Reps</span>
+          <span className="text-center">Done</span>
+          <span />
+        </div>
+      )}
       <ol className="mt-1 flex flex-col gap-1">
-        {exercise.sets.map((set, index) => (
-          <SetRow
-            key={index}
-            index={index}
-            set={set}
-            targetReps={exercise.targetReps}
-            record={index === record}
-            onChange={(patch) => onChangeSet(index, patch)}
-            onToggle={() => onToggleSet(index)}
-            onRemove={() => onRemoveSet(index)}
-          />
-        ))}
+        {exercise.sets.map((set, index) =>
+          isDraftCardioSet(set) ? (
+            <CardioSetRow
+              key={index}
+              index={index}
+              set={set}
+              exerciseName={exercise.exerciseName}
+              fields={cardioFields ?? []}
+              onChange={(patch) => onChangeSet(index, patch)}
+              onToggle={() => onToggleSet(index)}
+              onRemove={() => onRemoveSet(index)}
+            />
+          ) : (
+            <SetRow
+              key={index}
+              index={index}
+              set={set}
+              targetReps={exercise.targetReps}
+              record={index === record}
+              onChange={(patch) => onChangeSet(index, patch)}
+              onToggle={() => onToggleSet(index)}
+              onRemove={() => onRemoveSet(index)}
+            />
+          )
+        )}
       </ol>
 
       <button

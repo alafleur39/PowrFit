@@ -7,7 +7,7 @@
 
 import { EXERCISES } from "./exercises";
 import { convertWeight } from "./units";
-import type { MuscleGroup, WorkoutLog } from "./types";
+import { isCardioSet, type MuscleGroup, type WorkoutLog } from "./types";
 
 export type SuggestionKind = "comeback" | "plateau" | "new-exercise" | "balance" | "beginner";
 
@@ -48,7 +48,7 @@ function topSetKg(log: WorkoutLog, exerciseId: string): number | undefined {
   for (const exercise of log.exercises) {
     if (exercise.exerciseId !== exerciseId) continue;
     for (const set of exercise.sets) {
-      if (!set.done) continue;
+      if (!set.done || isCardioSet(set)) continue;
       const kg = convertWeight(set.weight, set.unit, "kg");
       if (best === undefined || kg > best) best = kg;
     }

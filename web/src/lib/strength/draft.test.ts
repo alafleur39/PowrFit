@@ -6,6 +6,7 @@ import {
   addSet,
   canCompleteSet,
   createDraft,
+  isCardioExercise,
   draftSetCounts,
   draftTotals,
   finishDraft,
@@ -160,8 +161,8 @@ describe("units", () => {
     let draft = addExercise(emptyDraft(), "barbell-curl", T1);
     draft = setDraftUnit(draft, "kg", T1);
     draft = addExercise(draft, "hammer-curl", T1);
-    expect(draft.exercises[0].sets[0].unit).toBe("lb");
-    expect(draft.exercises[1].sets[0].unit).toBe("kg");
+    expect(draft.exercises[0].sets[0]).toMatchObject({ unit: "lb" });
+    expect(draft.exercises[1].sets[0]).toMatchObject({ unit: "kg" });
   });
 });
 
@@ -176,7 +177,7 @@ describe("finishDraft", () => {
     const log = finishDraft(draft, T2);
     expect(log).toMatchObject({
       id: "w1",
-      schemaVersion: 1,
+      schemaVersion: 2,
       routineId: "preset-pull-day",
       routineName: "Pull day",
       startedAt: T0,
@@ -187,7 +188,7 @@ describe("finishDraft", () => {
     expect(log.exercises.map((exercise) => exercise.sets.length)).toEqual([2, 1]);
     expect(log.exercises.every((exercise) => exercise.sets.every((set) => set.done))).toBe(true);
     expect(log.totals).toEqual(workoutTotals(log.exercises, "lb"));
-    expect(log.totals).toEqual({ sets: 3, reps: 22, volume: 2820, unit: "lb" });
+    expect(log.totals).toEqual({ sets: 3, reps: 22, volume: 2820, unit: "lb", cardioSec: 0 });
   });
 
   it("lists a repeated exercise id once", () => {
@@ -236,6 +237,61 @@ describe("finishDraft", () => {
     draft = addSet(draft, "e0", T1);
     draft = toggleSetDone(draft, "e0", 1, T1);
     expect(finishDraft(draft, T2).totals).toEqual(draftTotals(draft, "kg"));
+  });
+});
+
+describe("cardio", () => {
+  it("gives cardio exercises time-based sets with the distance unit of the weight unit", () => {
+    const draft = addExercise(emptyDraft(), "stair-climber", T1);
+    expect(isCardioExercise("stair-climber")).toBe(true);
+    expect(isCardioExercise("barbell-row")).toBe(false);
+    expect(draft.exercises[0].sets[0]).toEqual({
+      durationSec: null,
+      distance: null,
+      distanceUnit: "mi",
+      level: null,
+      floors: null,
+      inclinePct: null,
+      calories: null,
+      done: false,
+    });
+    expect(addExercise(setDraftUnit(emptyDraft(), "kg", T1), "treadmill", T1).exercises[0].sets[0]).toMatchObject({
+      distanceUnit: "km",
+    });
+  });
+
+  it("needs only a time to finish a set, and starts no rest timer", () => {
+    let draft = addExercise(emptyDraft(), "stair-climber", T1);
+    expect(canCompleteSet(draft.exercises[0].sets[0])).toBe(false);
+    draft = updateSet(draft, "e0", 0, { durationSec: 1200, floors: 95 }, T1);
+    draft = toggleSetDone(draft, "e0", 0, T1);
+    expect(draft.exercises[0].sets[0].done).toBe(true);
+    expect(draft.rest).toBeUndefined();
+  });
+
+  it("rejects a fractional time or negative stats", () => {
+    const draft = addExercise(emptyDraft(), "treadmill", T1);
+    expect(() => updateSet(draft, "e0", 0, { durationSec: 1.5 }, T1)).toThrow(RangeError);
+    expect(() => updateSet(draft, "e0", 0, { distance: -1 }, T1)).toThrow(RangeError);
+  });
+
+  it("copies the previous cardio set when adding one", () => {
+    let draft = addExercise(emptyDraft(), "treadmill", T1);
+    draft = updateSet(draft, "e0", 0, { durationSec: 600, distance: 1 }, T1);
+    draft = addSet(draft, "e0", T1);
+    expect(draft.exercises[0].sets[1]).toMatchObject({ durationSec: 600, distance: 1, done: false });
+  });
+
+  it("saves only the stats that were entered and totals the time", () => {
+    let draft = logSet(addExercise(emptyDraft(), "barbell-row", T1), "e0", 0, 135, 6);
+    draft = addExercise(draft, "treadmill", T1);
+    draft = updateSet(draft, "e1", 0, { durationSec: 900, distance: 1.5, calories: 120 }, T1);
+    draft = toggleSetDone(draft, "e1", 0, T1);
+    const log = finishDraft(draft, T2);
+    expect(log.exercises[1].sets).toEqual([
+      { durationSec: 900, distance: 1.5, distanceUnit: "mi", calories: 120, done: true },
+    ]);
+    expect(log.totals).toEqual({ sets: 2, reps: 6, volume: 810, unit: "lb", cardioSec: 900 });
   });
 });
 

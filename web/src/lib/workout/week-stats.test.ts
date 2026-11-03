@@ -10,7 +10,7 @@ function log(id: string, weight: number, unit: "kg" | "lb"): WorkoutLog {
   ];
   return {
     id,
-    schemaVersion: 1,
+    schemaVersion: 2,
     startedAt: "2026-10-16T10:00:00.000Z",
     endedAt: "2026-10-16T11:00:00.000Z",
     updatedAt: "2026-10-16T11:00:00.000Z",
@@ -41,7 +41,7 @@ describe("summarizeWeek", () => {
   });
 
   it("is zero for an empty week", () => {
-    expect(summarizeWeek([], "kg")).toEqual({ workouts: 0, sets: 0, volume: 0, unit: "kg" });
+    expect(summarizeWeek([], "kg")).toEqual({ workouts: 0, sets: 0, volume: 0, unit: "kg", cardioSec: 0 });
   });
 });
 

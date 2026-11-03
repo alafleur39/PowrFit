@@ -16,7 +16,7 @@ function log(id: string, startedAt: string, exercises: LoggedExercise[]): Workou
     updatedAt: startedAt,
     exercises,
     exerciseIds: exercises.map((exercise) => exercise.exerciseId),
-    totals: { sets: 0, reps: 0, volume: 0, unit: "kg" },
+    totals: { sets: 0, reps: 0, volume: 0, unit: "kg", cardioSec: 0 },
   };
 }
 
@@ -96,7 +96,7 @@ describe("lastSetsForExercise", () => {
   it("joins an exercise logged twice in one workout", () => {
     const twice = log("f", "2026-10-13T10:00:00.000Z", [bench(135), squat, bench(95)]);
     const sets = lastSetsForExercise([twice], "barbell-bench-press")?.sets;
-    expect(sets?.map((set) => set.weight)).toEqual([135, 135, 95, 95]);
+    expect(sets?.map((set) => ("weight" in set ? set.weight : null))).toEqual([135, 135, 95, 95]);
   });
 
   it("treats an unparseable date as oldest", () => {
@@ -112,7 +112,7 @@ describe("lastSetsForExercise", () => {
     const result = lastSetsForExercise(logs, "barbell-bench-press");
     expect(logs).toEqual(before);
 
-    result!.sets[0].weight = 999;
-    expect(newest.exercises[0].sets[0].weight).toBe(135);
+    Object.assign(result!.sets[0], { weight: 999 });
+    expect(newest.exercises[0].sets[0]).toMatchObject({ weight: 135 });
   });
 });

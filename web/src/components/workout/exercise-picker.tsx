@@ -81,7 +81,7 @@ export function ExercisePicker({
                   <span className="min-w-0">
                     <span className="block font-medium text-foreground">{exercise.name}</span>
                     <span className="block text-sm text-muted-foreground">
-                      {catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
+                      {exercise.cardio ? "Cardio" : catalogLabel(exercise.primaryMuscle)} · {catalogLabel(exercise.equipment)}
                     </span>
                   </span>
                 </button>

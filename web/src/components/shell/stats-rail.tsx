@@ -1,7 +1,7 @@
 "use client";
 
 import { useWeekStats } from "@/components/workout/use-week-stats";
-import { formatWeight } from "@/lib/workout/format";
+import { formatCardioMinutes, formatWeight } from "@/lib/workout/format";
 
 // Right stats rail — appears only at lg (POWRFIT_NAV_SPEC §4). Same numbers
 // as Home's inline stats (one hook). Key numbers use yellow; labels muted.
@@ -11,6 +11,7 @@ export function StatsRail() {
     { label: "Workouts", value: String(stats.workouts) },
     { label: "Sets", value: String(stats.sets) },
     { label: "Volume", value: formatWeight(stats.volume, stats.unit) },
+    ...(stats.cardioSec > 0 ? [{ label: "Cardio", value: formatCardioMinutes(stats.cardioSec) }] : []),
   ];
 
   return (

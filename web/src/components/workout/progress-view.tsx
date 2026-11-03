@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/shell/placeholder";
 import { SegmentedTabs } from "@/components/shell/segmented-tabs";
 import type { WeightUnit, WorkoutLog } from "@/lib/strength";
-import { formatWeight } from "@/lib/workout/format";
+import { formatCardioMinutes, formatWeight } from "@/lib/workout/format";
 import {
   exerciseTrend,
   trendExercises,
@@ -77,6 +77,7 @@ function VolumePanel({
   const buckets = useMemo(() => volumeBuckets(logs, range.id, unit, now), [logs, range.id, unit, now]);
   const workouts = buckets.reduce((sum, bucket) => sum + bucket.workouts, 0);
   const volume = buckets.reduce((sum, bucket) => sum + bucket.volume, 0);
+  const cardioSec = buckets.reduce((sum, bucket) => sum + bucket.cardioSec, 0);
 
   if (workouts === 0) {
     return (
@@ -100,6 +101,12 @@ function VolumePanel({
           <dt className="text-xs text-muted-foreground">Workouts</dt>
           <dd className="font-mono text-xl font-bold tabular-nums">{workouts}</dd>
         </div>
+        {cardioSec > 0 && (
+          <div>
+            <dt className="text-xs text-muted-foreground">Cardio</dt>
+            <dd className="font-mono text-xl font-bold tabular-nums">{formatCardioMinutes(cardioSec)}</dd>
+          </div>
+        )}
       </dl>
       <VolumeChart buckets={buckets} unit={unit} caption={`Volume per ${range.per} ${range.period}`} />
     </section>

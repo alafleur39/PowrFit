@@ -22,7 +22,7 @@ const T1 = "2026-10-18T10:05:00.000Z";
 
 const log: WorkoutLog = {
   id: "w1",
-  schemaVersion: 1,
+  schemaVersion: 2,
   startedAt: T0,
   endedAt: T1,
   updatedAt: T1,
@@ -42,7 +42,7 @@ const log: WorkoutLog = {
     },
   ],
   exerciseIds: ["barbell-row", "hammer-curl"],
-  totals: { sets: 3, reps: 26, volume: 2250, unit: "lb" },
+  totals: { sets: 3, reps: 26, volume: 2250, unit: "lb", cardioSec: 0 },
 };
 
 const valid: Routine = {

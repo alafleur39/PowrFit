@@ -13,7 +13,7 @@ import { useNow } from "@/components/workout/use-now";
 import { useRecentWorkouts } from "@/components/workout/use-workout-logs";
 import { useWeekStats } from "@/components/workout/use-week-stats";
 import { PRESET_ROUTINES, workoutTotals } from "@/lib/strength";
-import { formatDate, formatElapsed, formatWeight, formatWeightAmount, plural } from "@/lib/workout/format";
+import { formatCardioMinutes, formatCardioSuffix, formatDate, formatElapsed, formatWeight, formatWeightAmount, plural } from "@/lib/workout/format";
 import { workoutLogHref } from "@/lib/routes";
 
 // Home is a training dashboard (D13, design spec §6.1): resume or start a
@@ -112,11 +112,12 @@ function WeekChips() {
     { label: "Sets", value: String(stats.sets) },
     // The unit is set smaller so "1,140 lb" fits a 375px-wide phone.
     { label: "Volume", value: formatWeightAmount(stats.volume, stats.unit), unit: stats.unit },
+    ...(stats.cardioSec > 0 ? [{ label: "Cardio", value: formatCardioMinutes(stats.cardioSec) }] : []),
   ];
   return (
     <section aria-label="This week" className="lg:hidden">
       <h2 className="mb-2 text-sm font-bold">This week</h2>
-      <div className="grid grid-cols-3 gap-3">
+      <div className={chips.length === 4 ? "grid grid-cols-2 gap-3" : "grid grid-cols-3 gap-3"}>
         {chips.map((chip) => (
           <div key={chip.label} className="rounded-xl border border-border bg-surface p-3">
             <p className="text-xs text-muted-foreground">{chip.label}</p>
@@ -181,6 +182,7 @@ function LastWorkout() {
           <span className="block text-sm text-muted-foreground">
             {plural(totals.sets, "set")} ·{" "}
             <span className="font-mono tabular-nums">{formatWeight(totals.volume, unit)}</span>
+            {formatCardioSuffix(totals.cardioSec)}
           </span>
           <SyncBadge status={last.status} className="mt-1" />
         </span>

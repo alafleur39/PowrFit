@@ -4,10 +4,10 @@
 // beats every earlier workout's heaviest set of that exercise. The first
 // time an exercise is done doesn't count, and a tie isn't a PR. Records are
 // worked out from history on every read, never stored, so editing or
-// deleting a workout updates them.
+// deleting a workout updates them. Cardio sets have no weight and never count.
 
 import { convertWeight } from "./units";
-import type { LoggedSet, WeightUnit, WorkoutLog } from "./types";
+import { isCardioSet, type StrengthSet, type WeightUnit, type WorkoutLog } from "./types";
 
 export type PersonalRecord = {
   exerciseId: string;
@@ -21,7 +21,7 @@ export type PersonalRecord = {
 /** Below this, two weights in kg are the same (float noise from converting). */
 const EPSILON_KG = 1e-6;
 
-const toKg = (set: Pick<LoggedSet, "weight" | "unit">) => convertWeight(set.weight, set.unit, "kg");
+const toKg = (set: Pick<StrengthSet, "weight" | "unit">) => convertWeight(set.weight, set.unit, "kg");
 
 /** Oldest first; ties broken by start time, then id, so the order is stable. */
 function chronological(logs: readonly WorkoutLog[]): WorkoutLog[] {
@@ -34,11 +34,11 @@ function chronological(logs: readonly WorkoutLog[]): WorkoutLog[] {
 }
 
 /** The heaviest finished set of each exercise in one workout. */
-function heaviestSets(log: WorkoutLog): Map<string, { set: LoggedSet; name: string }> {
-  const result = new Map<string, { set: LoggedSet; name: string }>();
+function heaviestSets(log: WorkoutLog): Map<string, { set: StrengthSet; name: string }> {
+  const result = new Map<string, { set: StrengthSet; name: string }>();
   for (const exercise of log.exercises) {
     for (const set of exercise.sets) {
-      if (!set.done) continue;
+      if (!set.done || isCardioSet(set)) continue;
       const current = result.get(exercise.exerciseId);
       if (!current || toKg(set) > toKg(current.set) + EPSILON_KG) {
         result.set(exercise.exerciseId, { set, name: exercise.exerciseName });
@@ -61,7 +61,7 @@ export function bestWeightsKg(logs: readonly WorkoutLog[]): Map<string, number> 
 
 /** True when `set` beats an earlier best (undefined: never done before). */
 export function beatsBest(
-  set: Pick<LoggedSet, "weight" | "unit">,
+  set: Pick<StrengthSet, "weight" | "unit">,
   bestKg: number | undefined
 ): boolean {
   return bestKg !== undefined && toKg(set) > bestKg + EPSILON_KG;

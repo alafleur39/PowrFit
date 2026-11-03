@@ -5,28 +5,40 @@ import { ArrowLeft, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
+  EXERCISES,
   cleanEditedLog,
+  distanceUnitFor,
   editLogNote,
   editLogSet,
+  isCardioSet,
   logProblems,
   removeLogExercise,
   removeLogSet,
+  type CardioField,
+  type CardioSet,
+  type DistanceUnit,
   type WorkoutLog,
 } from "@/lib/strength";
 import { formatDate, parseRepsInput, parseWeightInput } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
+import { CardioStatFields, CardioTimeField } from "./cardio-set-row";
 import { Dialog } from "./dialog";
 import { ExerciseNote } from "./exercise-note";
 import { NumberField } from "./set-row";
 
 const nowIso = () => new Date().toISOString();
 
+const CARDIO_FIELDS = new Map(
+  EXERCISES.flatMap((exercise) => (exercise.cardio ? [[exercise.id, exercise.cardio.fields] as const] : []))
+);
+
 // Editing a past workout (P4-05, D24). Shown in place of the summary rather
 // than on its own route, because a route the device hasn't loaded can't open
 // offline. Edits a local copy; nothing is written until Save. Saving goes through the same receipts as finishing a workout,
 // so it works offline and shows "Not synced yet" until it's confirmed.
 // Weights are edited in the unit each set was logged in. A cleared field is
-// NaN until it's filled in again; logProblems blocks saving it.
+// NaN until it's filled in again; logProblems blocks saving it. A cleared
+// cardio stat is removed.
 export function WorkoutEditor({
   initial,
   onClose,
@@ -103,6 +115,21 @@ export function WorkoutEditor({
                   <ol className="mt-2 flex flex-col gap-2">
                     {exercise.sets.map((set, setIndex) => {
                       const number = setIndex + 1;
+                      if (isCardioSet(set)) {
+                        return (
+                          <CardioEditRow
+                            key={setIndex}
+                            set={set}
+                            label={`${name} set ${number}`}
+                            fields={CARDIO_FIELDS.get(exercise.exerciseId) ?? []}
+                            distanceUnit={set.distanceUnit ?? distanceUnitFor(log.totals.unit)}
+                            onChange={(patch) =>
+                              change((l, now) => editLogSet(l, exerciseIndex, setIndex, patch, now))
+                            }
+                            onRemove={() => change((l, now) => removeLogSet(l, exerciseIndex, setIndex, now))}
+                          />
+                        );
+                      }
                       return (
                         <li
                           key={setIndex}
@@ -201,5 +228,60 @@ export function WorkoutEditor({
         </p>
       </Dialog>
     </div>
+  );
+}
+
+/** A finished cardio set: time and remove, with the machine's stats below. */
+function CardioEditRow({
+  set,
+  label,
+  fields,
+  distanceUnit,
+  onChange,
+  onRemove,
+}: {
+  set: CardioSet;
+  label: string;
+  fields: readonly CardioField[];
+  distanceUnit: DistanceUnit;
+  onChange: (patch: Partial<Omit<CardioSet, "done">>) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <li className="flex flex-col gap-2">
+      <div className="grid grid-cols-[2rem_1fr_2.75rem] items-center gap-2">
+        <span className="text-center font-mono text-sm text-muted-foreground" aria-hidden>
+          {label.split(" ").at(-1)}
+        </span>
+        <CardioTimeField
+          value={Number.isNaN(set.durationSec) ? null : set.durationSec}
+          onValue={(durationSec) => onChange({ durationSec: durationSec ?? Number.NaN })}
+          label={`${label} time`}
+        />
+        <button
+          type="button"
+          aria-label={`Remove ${label}`}
+          onClick={onRemove}
+          className="flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-danger"
+        >
+          <X className="size-4" aria-hidden />
+        </button>
+      </div>
+      <div className="pl-10">
+        <CardioStatFields
+          fields={fields}
+          values={set}
+          distanceUnit={distanceUnit}
+          labelPrefix={label}
+          onValue={(field, value) =>
+            onChange(
+              field === "distance"
+                ? { distance: value ?? undefined, distanceUnit: value === null ? undefined : distanceUnit }
+                : { [field]: value ?? undefined }
+            )
+          }
+        />
+      </div>
+    </li>
   );
 }

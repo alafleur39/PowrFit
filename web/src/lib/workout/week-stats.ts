@@ -2,7 +2,7 @@ import { workoutTotals, type WeightUnit } from "@/lib/strength";
 import { weekStart } from "./format";
 import type { HistoryItem } from "./history-merge";
 
-export type WeekStats = { workouts: number; sets: number; volume: number; unit: WeightUnit };
+export type WeekStats = { workouts: number; sets: number; volume: number; unit: WeightUnit; cardioSec: number };
 
 /**
  * This week's totals from the same items History shows, through the same
@@ -15,7 +15,7 @@ export function summarizeWeek(items: readonly HistoryItem[], unit: WeightUnit): 
     logs.flatMap((log) => log.exercises),
     unit
   );
-  return { workouts: logs.length, sets: totals.sets, volume: totals.volume, unit };
+  return { workouts: logs.length, sets: totals.sets, volume: totals.volume, unit, cardioSec: totals.cardioSec };
 }
 
 /**

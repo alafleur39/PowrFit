@@ -1,11 +1,12 @@
-// Workout totals: sets, reps and volume (P1-05).
+// Workout totals: sets, reps, volume and cardio time (P1-05).
 //
 // Only sets marked done count. Volume is weight × reps (decision D6), so an
-// unweighted bodyweight set adds reps but no volume. Each set's weight is
+// unweighted bodyweight set adds reps but no volume. Cardio sets count as
+// sets and add their time, but no reps or volume. Each set's weight is
 // converted to the target unit exactly and the sum is rounded once at the end,
 // so every screen shows the same number for the same workout.
 
-import type { LoggedExercise, LoggedSet, WeightUnit, WorkoutTotals } from "./types";
+import { isCardioSet, type LoggedExercise, type StrengthSet, type WeightUnit, type WorkoutTotals } from "./types";
 import { convertWeight, roundWeight } from "./units";
 
 function assertValidReps(reps: number): void {
@@ -15,7 +16,7 @@ function assertValidReps(reps: number): void {
 }
 
 /** Unrounded weight × reps of one set, in `unit`. Ignores `done`. */
-export function setVolume(set: LoggedSet, unit: WeightUnit): number {
+export function setVolume(set: StrengthSet, unit: WeightUnit): number {
   assertValidReps(set.reps);
   return convertWeight(set.weight, set.unit, unit) * set.reps;
 }
@@ -36,15 +37,20 @@ export function workoutTotals(
   let sets = 0;
   let reps = 0;
   let volume = 0;
+  let cardioSec = 0;
 
   for (const exercise of exercises) {
     for (const set of exercise.sets) {
       if (!set.done) continue;
-      volume += setVolume(set, unit);
       sets += 1;
+      if (isCardioSet(set)) {
+        cardioSec += set.durationSec;
+        continue;
+      }
+      volume += setVolume(set, unit);
       reps += set.reps;
     }
   }
 
-  return { sets, reps, volume: roundWeight(volume, unit), unit };
+  return { sets, reps, volume: roundWeight(volume, unit), unit, cardioSec };
 }

@@ -58,6 +58,7 @@ describe("exerciseTotals", () => {
       reps: 12,
       volume: 1620,
       unit: "lb",
+      cardioSec: 0,
     });
   });
 
@@ -65,13 +66,13 @@ describe("exerciseTotals", () => {
     const skipped = exercise("lateral-raise", [
       { reps: 8, weight: 15, unit: "lb", done: false },
     ]);
-    expect(exerciseTotals(skipped, "kg")).toEqual({ sets: 0, reps: 0, volume: 0, unit: "kg" });
+    expect(exerciseTotals(skipped, "kg")).toEqual({ sets: 0, reps: 0, volume: 0, unit: "kg", cardioSec: 0 });
   });
 });
 
 describe("workoutTotals", () => {
   it("returns zeros for an empty workout", () => {
-    expect(workoutTotals([], "kg")).toEqual({ sets: 0, reps: 0, volume: 0, unit: "kg" });
+    expect(workoutTotals([], "kg")).toEqual({ sets: 0, reps: 0, volume: 0, unit: "kg", cardioSec: 0 });
   });
 
   it("totals a mixed kg/lb workout in kg", () => {
@@ -81,6 +82,7 @@ describe("workoutTotals", () => {
       reps: 22,
       volume: 1734.8,
       unit: "kg",
+      cardioSec: 0,
     });
   });
 
@@ -91,6 +93,7 @@ describe("workoutTotals", () => {
       reps: 22,
       volume: 3824.6,
       unit: "lb",
+      cardioSec: 0,
     });
   });
 
@@ -113,6 +116,7 @@ describe("workoutTotals", () => {
       reps: 28,
       volume: 1000,
       unit: "kg",
+      cardioSec: 0,
     });
   });
 
@@ -128,5 +132,26 @@ describe("workoutTotals", () => {
     const before = structuredClone([bench, squat]);
     workoutTotals([bench, squat], "kg");
     expect([bench, squat]).toEqual(before);
+  });
+});
+
+describe("cardio totals", () => {
+  it("counts cardio sets and their time, but no reps or volume", () => {
+    expect(
+      workoutTotals(
+        [
+          {
+            exerciseId: "stair-climber",
+            exerciseName: "Stair climber",
+            sets: [
+              { durationSec: 1200, floors: 95, done: true },
+              { durationSec: 300, done: false },
+            ],
+          },
+          { exerciseId: "barbell-row", exerciseName: "Barbell row", sets: [{ reps: 5, weight: 100, unit: "lb", done: true }] },
+        ],
+        "lb"
+      )
+    ).toEqual({ sets: 2, reps: 5, volume: 500, unit: "lb", cardioSec: 1200 });
   });
 });

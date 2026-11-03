@@ -17,7 +17,7 @@ let env: RulesTestEnvironment;
 
 const log: WorkoutLog = {
   id: "w1",
-  schemaVersion: 1,
+  schemaVersion: 2,
   routineId: "preset-pull-day",
   routineName: "Pull day",
   startedAt: "2026-10-16T17:00:00.000Z",
@@ -31,7 +31,7 @@ const log: WorkoutLog = {
     },
   ],
   exerciseIds: ["barbell-row"],
-  totals: { sets: 1, reps: 6, volume: 810, unit: "lb" },
+  totals: { sets: 1, reps: 6, volume: 810, unit: "lb", cardioSec: 0 },
 };
 const valid = encodeWorkoutLog(log);
 
@@ -101,7 +101,7 @@ describe("workoutLogs access", () => {
       ...log,
       updatedAt: "2026-10-19T09:00:00.000Z",
       exercises: [{ ...log.exercises[0], sets: [{ reps: 5, weight: 145, unit: "lb", done: true }] }],
-      totals: { sets: 1, reps: 5, volume: 725, unit: "lb" },
+      totals: { sets: 1, reps: 5, volume: 725, unit: "lb", cardioSec: 0 },
     });
     await assertSucceeds(aliceLog().set(edited));
     await assertFails(aliceLog().set({ ...edited, exercises: [] }));
@@ -131,16 +131,30 @@ describe("workoutLogs validation", () => {
     await assertSucceeds(aliceLog().set(withoutRoutine));
   });
 
+  it("still accepts a version 1 workout from an older copy of the app", async () => {
+    await assertSucceeds(
+      aliceLog().set({ ...valid, schemaVersion: 1, totals: { sets: 1, reps: 6, volume: 810, unit: "lb" } })
+    );
+  });
+
+  it("accepts a workout with cardio time", async () => {
+    await assertSucceeds(
+      aliceLog().set({ ...valid, totals: { sets: 2, reps: 6, volume: 810, unit: "lb", cardioSec: 1200 } })
+    );
+  });
+
   it.each([
     ["an id that doesn't match the document", { ...valid, id: "other" }],
-    ["a newer schemaVersion", { ...valid, schemaVersion: 2 }],
+    ["a newer schemaVersion", { ...valid, schemaVersion: 3 }],
     ["an extra top-level field", { ...valid, admin: true }],
     ["a missing field", without(valid, "totals")],
     ["no exercises", { ...valid, exercises: [] }],
     ["too many exercises", { ...valid, exercises: Array.from({ length: 31 }, () => (valid.exercises as unknown[])[0]) }],
     ["a bad unit", { ...valid, totals: { sets: 1, reps: 6, volume: 810, unit: "stone" } }],
-    ["negative volume", { ...valid, totals: { sets: 1, reps: 6, volume: -1, unit: "lb" } }],
-    ["fractional set count", { ...valid, totals: { sets: 1.5, reps: 6, volume: 810, unit: "lb" } }],
+    ["negative volume", { ...valid, totals: { sets: 1, reps: 6, volume: -1, unit: "lb", cardioSec: 0 } }],
+    ["negative cardio time", { ...valid, totals: { sets: 1, reps: 6, volume: 810, unit: "lb", cardioSec: -1 } }],
+    ["fractional cardio time", { ...valid, totals: { sets: 1, reps: 6, volume: 810, unit: "lb", cardioSec: 1.5 } }],
+    ["fractional set count", { ...valid, totals: { sets: 1.5, reps: 6, volume: 810, unit: "lb", cardioSec: 0 } }],
     ["a timestamp that isn't a string", { ...valid, endedAt: 12345 }],
   ])("rejects %s", async (_name, data) => {
     await assertFails(aliceLog().set(data));

@@ -15,13 +15,13 @@ const bench = (weight: number, reps: number, unit: "kg" | "lb" = "lb"): LoggedEx
 function log(id: string, endedAt: string, exercises: LoggedExercise[]): WorkoutLog {
   return {
     id,
-    schemaVersion: 1,
+    schemaVersion: 2,
     startedAt: endedAt,
     endedAt,
     updatedAt: endedAt,
     exercises,
     exerciseIds: exercises.map((e) => e.exerciseId),
-    totals: { sets: 0, reps: 0, volume: 0, unit: "lb" },
+    totals: { sets: 0, reps: 0, volume: 0, unit: "lb", cardioSec: 0 },
   };
 }
 
