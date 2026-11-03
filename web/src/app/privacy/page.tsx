@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         PowrFit
       </Link>
       <h1 className="mt-2 text-3xl font-bold">Privacy</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Last updated October 21, 2026. PowrFit is in beta.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Last updated November 2, 2026. PowrFit is in beta.</p>
 
       <div className="mt-6 flex flex-col gap-6 text-base leading-relaxed">
         <section>
@@ -50,8 +50,22 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-lg font-bold">Video suggestions</h2>
           <p className="mt-2 text-muted-foreground">
-            Suggestions are worked out on your phone from your workouts. Opening one sends only the
-            search words to YouTube, never your workout data.
+            Suggestions are worked out on your phone from your workouts. To find videos, PowrFit&apos;s
+            server sends YouTube only the suggestion&apos;s topic, such as &quot;bench press form&quot;,
+            never your workout data or who you are. Videos play in YouTube&apos;s privacy-enhanced
+            player, which sets no YouTube cookies until you press play; once a video plays, or you
+            open it on YouTube, YouTube&apos;s own privacy policy applies.
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            PowrFit uses YouTube API Services. By watching videos in PowrFit you agree to the{" "}
+            <a href="https://www.youtube.com/t/terms" className="underline" target="_blank" rel="noopener noreferrer">
+              YouTube Terms of Service
+            </a>
+            , and{" "}
+            <a href="https://policies.google.com/privacy" className="underline" target="_blank" rel="noopener noreferrer">
+              Google&apos;s Privacy Policy
+            </a>{" "}
+            explains how Google handles data.
           </p>
         </section>
         <section>
