@@ -52,3 +52,6 @@ firebase-debug.log
 /test-results/
 /playwright-report/
 /blob-report/
+
+# UI/UX playbook screenshots (public repo: kept out of git)
+/docs/screenshots/

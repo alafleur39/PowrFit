@@ -1,0 +1,16 @@
+# PowrFit design rules (always on)
+- Use tokens only: no raw hex values, font sizes, spacing or radii in screens. Tokens live in `src/app/globals.css` (CSS variables exposed to Tailwind through `@theme inline`); use their Tailwind names.
+- Each screen has one filled-yellow element: its primary action. Anywhere else, yellow only highlights data.
+- Numbers use the system font with tabular digits (`tabular-nums`). No monospace fonts.
+- Touch targets are at least 44×44 pt. Every icon-only control has an accessibility label.
+- Every screen handles loading, empty, error and populated states. Charts handle 0, 1 and many points.
+- Nothing scrolls under the tab bar without a bottom inset.
+- Always show units (lb/kg), using the unit the user chose.
+- Respect Dynamic Type (rem sizes), Reduce Motion and Increase Contrast.
+- Destructive actions use the danger color and ask for confirmation.
+- Copy is short, plain and encouraging, in sentence case, with no jargon on first-use screens.
+- No gradient text, glows, blur shadows or neon effects. Use flat color, and separate surfaces with tone and borders.
+- The logo is the custom wordmark SVG. Never use a stock icon as the brand mark.
+- Only add a subtitle under a title when it tells the user something they need.
+- Vary shapes on purpose: pills for actions, rounded rectangles for cards, square-ish shapes for inputs.
+- Before calling UI work done, take screenshots (`npm run screenshots`) and look at them.
