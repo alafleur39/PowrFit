@@ -2,6 +2,7 @@
 
 import { useRef, type KeyboardEvent } from "react";
 
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 export type Segment<T extends string> = { value: T; label: string };
@@ -23,13 +24,18 @@ export function SegmentedControl<T extends string>({
   className?: string;
 }) {
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
+  const select = (next: T) => {
+    if (next === value) return;
+    haptic("selection");
+    onChange(next);
+  };
 
   const onKeyDown = (event: KeyboardEvent, index: number) => {
     const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
     if (!step) return;
     event.preventDefault();
     const next = (index + step + segments.length) % segments.length;
-    onChange(segments[next].value);
+    select(segments[next].value);
     buttons.current[next]?.focus();
   };
 
@@ -51,7 +57,7 @@ export function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={selected}
             tabIndex={selected ? 0 : -1}
-            onClick={() => onChange(segment.value)}
+            onClick={() => select(segment.value)}
             onKeyDown={(event) => onKeyDown(event, index)}
             className={cn(
               "h-11 rounded-input px-3 text-footnote font-semibold transition-colors",

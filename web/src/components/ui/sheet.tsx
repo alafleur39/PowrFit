@@ -3,11 +3,12 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 
+import { useKeyboardInset } from "@/components/use-keyboard-inset";
 import { cn } from "@/lib/utils";
 
 // Bottom sheet on phones, centred dialog on desktop (design spec §7 "Sheet").
-// Escape and the backdrop close it; focus moves into it when it opens and
-// back to where it was when it closes.
+// It rides above the on-screen keyboard. Escape and the backdrop close it;
+// focus moves into it when it opens and back to where it was when it closes.
 export function Sheet({
   open,
   title,
@@ -25,6 +26,8 @@ export function Sheet({
 }) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
+  // On phones the keyboard would cover the bottom of the sheet: lift it.
+  const keyboard = useKeyboardInset();
 
   useEffect(() => {
     if (!open) return;
@@ -46,7 +49,10 @@ export function Sheet({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
+    <div
+      style={keyboard > 0 ? { bottom: keyboard } : undefined}
+      className="fixed inset-0 z-50 flex items-end justify-center md:items-center"
+    >
       <button
         type="button"
         aria-label="Close"
@@ -62,7 +68,8 @@ export function Sheet({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          "relative flex max-h-[85dvh] w-full flex-col rounded-t-card border border-border bg-surface-raised pb-[env(safe-area-inset-bottom)] md:max-w-lg md:rounded-card md:pb-0",
+          "relative flex max-h-[85%] w-full flex-col rounded-t-card border border-border bg-surface-raised md:max-w-lg md:rounded-card md:pb-0",
+          keyboard === 0 && "pb-[env(safe-area-inset-bottom)]",
           className
         )}
       >

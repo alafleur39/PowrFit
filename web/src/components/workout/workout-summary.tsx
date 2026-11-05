@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
-import { ArrowLeft, Loader2, Pencil, Trophy } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { ArrowLeft, Pencil, Trophy } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { StatGrid, StatTile } from "@/components/ui/stat-tile";
+import { haptic } from "@/lib/haptics";
 import { useActiveWorkout } from "./active-workout-provider";
 import { FailedSaveActions } from "./failed-save-actions";
 import { PrBadge } from "./pr-badge";
@@ -20,7 +22,8 @@ import { formatCardioMinutes, formatDate, formatDuration, formatSetsLine, format
 // workoutTotals in the user's unit, the same way Home and History do it.
 // Reads from the Firestore cache and this device's receipts, so it renders
 // offline: the logger shows it in place right after Finish.
-export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode }) {
+/** `celebrate`: shown right after Finish, so new PRs get a success haptic. */
+export function WorkoutSummary({ logId, top, celebrate = false }: { logId: string; top?: ReactNode; celebrate?: boolean }) {
   const { unit } = useActiveWorkout();
   const { item, loading, error } = useWorkout(logId);
   const { records } = useRecords();
@@ -51,17 +54,26 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
     return (
       <div>
         {back}
-        <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
-          {loading ? (
-            <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
-          ) : (
+        {loading ? (
+          <div aria-busy className="flex flex-col gap-4 px-4 pt-2 sm:px-6">
+            <span className="sr-only">Loading workout</span>
+            <Skeleton className="h-8 w-2/3" />
+            <div className="grid grid-cols-3 gap-3">
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
+              <Skeleton className="h-16" />
+            </div>
+            <Skeleton className="h-32" />
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
             <p className="text-footnote text-muted-foreground">
               {error
                 ? "Couldn't load this workout. Check your connection and try again."
                 : "This workout isn't available on this device."}
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -122,7 +134,7 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
         </div>
       )}
 
-      {logRecords.length > 0 && <RecordsCard records={logRecords} unit={unit} />}
+      {logRecords.length > 0 && <RecordsCard records={logRecords} unit={unit} celebrate={celebrate} />}
 
       <StatGrid label="Workout totals" columns={4} className="mx-4 sm:mx-6">
         {[
@@ -168,7 +180,18 @@ export function WorkoutSummary({ logId, top }: { logId: string; top?: ReactNode 
 }
 
 /** The celebration: every PR from this workout, big, before the totals. */
-function RecordsCard({ records, unit }: { records: readonly PersonalRecord[]; unit: WeightUnit }) {
+function RecordsCard({
+  records,
+  unit,
+  celebrate,
+}: {
+  records: readonly PersonalRecord[];
+  unit: WeightUnit;
+  celebrate: boolean;
+}) {
+  useEffect(() => {
+    if (celebrate) haptic("success");
+  }, [celebrate]);
   return (
     <section
       aria-label="New personal records"

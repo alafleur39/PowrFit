@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 // The one Button (UI playbook Phase 2). Actions are pills; every size is at
@@ -44,13 +45,21 @@ type ButtonProps = React.ComponentProps<"button"> &
     loading?: boolean;
   };
 
-function Button({ className, variant, size, block, asChild = false, loading = false, children, ...props }: ButtonProps) {
+function Button({ className, variant, size, block, asChild = false, loading = false, children, onClick, ...props }: ButtonProps) {
   const Comp = asChild ? Slot : "button";
   return (
     <Comp
       data-slot="button"
       aria-busy={loading || undefined}
       className={cn(buttonVariants({ variant, size, block }), className)}
+      onClick={
+        variant === "destructive" && onClick
+          ? (event: React.MouseEvent<HTMLButtonElement>) => {
+              haptic("warning");
+              onClick(event);
+            }
+          : onClick
+      }
       {...props}
     >
       {asChild ? (

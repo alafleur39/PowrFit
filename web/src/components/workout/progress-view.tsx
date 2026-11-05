@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Loader2 } from "lucide-react";
 
 import { ChartContainer } from "@/components/ui/chart-container";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -17,6 +16,7 @@ import {
 import { useActiveWorkout } from "./active-workout-provider";
 import { TrendChart, VolumeChart } from "./progress-charts";
 import { useHistoryLogs } from "./use-records";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const RANGES: { id: ProgressRange; label: string; period: string; per: string }[] = [
   { id: "week", label: "Week", period: "this week", per: "day" },
@@ -29,8 +29,11 @@ const field =
 
 function Loading() {
   return (
-    <div className="flex justify-center py-16">
-      <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
+    <div aria-busy className="flex flex-col gap-4">
+      <span className="sr-only">Loading progress</span>
+      <Skeleton className="h-11" />
+      <Skeleton className="h-56 rounded-card" />
+      <Skeleton className="h-56 rounded-card" />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { DESTINATIONS, isDestinationActive } from "./nav-config";
 
@@ -26,6 +27,7 @@ export function BottomTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 onClick={(event) => {
+                  if (!active) haptic("selection");
                   if (pathname !== item.href) return;
                   event.preventDefault();
                   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

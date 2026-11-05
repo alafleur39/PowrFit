@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useId, type ReactNode } from "react";
 
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 type Common = {
@@ -66,7 +67,10 @@ export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
         role="switch"
         aria-checked={props.checked}
         {...a11y}
-        onClick={() => props.onCheckedChange(!props.checked)}
+        onClick={() => {
+          haptic("selection");
+          props.onCheckedChange(!props.checked);
+        }}
         className={cn(rowClass, className)}
       >
         <Icon icon={icon} />
@@ -91,7 +95,15 @@ export function ListRow(props: ChevronRow | ToggleRow | DestructiveRow) {
 
   if (props.variant === "destructive") {
     return (
-      <button type="button" onClick={props.onClick} className={cn(rowClass, className)} {...a11y}>
+      <button
+        type="button"
+        onClick={() => {
+          haptic("warning");
+          props.onClick();
+        }}
+        className={cn(rowClass, className)}
+        {...a11y}
+      >
         <Icon icon={icon} tone="danger" />
         <Text ids={ids} title={title} description={description} tone="danger" />
       </button>

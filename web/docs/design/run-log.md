@@ -11,7 +11,8 @@ only when asked.
 | 2 Components | c130edb | components/ui/*, /dev/components |
 | 3 App shell | a5af8a5 | wordmark, large-title header, no "+", tab re-tap, new icon |
 | 4 Screens (logger, Home) | 22252d2 | critic blocking issues fixed |
-| 4 Screens (Workouts, Progress, Profile, Gyms, sign-in) | (this commit) | critic run; see below |
+| 4 Screens (Workouts, Progress, Profile, Gyms, sign-in) | 1521857 | critic run; see below |
+| 5 Feel | (this commit) | haptics wired (silent until the package is approved), skeletons, keyboard |
 
 ## Pending decisions (temporary defaults, easy to undo)
 
@@ -64,3 +65,35 @@ average 8, a screenshot run took 19 minutes instead of 35 seconds). The
 last copy tweaks passed typecheck, lint and unit tests, but the browser
 tests weren't rerun for them. Next session: a fresh `SHOTS_PHASE=phase4`
 capture, a quick critic pass, then Phases 5–7.
+
+## Phase 5: Feel (Nov 4)
+
+Interactions added, and where:
+
+| Interaction | Where |
+|---|---|
+| Light haptic (selection) | bottom tab bar (switching tabs), Tabs (Workouts sections), SegmentedControl (Progress range, unit), ListRow toggles |
+| Success haptic | ticking a set done (set-row); new PRs on the summary right after Finish (RecordsCard, `celebrate`) |
+| Warning haptic | every destructive Button, IconButton and ListRow (discard workout, delete routine/workout, delete account, failed-save discard) |
+| Skeletons instead of spinners | logger restore, workout summary, History, Progress, routine editor; the sign-in gate is now a plain dark screen like the launch screen |
+| Keyboard never covers inputs | set stepper bar and every Sheet ride on top of the iPhone keyboard (`use-keyboard-inset.ts`, visual viewport); the focused set field scrolls clear of the bar |
+| Reduce Motion | the inline button spinners now stop spinning too |
+
+Already in place before this phase: press-in feedback on every button and
+link (globals.css), screen crossfade via view transitions, and Reduce
+Motion turning both off.
+
+Haptics: `src/lib/haptics.ts` calls the native Haptics plugin through
+`registerPlugin`, guarded by `Capacitor.isPluginAvailable`. Nothing happens
+on the website or until `@capacitor/haptics` is installed and synced, at
+which point they start working with no code change. Still needs the
+owner's OK (pending decision 5).
+
+Pull-to-refresh: not added. Every user-data screen is a live Firestore
+listener, so it would only re-show the same data, and Gyms re-fetches with
+its Search button. A pull gesture in WKWebView would be custom code with
+no payoff.
+
+Checks: typecheck, lint, 370 unit tests; logger, profile and progress
+browser tests on iPhone. Screenshots not retaken (machine load ~50 at
+the start of the session from macOS background work).

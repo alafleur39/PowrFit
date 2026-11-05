@@ -2,11 +2,11 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { Loader2 } from "lucide-react";
 
 import { RoutineEditor } from "@/components/workout/routine-editor";
 import { useRoutines } from "@/components/workout/use-routines";
 import { newRoutine } from "@/lib/strength";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // /workouts/routines/edit?id=new creates a routine; any other id edits that
 // routine (P7-01: query, not path, so the static iOS build has this page too).
@@ -31,11 +31,16 @@ function RoutineEditorForId() {
   if (entry) return <RoutineEditor key={entry.routine.id} initial={entry.routine} isNew={false} />;
 
   return (
-    <div className="flex justify-center px-4 py-20 text-center text-footnote text-muted-foreground">
+    <div className="px-4 py-4 text-center text-footnote text-muted-foreground">
       {loading ? (
-        <Loader2 className="size-6 animate-spin" aria-label="Loading" />
+        <div aria-busy className="flex flex-col gap-4">
+          <span className="sr-only">Loading routine</span>
+          <Skeleton className="h-11" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
       ) : (
-        <p>This routine isn&apos;t available. It may have been deleted.</p>
+        <p className="py-16">This routine isn&apos;t available. It may have been deleted.</p>
       )}
     </div>
   );

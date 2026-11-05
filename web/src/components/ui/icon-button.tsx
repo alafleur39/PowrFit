@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 // An icon-only control (UI playbook Phase 2). `label` is required: it is the
@@ -25,10 +26,18 @@ type IconButtonProps = Omit<React.ComponentProps<"button">, "aria-label" | "chil
     icon: React.ReactNode;
   };
 
-export function IconButton({ label, icon, variant, className, type = "button", ...props }: IconButtonProps) {
+export function IconButton({ label, icon, variant, className, type = "button", onClick, ...props }: IconButtonProps) {
   return (
     <button
       type={type}
+      onClick={
+        variant === "destructive" && onClick
+          ? (event) => {
+              haptic("warning");
+              onClick(event);
+            }
+          : onClick
+      }
       aria-label={label}
       title={label}
       className={cn(iconButtonVariants({ variant }), className)}

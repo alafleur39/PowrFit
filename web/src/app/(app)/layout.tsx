@@ -2,7 +2,6 @@
 
 import { useEffect, type PropsWithChildren } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { useAuth } from "@/components/auth-provider";
@@ -22,10 +21,12 @@ export default function ProtectedLayout({ children }: PropsWithChildren) {
     }
   }, [loading, user, router]);
 
+  // Usually a split second while Firebase reads the saved session: a plain
+  // dark screen (like the launch screen) rather than a flashing spinner.
   if (loading || !user) {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <Loader2 className="text-muted-foreground size-6 animate-spin" />
+      <div aria-busy className="flex-1">
+        <span className="sr-only">Loading</span>
       </div>
     );
   }

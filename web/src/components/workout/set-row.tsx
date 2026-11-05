@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Trash2, Trophy } from "lucide-react";
 
+import { useKeyboardInset } from "@/components/use-keyboard-inset";
 import { canCompleteSet, type DraftStrengthSet } from "@/lib/strength";
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { parseRepsInput, parseWeightInput } from "@/lib/workout/format";
 
@@ -64,7 +66,7 @@ export function NumberField({
         onBlur?.();
       }}
       className={cn(
-        "h-12 w-full min-w-0 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground/60 placeholder:italic focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "h-12 w-full min-w-0 scroll-mb-28 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground/60 placeholder:italic focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
         invalid && "border-danger focus-visible:border-danger"
       )}
     />
@@ -81,7 +83,7 @@ const accessoryButton =
 
 /**
  * The bar shown while one of a set's fields is focused (UI playbook Phase 4),
- * like an iOS keyboard accessory: fixed at the bottom, over the tab bar and
+ * like an iOS keyboard accessory: fixed just above the keyboard, over the tab bar and
  * rest timer, so nothing in the list moves. Steppers for the focused field,
  * and Remove set, which lives here so it's never next to ✓.
  * pointerdown is cancelled so the field keeps focus and the number pad stays up.
@@ -105,8 +107,22 @@ function SetAccessory({
   onRemove: () => void;
 }) {
   const keepFocus = (event: React.PointerEvent) => event.preventDefault();
+  // Sit on top of the keyboard, not behind it, and keep the focused field
+  // above this bar (its scroll-mb leaves room).
+  const keyboard = useKeyboardInset();
+  useEffect(() => {
+    if (keyboard > 0 && document.activeElement instanceof HTMLInputElement) {
+      document.activeElement.scrollIntoView({ block: "nearest" });
+    }
+  }, [keyboard]);
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:static md:col-span-4 md:border-0 md:bg-transparent md:pb-0">
+    <div
+      style={keyboard > 0 ? { bottom: keyboard } : undefined}
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface md:static md:col-span-4 md:border-0 md:bg-transparent md:pb-0",
+        keyboard === 0 && "pb-[env(safe-area-inset-bottom)]"
+      )}
+    >
       <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-2 md:px-0 md:py-0">
         <span className="min-w-0 flex-1 truncate text-footnote text-muted-foreground">{title}</span>
         <button type="button" onPointerDown={keepFocus} onClick={() => onStep(-1)} aria-label={less} className={accessoryButton}>
@@ -172,6 +188,7 @@ export function SetRow({
     if (!set.done && fillable && suggestion) {
       onChange({ weight: set.weight ?? suggestion.weight, reps: set.reps ?? suggestion.reps });
     }
+    if (!set.done) haptic("success");
     onToggle();
   };
 

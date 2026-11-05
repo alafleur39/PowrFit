@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 export type Tab = {
@@ -71,6 +72,7 @@ export function Tabs({
   const settle = useCallback(
     (index: number) => {
       if (index === activeRef.current) return;
+      haptic("selection");
       // Leave the old tab where it was; come back to the new tab where you left it.
       savedScroll.current.set(activeRef.current, window.scrollY);
       activeRef.current = index;

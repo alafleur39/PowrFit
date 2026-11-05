@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -15,6 +15,7 @@ import { PrBadge } from "./pr-badge";
 import { SyncBadge } from "./sync-badge";
 import { useRecords } from "./use-records";
 import { useRecentWorkouts } from "./use-workout-logs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PAGE = 20;
 
@@ -29,8 +30,11 @@ export function HistoryList() {
 
   if (loading && items.length === 0) {
     return (
-      <div className="flex justify-center py-16">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
+      <div aria-busy className="flex flex-col gap-3">
+        <span className="sr-only">Loading history</span>
+        <Skeleton className="h-20" />
+        <Skeleton className="h-20" />
+        <Skeleton className="h-20" />
       </div>
     );
   }

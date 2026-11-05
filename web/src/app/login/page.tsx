@@ -179,7 +179,7 @@ export default function LoginPage() {
               disabled={submitting !== null}
               className="-mt-2 flex h-11 items-center gap-2 self-end text-footnote font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
             >
-              {submitting === "reset" && <Loader2 className="size-4 animate-spin" aria-hidden />}
+              {submitting === "reset" && <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />}
               Forgot password?
             </button>
 

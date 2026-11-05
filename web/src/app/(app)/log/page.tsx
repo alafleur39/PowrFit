@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, Dumbbell, Loader2, Plus } from "lucide-react";
+import { AlertTriangle, Dumbbell, Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/ui/empty-state";
 import { ScreenHeader } from "@/components/ui/screen-header";
@@ -15,6 +15,7 @@ import { RestTimer } from "@/components/workout/rest-timer";
 import { useNow } from "@/components/workout/use-now";
 import { useRoutines } from "@/components/workout/use-routines";
 import { useHistoryLogs } from "@/components/workout/use-records";
+import { Skeleton } from "@/components/ui/skeleton";
 import { WorkoutSummary } from "@/components/workout/workout-summary";
 import {
   PRESET_ROUTINES,
@@ -44,8 +45,11 @@ export default function LogPage() {
 
   if (!ready) {
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
+      <div aria-busy className="flex flex-col gap-4 px-4 pt-4 sm:px-6">
+        <span className="sr-only">Loading workout</span>
+        <Skeleton className="h-8 w-1/2" />
+        <Skeleton className="h-48" />
+        <Skeleton className="h-48" />
       </div>
     );
   }
@@ -69,6 +73,7 @@ export default function LogPage() {
       ) : finishedId ? (
         <WorkoutSummary
           logId={finishedId}
+          celebrate
           top={
             <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:px-6">
               <p className="text-footnote font-semibold text-success">Workout saved</p>
