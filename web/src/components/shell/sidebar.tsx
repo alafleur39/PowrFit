@@ -42,7 +42,7 @@ export function Sidebar({
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex h-12 items-center gap-3 rounded-tile px-3 text-body font-semibold transition-colors",
+                "flex min-h-12 items-center gap-3 rounded-tile px-3 text-body font-semibold transition-colors",
                 active
                   ? "bg-accent-muted text-accent"
                   : "text-foreground hover:bg-surface"

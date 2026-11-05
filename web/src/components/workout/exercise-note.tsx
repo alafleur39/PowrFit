@@ -24,7 +24,7 @@ export function ExerciseNote({
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`Add a note to ${exerciseName}`}
-        className="mt-1 flex h-11 items-center gap-2 rounded-tile px-2 text-footnote font-medium text-muted-foreground hover:bg-surface-raised hover:text-foreground"
+        className="mt-1 flex min-h-11 items-center gap-2 rounded-tile px-2 text-footnote font-medium text-muted-foreground hover:bg-surface-raised hover:text-foreground"
       >
         <StickyNote className="size-4" aria-hidden />
         Add note

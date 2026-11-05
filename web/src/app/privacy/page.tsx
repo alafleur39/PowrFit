@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-8 sm:px-6">
       <Link
         href="/home"
-        className="inline-flex h-11 items-center gap-2 text-footnote font-medium text-muted-foreground hover:text-foreground"
+        className="inline-flex min-h-11 items-center gap-2 text-footnote font-medium text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" aria-hidden />
         PowrFit

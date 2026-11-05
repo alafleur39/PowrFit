@@ -76,7 +76,7 @@ export function WorkoutEditor({
       <button
         type="button"
         onClick={onClose}
-        className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
+        className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Cancel
@@ -133,7 +133,7 @@ export function WorkoutEditor({
                       return (
                         <li
                           key={setIndex}
-                          className="grid grid-cols-[2rem_1fr_1fr_2.75rem] items-center gap-2"
+                          className="type-cap grid grid-cols-[2rem_1fr_1fr_2.75rem] items-center gap-2"
                         >
                           <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
                             {number}
@@ -194,12 +194,12 @@ export function WorkoutEditor({
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button className="h-12 flex-1 text-body font-bold" onClick={save}>
+          <Button className="min-h-12 flex-1 text-body font-bold" onClick={save}>
             Save changes
           </Button>
           <Button
             variant="secondary"
-            className="h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
+            className="min-h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
             onClick={() => setDeleteOpen(true)}
           >
             Delete workout
@@ -213,10 +213,10 @@ export function WorkoutEditor({
         onClose={() => setDeleteOpen(false)}
         footer={
           <div className="flex gap-3">
-            <Button variant="secondary" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
+            <Button variant="secondary" className="min-h-12 flex-1" onClick={() => setDeleteOpen(false)}>
               Keep it
             </Button>
-            <Button variant="destructive" className="h-12 flex-1" onClick={remove}>
+            <Button variant="destructive" className="min-h-12 flex-1" onClick={remove}>
               Delete
             </Button>
           </div>
@@ -249,7 +249,7 @@ function CardioEditRow({
 }) {
   return (
     <li className="flex flex-col gap-2">
-      <div className="grid grid-cols-[2rem_1fr_2.75rem] items-center gap-2">
+      <div className="type-cap grid grid-cols-[2rem_1fr_2.75rem] items-center gap-2">
         <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
           {label.split(" ").at(-1)}
         </span>

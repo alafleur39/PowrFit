@@ -30,19 +30,19 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
         still saved on this device.
       </p>
       <div className="flex flex-wrap gap-2">
-        <Button className="h-11" onClick={() => retryReceipt(log.id)}>
+        <Button className="min-h-11" onClick={() => retryReceipt(log.id)}>
           Retry
         </Button>
         <Button
           variant="secondary"
-          className="h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
+          className="min-h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
           onClick={copy}
         >
           {copied ? "Copied" : "Copy as text"}
         </Button>
         <Button
           variant="ghost"
-          className="h-11 text-danger hover:bg-surface hover:text-danger"
+          className="min-h-11 text-danger hover:bg-surface hover:text-danger"
           onClick={() => setConfirmOpen(true)}
         >
           Discard
@@ -57,7 +57,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
           <div className="flex flex-col gap-2">
             <Button
               variant="destructive"
-              className="h-12 text-body font-bold"
+              className="min-h-12 text-body font-bold"
               onClick={() => {
                 setConfirmOpen(false);
                 discardReceipt(log.id);
@@ -67,7 +67,7 @@ export function FailedSaveActions({ log, errorCode }: { log: WorkoutLog; errorCo
             </Button>
             <Button
               variant="ghost"
-              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
+              className="min-h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setConfirmOpen(false)}
             >
               Keep it

@@ -111,12 +111,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onClose={() => setSignOutWarning(false)}
         footer={
           <div className="flex flex-col gap-2">
-            <Button className="h-12 text-body font-bold" onClick={() => void finishSignOut()}>
+            <Button className="min-h-12 text-body font-bold" onClick={() => void finishSignOut()}>
               Keep on this device and sign out
             </Button>
             <Button
               variant="destructive"
-              className="h-12 text-body"
+              className="min-h-12 text-body"
               onClick={() => {
                 clearDevice();
                 void finishSignOut();
@@ -126,7 +126,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Button>
             <Button
               variant="ghost"
-              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
+              className="min-h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setSignOutWarning(false)}
             >
               Cancel

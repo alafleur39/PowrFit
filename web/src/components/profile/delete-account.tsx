@@ -75,7 +75,7 @@ export function DeleteAccount() {
         onClose={busy ? () => undefined : close}
         footer={
           <div className="flex gap-3">
-            <Button variant="secondary" className="h-12 flex-1" disabled={busy} onClick={close}>
+            <Button variant="secondary" className="min-h-12 flex-1" disabled={busy} onClick={close}>
               Keep it
             </Button>
             <Button variant="destructive" size="lg" className="flex-1" loading={busy} onClick={confirm}>
@@ -97,7 +97,7 @@ export function DeleteAccount() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               disabled={busy}
-              className="h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none"
+              className="min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none"
             />
           </label>
           {error && (

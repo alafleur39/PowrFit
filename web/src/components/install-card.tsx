@@ -39,7 +39,7 @@ export function InstallCard() {
           <button
             type="button"
             onClick={() => void promptInstall()}
-            className="flex h-11 items-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground"
+            className="flex min-h-11 items-center gap-2 rounded-full bg-accent px-5 font-bold text-accent-foreground"
           >
             <Download className="size-4" aria-hidden />
             Install
@@ -48,7 +48,7 @@ export function InstallCard() {
         <button
           type="button"
           onClick={dismissInstall}
-          className="flex h-11 items-center rounded-full border border-border px-5 font-semibold text-foreground hover:bg-surface-raised"
+          className="flex min-h-11 items-center rounded-full border border-border px-5 font-semibold text-foreground hover:bg-surface-raised"
         >
           Not now
         </button>

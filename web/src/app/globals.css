@@ -47,6 +47,10 @@
 :root {
   color-scheme: dark;
 
+  /* Dynamic Type multipliers; see the Type tokens below. */
+  --type-scale: 1;
+  --title-scale: min(var(--type-scale), 1.75);
+
   --bg: #0a0a0a;
   --surface: #161616;
   --surface-raised: #1f1f1f;
@@ -100,6 +104,35 @@
   --ring: var(--brand);
 }
 
+/*
+  Dense, fixed-layout parts (set tables, the rest timer, the logger's
+  sticky bar, segmented controls, tab strips) grow with Dynamic Type only
+  up to the title cap (1.75×), the way iOS caps its bars and controls,
+  so nothing in them overlaps or gets cut off. Everything else keeps
+  growing.
+*/
+@utility type-cap {
+  --type-scale: var(--title-scale);
+}
+
+/*
+  Increase Contrast (UI playbook Phase 6): iOS turns on prefers-contrast:
+  more. Secondary text, borders and raised surfaces step up so every
+  edge and label stands out more; brand, success, warning and danger
+  already clear 4.5:1 on every surface. With this on:
+    textSecondary 11.9:1 on surface (9.2 on raised), textTertiary 9.3:1
+    (7.1 on raised), and borders 3.0–3.3:1 against the background and
+    surface (WCAG non-text contrast).
+*/
+@media (prefers-contrast: more) {
+  :root {
+    --text-secondary: #d1d1d6;
+    --text-tertiary: #b9b9be;
+    --hairline: #636366;
+    --surface-raised: #2c2c2e;
+  }
+}
+
 @theme inline {
   /*
     Radii: square-ish inputs, rounded tiles and cards, pills for actions
@@ -114,28 +147,33 @@
   --radius-xl: var(--radius-card);
 
   /*
-    Type: eight steps in rem, so text follows the root size (iOS text size
-    once Phase 6 turns that on). Sizes match the ones the app used before
-    tokens: caption 12, footnote 14, body 16, headline 18, title3 20,
-    title2 24, title1 30, display 36. Numbers add tabular-nums; there is no
-    monospace font.
+    Type: eight steps. Sizes at the default iPhone text size: caption 12,
+    footnote 14, body 16, headline 18, title3 20, title2 24, title1 30,
+    display 36. Numbers add tabular-nums; there is no monospace font.
+
+    Dynamic Type (UI playbook Phase 6): every size is multiplied by
+    --type-scale, which dynamic-type.ts sets from the iPhone's text size
+    (1 by default, up to about 3 at the largest accessibility size). Only
+    text grows, not spacing or icons, as in native iOS. Titles grow less
+    (--title-scale), also as iOS does. A part of the screen that must not
+    grow (the tab bar) sets [--type-scale:1].
   */
-  --text-caption: 0.75rem;
-  --text-caption--line-height: 1rem;
-  --text-footnote: 0.875rem;
-  --text-footnote--line-height: 1.25rem;
-  --text-body: 1rem;
-  --text-body--line-height: 1.5rem;
-  --text-headline: 1.125rem;
-  --text-headline--line-height: 1.75rem;
-  --text-title3: 1.25rem;
-  --text-title3--line-height: 1.75rem;
-  --text-title2: 1.5rem;
-  --text-title2--line-height: 2rem;
-  --text-title1: 1.875rem;
-  --text-title1--line-height: 2.25rem;
-  --text-display: 2.25rem;
-  --text-display--line-height: 2.5rem;
+  --text-caption: calc(0.75rem * var(--type-scale, 1));
+  --text-caption--line-height: calc(1rem * var(--type-scale, 1));
+  --text-footnote: calc(0.875rem * var(--type-scale, 1));
+  --text-footnote--line-height: calc(1.25rem * var(--type-scale, 1));
+  --text-body: calc(1rem * var(--type-scale, 1));
+  --text-body--line-height: calc(1.5rem * var(--type-scale, 1));
+  --text-headline: calc(1.125rem * var(--type-scale, 1));
+  --text-headline--line-height: calc(1.75rem * var(--type-scale, 1));
+  --text-title3: calc(1.25rem * var(--title-scale, 1));
+  --text-title3--line-height: calc(1.75rem * var(--title-scale, 1));
+  --text-title2: calc(1.5rem * var(--title-scale, 1));
+  --text-title2--line-height: calc(2rem * var(--title-scale, 1));
+  --text-title1: calc(1.875rem * var(--title-scale, 1));
+  --text-title1--line-height: calc(2.25rem * var(--title-scale, 1));
+  --text-display: calc(2.25rem * var(--title-scale, 1));
+  --text-display--line-height: calc(2.5rem * var(--title-scale, 1));
 
   /* The system font: SF Pro on iPhone and Mac. */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
@@ -178,6 +216,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Text with no text-* class still follows Dynamic Type. */
+    font-size: calc(1rem * var(--type-scale));
+    line-height: calc(1.5rem * var(--type-scale));
   }
 }
 

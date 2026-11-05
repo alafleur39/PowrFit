@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check, Trash2, Trophy } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { AlertCircle, Check, Trash2, Trophy } from "lucide-react";
 
 import { useKeyboardInset } from "@/components/use-keyboard-inset";
 import { canCompleteSet, type DraftStrengthSet } from "@/lib/strength";
@@ -46,30 +46,37 @@ export function NumberField({
   }
   const invalid = parse(text) === undefined;
 
+  // Not just a red border: an icon too, so it doesn't rely on color
+  // (UI playbook Phase 6). VoiceOver hears "invalid data" from aria-invalid.
   return (
-    <input
-      type="text"
-      inputMode={inputMode}
-      autoComplete="off"
-      aria-label={label}
-      aria-invalid={invalid || undefined}
-      placeholder={placeholder}
-      value={text}
-      onChange={(event) => {
-        setText(event.target.value);
-        const parsed = parse(event.target.value);
-        if (parsed !== undefined) onValue(parsed);
-      }}
-      onFocus={onFocus}
-      onBlur={() => {
-        if (!invalid) setText(show(value));
-        onBlur?.();
-      }}
-      className={cn(
-        "h-12 w-full min-w-0 scroll-mb-28 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground/60 placeholder:italic focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
-        invalid && "border-danger focus-visible:border-danger"
+    <span className="relative block min-w-0">
+      <input
+        type="text"
+        inputMode={inputMode}
+        autoComplete="off"
+        aria-label={label}
+        aria-invalid={invalid || undefined}
+        placeholder={placeholder}
+        value={text}
+        onChange={(event) => {
+          setText(event.target.value);
+          const parsed = parse(event.target.value);
+          if (parsed !== undefined) onValue(parsed);
+        }}
+        onFocus={onFocus}
+        onBlur={() => {
+          if (!invalid) setText(show(value));
+          onBlur?.();
+        }}
+        className={cn(
+          "min-h-12 w-full min-w-0 scroll-mb-28 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground/60 placeholder:italic focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+          invalid && "border-danger pr-7 focus-visible:border-danger"
+        )}
+      />
+      {invalid && (
+        <AlertCircle className="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-danger" aria-hidden />
       )}
-    />
+    </span>
   );
 }
 
@@ -79,7 +86,7 @@ export type SetSuggestion = { weight: number; reps: number };
 const WEIGHT_STEP = { lb: 5, kg: 2.5 } as const;
 
 const accessoryButton =
-  "flex h-12 min-w-14 items-center justify-center rounded-input border border-border bg-surface-raised px-3 text-body font-semibold tabular-nums text-foreground";
+  "flex min-h-12 min-w-14 items-center justify-center rounded-input border border-border bg-surface-raised px-3 text-body font-semibold tabular-nums text-foreground";
 
 /**
  * The bar shown while one of a set's fields is focused (UI playbook Phase 4),
@@ -119,7 +126,7 @@ function SetAccessory({
     <div
       style={keyboard > 0 ? { bottom: keyboard } : undefined}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface md:static md:col-span-4 md:border-0 md:bg-transparent md:pb-0",
+        "type-cap fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface md:static md:col-span-4 md:border-0 md:bg-transparent md:pb-0",
         keyboard === 0 && "pb-[env(safe-area-inset-bottom)]"
       )}
     >
@@ -175,6 +182,14 @@ export function SetRow({
   const fillable = !completable && suggestion !== undefined;
   const [editing, setEditing] = useState<"weight" | "reps" | null>(null);
   const step = WEIGHT_STEP[set.unit];
+  // What ✓ will do, for VoiceOver (a title isn't reliably read).
+  const hintId = useId();
+  const hint =
+    set.done || completable
+      ? undefined
+      : fillable && suggestion
+        ? `Fills in ${suggestion.weight} ${set.unit} × ${suggestion.reps} reps`
+        : "Enter weight and reps first";
 
   const stepWeight = (direction: -1 | 1) => {
     const base = set.weight ?? suggestion?.weight ?? 0;
@@ -195,7 +210,7 @@ export function SetRow({
   return (
     <li
       className={cn(
-        "grid grid-cols-[2rem_1fr_1fr_3rem] items-center gap-2 rounded-tile px-1 py-1",
+        "type-cap grid grid-cols-[2rem_1fr_1fr_3rem] items-center gap-2 rounded-tile px-1 py-1",
         set.done && "bg-accent-muted"
       )}
     >
@@ -235,6 +250,7 @@ export function SetRow({
         onClick={toggle}
         aria-pressed={set.done}
         aria-label={`Set ${number} ${set.done ? "done" : "not done"}`}
+        aria-describedby={hint ? hintId : undefined}
         title={completable || set.done || fillable ? undefined : "Enter weight and reps first"}
         disabled={!set.done && !completable && !fillable}
         className={cn(
@@ -244,6 +260,11 @@ export function SetRow({
       >
         {set.done && <Check className="size-6" strokeWidth={3} aria-hidden />}
       </button>
+      {hint && (
+        <span id={hintId} className="sr-only">
+          {hint}
+        </span>
+      )}
       {editing && (
         <SetAccessory
           title={`Set ${number} · ${editing === "weight" ? set.unit : "reps"}`}

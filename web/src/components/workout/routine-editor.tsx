@@ -78,7 +78,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
     <div className="pb-10">
       <Link
         href="/workouts"
-        className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
+        className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
         <ArrowLeft className="size-4" aria-hidden />
         Workouts
@@ -94,7 +94,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
             maxLength={ROUTINE_LIMITS.name}
             onChange={(event) => change((r, now) => updateRoutineDetails(r, { name: event.target.value }, now))}
             placeholder="Upper body A"
-            className={`${field} h-11`}
+            className={`${field} min-h-11`}
           />
         </label>
 
@@ -157,7 +157,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                           updateRoutineExercise(r, index, { targetSets: Number(event.target.value) }, now)
                         )
                       }
-                      className={`${field} h-11`}
+                      className={`${field} min-h-11`}
                     >
                       {SET_OPTIONS.map((count) => (
                         <option key={count} value={count}>
@@ -178,7 +178,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                           updateRoutineExercise(r, index, { targetReps: event.target.value }, now)
                         )
                       }
-                      className={`${field} h-11`}
+                      className={`${field} min-h-11`}
                     />
                   </label>
                   <label className="flex flex-col gap-1">
@@ -196,7 +196,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                           )
                         )
                       }
-                      className={`${field} h-11`}
+                      className={`${field} min-h-11`}
                     >
                       <option value="">Default</option>
                       {REST_OPTIONS.map((seconds) => (
@@ -215,7 +215,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         <Button
           variant="secondary"
           disabled={routine.exercises.length >= ROUTINE_LIMITS.exercises}
-          className="h-12 border-dashed border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
+          className="min-h-12 border-dashed border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => setPickerOpen(true)}
         >
           <Plus className="size-4" aria-hidden />
@@ -231,13 +231,13 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button className="h-12 flex-1 text-body font-bold" onClick={save}>
+          <Button className="min-h-12 flex-1 text-body font-bold" onClick={save}>
             Save routine
           </Button>
           {!isNew && (
             <Button
               variant="secondary"
-              className="h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
+              className="min-h-12 border-danger/50 bg-transparent text-body font-semibold text-danger hover:bg-surface"
               onClick={() => setDeleteOpen(true)}
             >
               Delete
@@ -264,10 +264,10 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         onClose={() => setDeleteOpen(false)}
         footer={
           <div className="flex gap-3">
-            <Button variant="secondary" className="h-12 flex-1" onClick={() => setDeleteOpen(false)}>
+            <Button variant="secondary" className="min-h-12 flex-1" onClick={() => setDeleteOpen(false)}>
               Keep it
             </Button>
-            <Button variant="destructive" className="h-12 flex-1" onClick={remove}>
+            <Button variant="destructive" className="min-h-12 flex-1" onClick={remove}>
               Delete routine
             </Button>
           </div>

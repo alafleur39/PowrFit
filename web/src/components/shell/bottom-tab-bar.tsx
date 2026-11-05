@@ -10,13 +10,14 @@ import { DESTINATIONS, isDestinationActive } from "./nav-config";
 // Mobile-only bottom tab bar (POWRFIT_NAV_SPEC §5). Folds away at md, where the
 // Sidebar takes over. Active destination = yellow icon + label (the iOS tint).
 // Tapping the tab you're on scrolls back to the top, as in iOS apps.
+// Its labels stay one size at every text size, like the iOS tab bar.
 export function BottomTabBar() {
   const pathname = usePathname();
 
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] [--type-scale:1] md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
         {DESTINATIONS.map((item) => {

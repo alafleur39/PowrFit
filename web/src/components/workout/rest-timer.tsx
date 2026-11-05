@@ -17,7 +17,7 @@ export function formatRest(seconds: number): string {
 }
 
 const control =
-  "flex h-11 min-w-11 items-center justify-center rounded-full border border-border px-3 text-footnote font-semibold text-foreground hover:bg-surface-raised";
+  "flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border px-3 text-footnote font-semibold text-foreground hover:bg-surface-raised";
 
 // Rest timer (P4-04, D23). Runs from the end time saved in the draft, so it
 // keeps counting through a reload or a locked phone. In-app only: iOS
@@ -43,7 +43,7 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
     <div
       role="region"
       aria-label="Rest timer"
-      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-accent/40 bg-accent-muted px-4 py-3 md:inset-x-auto md:bottom-6 md:left-1/2 md:w-[min(560px,calc(100vw-3rem))] md:-translate-x-1/2 md:rounded-card md:border"
+      className="type-cap fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-accent/40 bg-accent-muted px-4 py-3 md:inset-x-auto md:bottom-6 md:left-1/2 md:w-[min(560px,calc(100vw-3rem))] md:-translate-x-1/2 md:rounded-card md:border"
     >
       <div className="flex items-center gap-3">
         <Timer className="size-5 shrink-0 text-accent" aria-hidden />

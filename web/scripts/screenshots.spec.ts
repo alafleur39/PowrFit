@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 
 import { expect, test, type Page } from "@playwright/test";
 
@@ -12,8 +12,20 @@ import { logSet, resetEmulators, signIn, signUp, TEST_PASSWORD } from "../e2e/he
 // docs/screenshots/<SHOTS_PHASE>/. Runs against the emulators like the e2e
 // tests: npm run screenshots (SHOTS_PHASE=phase1 npm run screenshots).
 
+//
+// Accessibility runs (Phase 6), all optional:
+//   SHOTS_TYPE_SCALE=3.1  text at that iPhone text size (3.1 = the largest)
+//   SHOTS_CONTRAST=more   Increase Contrast on
+//   SHOTS_AXE=1           also checks each screen with axe-core and writes
+//                         axe.json next to the images. axe-core comes with
+//                         the lint tools; it isn't a dependency of its own.
+
 const PHASE = process.env.SHOTS_PHASE ?? "phase0";
 const DIR = `docs/screenshots/${PHASE}`;
+const TYPE_SCALE = process.env.SHOTS_TYPE_SCALE;
+const CONTRAST = process.env.SHOTS_CONTRAST === "more" ? "more" : null;
+const AXE = process.env.SHOTS_AXE === "1";
+const axeFindings: Record<string, { id: string; impact: string | null; help: string; targets: string[] }[]> = {};
 const FIRESTORE = "http://127.0.0.1:8080/v1/projects/demo-powrfit/databases/(default)/documents";
 const AUTH = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1";
 
@@ -24,7 +36,33 @@ async function shot(page: Page, name: string) {
   mkdirSync(DIR, { recursive: true });
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${DIR}/${name}.jpg`, type: "jpeg", quality: 80 });
+  if (AXE) await audit(page, name);
 }
+
+async function audit(page: Page, name: string) {
+  await page.addScriptTag({ path: "node_modules/axe-core/axe.min.js" });
+  const violations = await page.evaluate(async () => {
+    const axe = (window as unknown as { axe: { run: (context: Document, options: object) => Promise<{ violations: { id: string; impact: string | null; help: string; nodes: { target: string[] }[] }[] }> } }).axe;
+    const result = await axe.run(document, { runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] } });
+    return result.violations.map((v) => ({ id: v.id, impact: v.impact, help: v.help, targets: v.nodes.map((n) => n.target.join(" ")) }));
+  });
+  axeFindings[name] = violations;
+  writeFileSync(`${DIR}/axe.json`, JSON.stringify(axeFindings, null, 2));
+}
+
+test.beforeEach(async ({ page }) => {
+  if (CONTRAST) await page.emulateMedia({ contrast: CONTRAST });
+  if (TYPE_SCALE) {
+    // Stands in for the iPhone's text size: beats what dynamic-type.ts sets.
+    await page.addInitScript((scale) => {
+      document.addEventListener("DOMContentLoaded", () => {
+        const style = document.createElement("style");
+        style.textContent = `:root { --type-scale: ${scale} !important; }`;
+        document.head.appendChild(style);
+      });
+    }, TYPE_SCALE);
+  }
+});
 
 /** Scrolls the page and every scrollable box to the bottom, then shoots. */
 async function shotBottom(page: Page, name: string) {

@@ -49,7 +49,7 @@ export function ExerciseSearchControls({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search exercises"
-          className="h-11 w-full rounded-input border border-input bg-background pr-3 pl-9 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
+          className="min-h-11 w-full rounded-input border border-input bg-background pr-3 pl-9 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
         />
       </label>
 
@@ -62,7 +62,7 @@ export function ExerciseSearchControls({
             aria-pressed={muscle === group}
             onClick={() => setMuscle(muscle === group ? undefined : group)}
             className={cn(
-              "h-11 shrink-0 rounded-full border px-4 text-footnote font-medium",
+              "min-h-11 shrink-0 rounded-full border px-4 text-footnote font-medium",
               muscle === group
                 ? "border-accent bg-accent text-accent-foreground"
                 : "border-border bg-surface text-muted-foreground hover:text-foreground"
@@ -73,12 +73,12 @@ export function ExerciseSearchControls({
         ))}
       </div>
 
-      <label className="flex items-center gap-2 text-footnote text-muted-foreground">
+      <label className="flex flex-wrap items-center gap-2 text-footnote text-muted-foreground">
         Equipment
         <select
           value={equipment ?? ""}
           onChange={(event) => setEquipment((event.target.value || undefined) as Equipment | undefined)}
-          className="h-11 rounded-input border border-input bg-background px-2 text-foreground"
+          className="min-h-11 max-w-full rounded-input border border-input bg-background px-2 text-foreground"
         >
           <option value="">Any</option>
           {EQUIPMENT.map((item) => (

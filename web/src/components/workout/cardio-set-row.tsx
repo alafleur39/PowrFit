@@ -113,7 +113,7 @@ export function CardioSetRow({
 
   return (
     <li className={cn("flex flex-col gap-2 rounded-tile px-1 py-1", set.done && "bg-accent-muted")}>
-      <div className="grid grid-cols-[2rem_1fr_3rem_2.75rem] items-center gap-2">
+      <div className="type-cap grid grid-cols-[2rem_1fr_3rem_2.75rem] items-center gap-2">
         <span className="text-center tabular-nums text-footnote text-muted-foreground" aria-hidden>
           {number}
         </span>

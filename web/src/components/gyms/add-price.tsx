@@ -9,7 +9,7 @@ import { sendPriceReport } from "@/lib/gyms/gym-repo";
 import { CURRENCIES, PRICE_LIMITS, priceReportProblems, type Currency, type Gym } from "@/lib/gyms/gyms";
 
 const fieldClass =
-  "h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
+  "min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 // "Add a price" (P6-06, D36, D42): a member says what they pay. The report
 // is anonymous and only shows once it's checked (P6-07). Offline, Firestore
@@ -46,7 +46,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
   };
 
   if (sent) {
-    return <p className="flex h-11 items-center text-footnote text-muted-foreground">Thanks! It shows once it&apos;s checked.</p>;
+    return <p className="flex min-h-11 items-center text-footnote text-muted-foreground">Thanks! It shows once it&apos;s checked.</p>;
   }
 
   return (
@@ -55,7 +55,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`Add a price for ${gym.name}`}
-        className="flex h-11 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface-raised"
+        className="flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface-raised"
       >
         <Plus className="size-4" aria-hidden />
         Add a price
@@ -67,10 +67,10 @@ export function AddPrice({ gym }: { gym: Gym }) {
         onClose={close}
         footer={
           <div className="flex gap-3">
-            <Button variant="secondary" className="h-12 flex-1" onClick={close}>
+            <Button variant="secondary" className="min-h-12 flex-1" onClick={close}>
               Cancel
             </Button>
-            <Button className="h-12 flex-1 font-bold" onClick={submit}>
+            <Button className="min-h-12 flex-1 font-bold" onClick={submit}>
               Send price
             </Button>
           </div>

@@ -25,7 +25,7 @@ const RANGES: { id: ProgressRange; label: string; period: string; per: string }[
 ];
 
 const field =
-  "h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
+  "min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 function Loading() {
   return (

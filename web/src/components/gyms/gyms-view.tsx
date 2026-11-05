@@ -135,7 +135,7 @@ export function GymsView() {
               maxLength={80}
               onChange={(event) => setPlace(event.target.value)}
               placeholder="City or zip code"
-              className="h-11 w-full rounded-input border border-input bg-background pr-3 pl-9 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
+              className="min-h-11 w-full rounded-input border border-input bg-background pr-3 pl-9 text-body text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none"
             />
           </label>
           <button
@@ -225,7 +225,7 @@ export function GymsView() {
                     aria-pressed={sort === option}
                     onClick={() => setSort(option)}
                     className={cn(
-                      "h-11 rounded-full px-3 text-footnote font-semibold",
+                      "min-h-11 rounded-full px-3 text-footnote font-semibold",
                       sort === option ? "bg-surface-raised text-foreground" : "text-muted-foreground"
                     )}
                   >
@@ -240,7 +240,7 @@ export function GymsView() {
                 id={`${resultsId}-budget`}
                 value={budget ?? ""}
                 onChange={(event) => setBudget(event.target.value ? Number(event.target.value) : undefined)}
-                className="h-11 rounded-input border border-input bg-background px-2 text-footnote text-foreground"
+                className="min-h-11 rounded-input border border-input bg-background px-2 text-footnote text-foreground"
               >
                 <option value="">Any price</option>
                 {BUDGETS.map((amount) => (
@@ -316,7 +316,7 @@ function GymRow({ item, unit }: { item: RankedGym; unit: "kg" | "lb" }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Directions to ${gym.name}`}
-          className="flex h-11 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface-raised"
+          className="flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface-raised"
         >
           <Navigation className="size-4" aria-hidden />
           Directions

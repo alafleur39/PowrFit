@@ -145,7 +145,7 @@ export function Tabs({
 
   return (
     <div>
-      <div role="tablist" aria-label={ariaLabel} className="relative flex border-b border-border">
+      <div role="tablist" aria-label={ariaLabel} className="type-cap relative flex border-b border-border">
         {tabs.map((tab, index) => {
           const selected = index === activeIndex;
           return (

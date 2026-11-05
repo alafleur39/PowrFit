@@ -43,7 +43,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className={cn("grid auto-cols-fr grid-flow-col gap-1 rounded-tile bg-surface p-1", className)}
+      className={cn("type-cap grid auto-cols-fr grid-flow-col gap-1 rounded-tile bg-surface p-1", className)}
     >
       {segments.map((segment, index) => {
         const selected = segment.value === value;
@@ -60,7 +60,7 @@ export function SegmentedControl<T extends string>({
             onClick={() => select(segment.value)}
             onKeyDown={(event) => onKeyDown(event, index)}
             className={cn(
-              "h-11 rounded-input px-3 text-footnote font-semibold transition-colors",
+              "min-h-11 rounded-input px-3 text-footnote font-semibold transition-colors",
               selected ? "bg-surface-raised text-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >

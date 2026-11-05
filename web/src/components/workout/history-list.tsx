@@ -101,7 +101,7 @@ export function HistoryList() {
       {serverCount >= count && (
         <Button
           variant="secondary"
-          className="mt-2 h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
+          className="mt-2 min-h-11 border-border bg-transparent text-foreground hover:bg-surface hover:text-foreground"
           onClick={() => setCount((current) => current + PAGE)}
         >
           Load more

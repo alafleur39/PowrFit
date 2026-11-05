@@ -37,7 +37,7 @@ export function ScreenHeader({
 
   return (
     <>
-      <header className="flex items-start justify-between gap-3 px-4 pt-4 pb-4 sm:px-6 md:pt-5">
+      <header className="flex flex-wrap items-start justify-between gap-3 px-4 pt-4 pb-4 sm:px-6 md:pt-5">
         <div className="min-w-0">
           {brand ? (
             <h1>
@@ -55,7 +55,7 @@ export function ScreenHeader({
       <div
         aria-hidden
         className={cn(
-          "fixed inset-x-0 top-[env(safe-area-inset-top)] z-20 flex h-11 items-center justify-center border-b border-border bg-background transition-opacity duration-(--duration-fast) md:hidden",
+          "fixed inset-x-0 top-[env(safe-area-inset-top)] z-20 flex h-11 items-center justify-center border-b border-border bg-background [--type-scale:1] transition-opacity duration-(--duration-fast) md:hidden",
           collapsed ? "opacity-100" : "pointer-events-none opacity-0"
         )}
       >

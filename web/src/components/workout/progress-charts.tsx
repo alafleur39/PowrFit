@@ -35,6 +35,8 @@ export function VolumeChart({
   return (
     <figure className="mx-auto w-full max-w-lg">
       <svg
+        // Labels sit at fixed SVG positions, so they stay one size; the
+        // summary and readout around the chart follow Dynamic Type.
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         role="img"
         aria-label={
@@ -42,7 +44,7 @@ export function VolumeChart({
             ? `${caption}: no volume yet.`
             : `${caption}. Highest: ${best.longLabel}, ${formatWeight(best.volume, unit)}.`
         }
-        className="h-auto w-full"
+        className="h-auto w-full [--type-scale:1]"
       >
         <line x1={0} x2={WIDTH} y1={bottom} y2={bottom} className="stroke-border" strokeWidth={1} />
         {max > 0 && (
@@ -152,6 +154,8 @@ export function TrendChart({
         <span className="font-semibold tabular-nums text-foreground">{formatWeight(shown.weight, unit)}</span>
       </p>
       <svg
+        // Labels sit at fixed SVG positions, so they stay one size; the
+        // summary and readout around the chart follow Dynamic Type.
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
         role="img"
         aria-label={`Top set weight for ${exerciseName} over ${points.length} ${
@@ -161,7 +165,7 @@ export function TrendChart({
             ? `, ${change >= 0 ? "up" : "down"} ${formatWeight(Math.abs(change), unit)} from the first`
             : ""
         }.`}
-        className="h-auto w-full"
+        className="h-auto w-full [--type-scale:1]"
       >
         <line x1={left} x2={right} y1={top} y2={top} className="stroke-border" strokeWidth={1} strokeDasharray="3 3" />
         <line x1={left} x2={right} y1={bottom} y2={bottom} className="stroke-border" strokeWidth={1} />

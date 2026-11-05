@@ -25,7 +25,7 @@ import { ProfileAvatar } from "./profile-avatar";
 import { useProfile } from "./use-profile";
 
 const field =
-  "h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
+  "min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 // The top of Profile (P6-13): who you are, your lifetime numbers and your
 // unit. Stats are worked out from history like Progress; nothing new is
@@ -74,17 +74,17 @@ export function ProfileCard() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <ProfileAvatar className="size-16 text-title3" />
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-title3 font-bold">{profile.displayName}</h2>
-          <p className="truncate text-footnote text-muted-foreground">{user?.email}</p>
+        <div className="min-w-0 flex-1 basis-40">
+          <h2 className="text-title3 font-bold wrap-anywhere">{profile.displayName}</h2>
+          <p className="text-footnote text-muted-foreground wrap-anywhere">{user?.email}</p>
         </div>
         {!editing && (
           <button
             type="button"
             onClick={startEditing}
-            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold hover:bg-surface"
           >
             <Pencil className="size-4" aria-hidden />
             Edit

@@ -156,7 +156,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={submitting !== null}
                 aria-invalid={Boolean(error)}
-                className="h-11"
+                className="min-h-11"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={submitting !== null}
                 aria-invalid={Boolean(error)}
-                className="h-11"
+                className="min-h-11"
               />
             </div>
 
@@ -177,7 +177,7 @@ export default function LoginPage() {
               type="button"
               onClick={handleReset}
               disabled={submitting !== null}
-              className="-mt-2 flex h-11 items-center gap-2 self-end text-footnote font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
+              className="-mt-2 flex min-h-11 items-center gap-2 self-end text-footnote font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
             >
               {submitting === "reset" && <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />}
               Forgot password?

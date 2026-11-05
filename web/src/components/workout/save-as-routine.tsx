@@ -52,7 +52,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
       ) : (
         <Button
           variant="secondary"
-          className="h-11 border-border bg-transparent font-semibold text-foreground hover:bg-surface"
+          className="min-h-11 border-border bg-transparent font-semibold text-foreground hover:bg-surface"
           onClick={() => setOpen(true)}
         >
           <ListPlus className="size-4" aria-hidden />
@@ -70,7 +70,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
         title="Save as routine"
         onClose={() => setOpen(false)}
         footer={
-          <Button className="h-12 w-full text-body font-bold" disabled={name.trim() === ""} onClick={save}>
+          <Button className="min-h-12 w-full text-body font-bold" disabled={name.trim() === ""} onClick={save}>
             Save routine
           </Button>
         }
@@ -81,7 +81,7 @@ export function SaveAsRoutine({ log }: { log: WorkoutLog }) {
             value={name}
             maxLength={ROUTINE_LIMITS.name}
             onChange={(event) => setName(event.target.value)}
-            className="h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none"
+            className="min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none"
           />
         </label>
         <p className="mt-2 text-footnote text-muted-foreground">

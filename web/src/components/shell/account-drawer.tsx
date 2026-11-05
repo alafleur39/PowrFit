@@ -141,7 +141,7 @@ export function AccountDrawer({
                     aria-checked={unit === option}
                     onClick={() => onUnitChange(option)}
                     className={cn(
-                      "h-11 rounded-input text-footnote font-bold transition-colors",
+                      "min-h-11 rounded-input text-footnote font-bold transition-colors",
                       unit === option
                         ? "bg-accent text-accent-foreground"
                         : "text-muted-foreground hover:text-foreground"
@@ -156,7 +156,7 @@ export function AccountDrawer({
             <button
               type="button"
               onClick={onSignOut}
-              className="mt-auto flex h-12 items-center gap-3 rounded-tile px-3 text-left font-medium text-foreground transition-colors hover:bg-accent-muted"
+              className="mt-auto flex min-h-12 items-center gap-3 rounded-tile px-3 text-left font-medium text-foreground transition-colors hover:bg-accent-muted"
             >
               <LogOut className="size-5 text-muted-foreground" aria-hidden />
               Sign out

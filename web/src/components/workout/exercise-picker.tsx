@@ -40,7 +40,7 @@ export function ExercisePicker({
       onClose={close}
       footer={
         <Button
-          className="h-12 w-full text-body font-bold"
+          className="min-h-12 w-full text-body font-bold"
           disabled={selected.length === 0}
           onClick={() => {
             onAdd(selected);

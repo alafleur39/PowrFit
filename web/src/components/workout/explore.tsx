@@ -78,7 +78,7 @@ function ExerciseDetail({ exercise, onBack }: { exercise: Exercise; onBack: () =
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
+        className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
         <ArrowLeft className="size-4" aria-hidden />
         All exercises

@@ -32,7 +32,7 @@ export function WorkoutSummary({ logId, top, celebrate = false }: { logId: strin
   const back = top ?? (
     <Link
       href="/workouts?tab=history"
-      className="inline-flex h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
+      className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
     >
       <ArrowLeft className="size-4" aria-hidden />
       History
@@ -117,7 +117,7 @@ export function WorkoutSummary({ logId, top, celebrate = false }: { logId: strin
           <button
             type="button"
             onClick={() => setMode("edit")}
-            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold text-foreground hover:bg-surface"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border px-4 text-footnote font-semibold text-foreground hover:bg-surface"
           >
             <Pencil className="size-4" aria-hidden />
             Edit

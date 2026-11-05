@@ -77,7 +77,7 @@ export default function LogPage() {
           top={
             <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:px-6">
               <p className="text-footnote font-semibold text-success">Workout saved</p>
-              <Link href="/home" className="inline-flex h-11 items-center px-2 text-footnote font-semibold text-accent">
+              <Link href="/home" className="inline-flex min-h-11 items-center px-2 text-footnote font-semibold text-accent">
                 Done
               </Link>
             </div>
@@ -141,7 +141,7 @@ function StartPanel() {
         ))}
         <Button
           variant="secondary"
-          className="h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
+          className="min-h-12 border-border bg-transparent text-body font-semibold text-foreground hover:bg-surface"
           onClick={() => start()}
         >
           <Plus className="size-4" aria-hidden />
@@ -193,7 +193,7 @@ function Logger({
   return (
     <div className={draft.rest ? "pb-36" : "pb-10"}>
       {draft.rest && <RestTimer rest={draft.rest} />}
-      <header className="sticky top-[env(safe-area-inset-top)] z-10 flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 sm:px-6 md:top-0">
+      <header className="type-cap sticky top-[env(safe-area-inset-top)] z-10 flex items-center justify-between gap-3 border-b border-border bg-background px-4 py-3 sm:px-6 md:top-0">
         <div className="min-w-0">
           <h1 className="truncate text-title3 font-bold">{draft.routineName ?? "Workout"}</h1>
           <p className="text-footnote text-muted-foreground">
@@ -260,7 +260,7 @@ function Logger({
         <button
           type="button"
           onClick={() => setDiscardOpen(true)}
-          className="mx-auto mt-4 h-11 px-4 text-footnote font-medium text-danger"
+          className="mx-auto mt-4 min-h-11 px-4 text-footnote font-medium text-danger"
         >
           Discard workout
         </button>
@@ -281,13 +281,13 @@ function Logger({
         footer={
           <div className="flex flex-col gap-2">
             {counts.done > 0 && (
-              <Button className="h-12 text-body font-bold" onClick={confirmFinish}>
+              <Button className="min-h-12 text-body font-bold" onClick={confirmFinish}>
                 Finish and save
               </Button>
             )}
             <Button
               variant="ghost"
-              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
+              className="min-h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setFinishOpen(false)}
             >
               Keep logging
@@ -323,7 +323,7 @@ function Logger({
           <div className="flex flex-col gap-2">
             <Button
               variant="destructive"
-              className="h-12 text-body font-bold"
+              className="min-h-12 text-body font-bold"
               onClick={() => {
                 discard();
                 setDiscardOpen(false);
@@ -333,7 +333,7 @@ function Logger({
             </Button>
             <Button
               variant="ghost"
-              className="h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
+              className="min-h-12 text-body text-foreground hover:bg-surface hover:text-foreground"
               onClick={() => setDiscardOpen(false)}
             >
               Keep logging

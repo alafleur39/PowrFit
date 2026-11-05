@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import { AuthProvider } from "@/components/auth-provider";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { DYNAMIC_TYPE_SCRIPT } from "@/lib/dynamic-type";
 import "./globals.css";
 
 const description =
@@ -43,6 +44,10 @@ export default function RootLayout({
       lang="en"
       className="h-full antialiased"
     >
+      <head>
+        {/* Follows the iPhone's text size before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: DYNAMIC_TYPE_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <AuthProvider>{children}</AuthProvider>
         <ServiceWorkerRegistration />

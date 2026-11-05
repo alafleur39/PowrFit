@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 // one (DESIGN_RULES). `destructive` is red text on a dark surface, which
 // passes AA where white on red (3.4:1) doesn't.
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-busy:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex max-w-full shrink-0 items-center justify-center gap-2 text-center rounded-full font-semibold outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-busy:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -22,8 +22,8 @@ const buttonVariants = cva(
           "border border-danger/40 bg-surface-raised text-danger hover:bg-danger/10 focus-visible:ring-danger/40",
       },
       size: {
-        md: "h-11 px-5 text-body",
-        lg: "h-12 px-6 text-body",
+        md: "min-h-11 px-5 py-2 text-body",
+        lg: "min-h-12 px-6 py-2 text-body",
       },
       block: {
         true: "w-full",

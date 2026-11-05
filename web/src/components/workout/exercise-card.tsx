@@ -116,7 +116,7 @@ export function ExerciseCard({
 
       {cardioFields ? (
         <div
-          className="mt-3 grid grid-cols-[2rem_1fr_3rem_2.75rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
+          className="mt-3 type-cap grid grid-cols-[2rem_1fr_3rem_2.75rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
           aria-hidden
         >
           <span className="text-center">Set</span>
@@ -126,7 +126,7 @@ export function ExerciseCard({
         </div>
       ) : (
         <div
-          className="mt-3 grid grid-cols-[2rem_1fr_1fr_3rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
+          className="mt-3 type-cap grid grid-cols-[2rem_1fr_1fr_3rem] gap-2 px-1 text-caption font-medium text-muted-foreground"
           aria-hidden
         >
           <span className="text-center">Set</span>
@@ -167,7 +167,7 @@ export function ExerciseCard({
       <button
         type="button"
         onClick={onAddSet}
-        className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-tile text-footnote font-semibold text-accent hover:bg-surface-raised"
+        className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-tile text-footnote font-semibold text-accent hover:bg-surface-raised"
       >
         <Plus className="size-4" aria-hidden />
         Add set
