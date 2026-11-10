@@ -43,6 +43,10 @@
       </array>
     </dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>PowrFit uses your location once to find cheap gyms near you. It rounds it to an area about 1 km wide and never stores your exact spot.</string>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

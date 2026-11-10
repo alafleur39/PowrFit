@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Trash2, X } from "lucide-react";
+import { ChevronLeft, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -78,7 +78,7 @@ export function WorkoutEditor({
         onClick={onClose}
         className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
-        <ArrowLeft className="size-4" aria-hidden />
+        <ChevronLeft className="size-5" aria-hidden />
         Cancel
       </button>
 

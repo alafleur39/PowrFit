@@ -104,10 +104,10 @@ export function ProfileCard() {
             />
           </label>
           <div>
-            <p id="avatar-colour" className="text-footnote font-medium">
-              Avatar colour
+            <p id="avatar-color" className="text-footnote font-medium">
+              Avatar color
             </p>
-            <div role="radiogroup" aria-labelledby="avatar-colour" className="mt-2 flex flex-wrap gap-2">
+            <div role="radiogroup" aria-labelledby="avatar-color" className="mt-2 flex flex-wrap gap-2">
               {AVATAR_COLORS.map((option) => (
                 <button
                   key={option}

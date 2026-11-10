@@ -13,7 +13,8 @@ only when asked.
 | 4 Screens (logger, Home) | 22252d2 | critic blocking issues fixed |
 | 4 Screens (Workouts, Progress, Profile, Gyms, sign-in) | 1521857 | critic run; see below |
 | 5 Feel | 59b5ff8 | pushed and deployed Nov 4 with Phases 2–4; haptics wired (silent until the package is approved), skeletons, keyboard |
-| 6 Accessibility | (this commit) | Dynamic Type, Increase Contrast, color-free cues, VoiceOver hints |
+| 6 Accessibility | 8329016 | Dynamic Type, Increase Contrast, color-free cues, VoiceOver hints |
+| 7 Review and App Store polish | (this commit) | critic on every screen, iOS permission text, splash, privacy |
 
 ## Pending decisions (temporary defaults, easy to undo)
 
@@ -161,6 +162,88 @@ Capacitor app. Both are for the first TestFlight build.
 
 Images (not in git): `docs/screenshots/phase6/` (default size, with
 axe.json), `phase6-ax5/` (largest text), `phase6-contrast/`.
+
+Checks: typecheck, lint, 376 unit tests, full browser suite (85 passed,
+9 skipped as usual).
+
+## Phase 7: Independent review and App Store polish (Nov 9)
+
+### 1. Design critic on every final screen
+
+Fresh screenshots (`docs/screenshots/phase7/`, 29 screens). The critic
+marked 4 items Blocking:
+
+| Blocking item | Outcome |
+|---|---|
+| "Add PowrFit to your home screen" card would show in the App Store app | Not a bug: `isStandalone()` already returns true when `Capacitor.isNativePlatform()`. The screenshots are from the web build. |
+| Privacy says "PowrFit is in beta." (App Review guideline 2.2) | Fixed: removed. |
+| Exercise and Equipment pickers about 22pt tall | Fixed: new `components/ui/select.tsx` drops WebKit's native look (which ignored the height), 44pt, chevron, input style. Used by all 6 pickers. |
+| Filled-yellow avatar by default breaks the one-yellow-primary rule | **Your call (decision 6 below).** The default lives in the data model (`profile.ts`). |
+
+Should-fix and nits fixed now: selected segment and track barely visible
+(Week/Month/Year, kg/lb); summary had no primary (Done is now the
+primary); "ticked/unticked" → "checked/unchecked"; "First of Push → Pull
+→ Leg" → "Day 1 of 3: Push day, Pull day, Leg day" (and the populated
+reason drops the arrow string); italic suggestion placeholders → roman
+grey; rest timer "−15s / +15s"; back links use the iOS chevron; "Avatar
+colour" → "color".
+
+### 2. App Store checklist
+
+| Check | Result |
+|---|---|
+| No placeholder or developer text | pass (scan for lorem/TODO/coming soon/console.log; "beta" removed from Privacy) |
+| No dev screens in release | pass: `/dev/components` is `page.web.tsx` (left out of the iOS build) and 404s in production |
+| Permission prompts explain why | **fixed**: Info.plist had no `NSLocationWhenInUseUsageDescription`; Near me would have shown no reason (App Review rejects that). Now matches the in-app explainer. |
+| Account deletion easy to find | pass: Profile → Account → Delete account, with password confirm |
+| Privacy screen matches what's collected | **fixed**: added cardio times and distances, and the feedback form; date updated |
+| App icon and launch screen match | **fixed**: the splash still had the old bolt from P7-02; redrawn with the slanted bolt from the icon |
+| Light/dark | dark-only, on purpose: `color-scheme: dark` and now `UIUserInterfaceStyle = Dark`, so the keyboard and pickers are dark too |
+
+### 3. App Store screenshots
+
+Proposal: `docs/design/app-store-screenshots.md` (six layouts from real
+screens, headline per slide, sizes, capture steps).
+
+### Pending decisions (added in Phase 7)
+
+6. **Avatar default color.** New profiles start yellow (`profile.ts`),
+   which makes a big filled-yellow circle that isn't an action.
+   Suggestion: default to blue; existing users keep theirs. A one-line
+   data default, so it needs your OK.
+7. **"✓ Saved" on every workout card.** The critic calls it noise. It's
+   the honest-sync badge from Phase 2 and tests rely on it. Option: show
+   only "Waiting to sync" and "Sync failed", and nothing once saved.
+
+### Still open (should-fix, not done)
+
+- Progress Month chart shows weeks after today and starts in the previous
+  month without saying so (chart bucketing: calculation, so not touched).
+- Progress opens on Week, which is empty early in the week for regular
+  lifters: default to Month, or show last week in the empty card.
+- Gyms distances are in km even for lb users.
+- Explore: no "All" chip or selected chip state; list rows inset more
+  than the search field.
+- Login: card border inside a black page; no password show/hide.
+- Logger: Finish is enabled with 0 sets (the sheet then explains);
+  Remove set in the stepper bar has no undo.
+- Home first use shows two empty states in a row (week card, then the
+  dashed "finished workouts" box).
+- The critic couldn't see Gyms results/errors, login errors, empty
+  search, exercise detail or skeletons; the screenshot script doesn't
+  capture them yet.
+
+### Known risks
+
+- Nothing has run on a real iPhone yet: haptics (package not approved),
+  Dynamic Type through `-apple-system-body`, VoiceOver, the keyboard
+  fixes and the location prompt all need the first TestFlight build.
+- Info.plist still lists `armv7` under UIRequiredDeviceCapabilities
+  (Capacitor's template). Watch for an upload validation warning; if it
+  appears, change it to `arm64`.
+- The App Store build is the web app in a WebView (Capacitor). Guideline
+  4.2 asks for app-like value; the logger offline, haptics, and native
+  location help, but the reviewer may still look closely.
 
 Checks: typecheck, lint, 376 unit tests, full browser suite (85 passed,
 9 skipped as usual).

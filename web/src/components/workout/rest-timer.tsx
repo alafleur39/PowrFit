@@ -67,7 +67,7 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
               onClick={() => update((draft, time) => adjustRest(draft, -15, time))}
               className={control}
             >
-              −15
+              −15s
             </button>
             <button
               type="button"
@@ -75,7 +75,7 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
               onClick={() => update((draft, time) => adjustRest(draft, 15, time))}
               className={control}
             >
-              +15
+              +15s
             </button>
           </>
         )}

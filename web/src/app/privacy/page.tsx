@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = { title: "Privacy · PowrFit" };
 
@@ -13,20 +13,20 @@ export default function PrivacyPage() {
         href="/home"
         className="inline-flex min-h-11 items-center gap-2 text-footnote font-medium text-muted-foreground hover:text-foreground"
       >
-        <ArrowLeft className="size-4" aria-hidden />
+        <ChevronLeft className="size-5" aria-hidden />
         PowrFit
       </Link>
       <h1 className="mt-2 text-title1 font-bold">Privacy</h1>
-      <p className="mt-1 text-footnote text-muted-foreground">Last updated November 2, 2026. PowrFit is in beta.</p>
+      <p className="mt-1 text-footnote text-muted-foreground">Last updated November 9, 2026.</p>
 
       <div className="mt-6 flex flex-col gap-6 text-body leading-relaxed">
         <section>
           <h2 className="text-headline font-bold">What PowrFit stores</h2>
           <ul className="mt-2 list-disc pl-5 text-muted-foreground">
             <li>Your email address and password, to sign you in. The password is never stored in readable form.</li>
-            <li>The workouts you log: exercises, sets, weights, reps, notes, and when you trained.</li>
+            <li>The workouts you log: exercises, sets, weights, reps, cardio times and distances, notes, and when you trained.</li>
             <li>The routines you create, and whether you use kg or lb.</li>
-            <li>The name and avatar colour you pick in your profile. There are no profile photos.</li>
+            <li>The name and avatar color you pick in your profile. There are no profile photos.</li>
           </ul>
         </section>
         <section>
@@ -66,6 +66,13 @@ export default function PrivacyPage() {
               Google&apos;s Privacy Policy
             </a>{" "}
             explains how Google handles data.
+          </p>
+        </section>
+        <section>
+          <h2 className="text-headline font-bold">Feedback</h2>
+          <p className="mt-2 text-muted-foreground">
+            Send feedback opens a short form outside the app. Only what you type into it is sent, and
+            it&apos;s used to fix bugs and improve PowrFit.
           </p>
         </section>
         <section>

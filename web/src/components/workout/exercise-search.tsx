@@ -11,6 +11,7 @@ import {
   type MuscleGroup,
 } from "@/lib/strength";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/ui/select";
 
 /** "Full body", "Barbell": catalog values as labels. */
 export const catalogLabel = (value: string) =>
@@ -75,10 +76,10 @@ export function ExerciseSearchControls({
 
       <label className="flex flex-wrap items-center gap-2 text-footnote text-muted-foreground">
         Equipment
-        <select
+        <Select
           value={equipment ?? ""}
           onChange={(event) => setEquipment((event.target.value || undefined) as Equipment | undefined)}
-          className="min-h-11 max-w-full rounded-input border border-input bg-background px-2 text-foreground"
+          className="text-footnote"
         >
           <option value="">Any</option>
           {EQUIPMENT.map((item) => (
@@ -86,7 +87,7 @@ export function ExerciseSearchControls({
               {catalogLabel(item)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
     </div>
   );

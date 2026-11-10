@@ -69,7 +69,7 @@ export function NumberField({
           onBlur?.();
         }}
         className={cn(
-          "min-h-12 w-full min-w-0 scroll-mb-28 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground/60 placeholder:italic focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+          "min-h-12 w-full min-w-0 scroll-mb-28 rounded-input border border-input bg-background px-3 text-center text-body tabular-nums text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
           invalid && "border-danger pr-7 focus-visible:border-danger"
         )}
       />

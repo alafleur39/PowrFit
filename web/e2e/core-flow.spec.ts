@@ -22,7 +22,7 @@ async function logPushDay(page: Page) {
 async function finish(page: Page) {
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Finish workout?" });
-  await expect(dialog.getByText(/unticked sets will be discarded/)).toBeVisible();
+  await expect(dialog.getByText(/unchecked sets will be discarded/)).toBeVisible();
   await dialog.getByRole("button", { name: "Finish and save" }).click();
   // The summary appears in place (no network needed), then History reopens it.
   await expect(page).toHaveURL(/\/log$/);

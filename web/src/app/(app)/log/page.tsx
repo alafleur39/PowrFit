@@ -77,9 +77,9 @@ export default function LogPage() {
           top={
             <div className="flex items-center justify-between gap-3 px-4 pt-4 sm:px-6">
               <p className="text-footnote font-semibold text-success">Workout saved</p>
-              <Link href="/home" className="inline-flex min-h-11 items-center px-2 text-footnote font-semibold text-accent">
-                Done
-              </Link>
+              <Button asChild>
+                <Link href="/home">Done</Link>
+              </Button>
             </div>
           }
         />
@@ -303,8 +303,8 @@ function Logger({
             </p>
             {counts.notDone > 0 && (
               <p className="font-semibold text-warning">
-                {counts.notDone} unticked {counts.notDone === 1 ? "set" : "sets"} will be
-                discarded. Only ticked sets are saved.
+                {counts.notDone} unchecked {counts.notDone === 1 ? "set" : "sets"} will be
+                discarded. Only checked sets are saved.
               </p>
             )}
           </div>

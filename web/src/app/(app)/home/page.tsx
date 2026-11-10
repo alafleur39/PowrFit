@@ -74,12 +74,12 @@ function StartOrResume() {
   );
   const next = PRESET_ROUTINES[(lastIndex + 1) % PRESET_ROUTINES.length];
   const isFirst = items.length === 0;
-  const rotation = PRESET_ROUTINES.map((routine) => routine.name.replace(/ day$/, "")).join(" → ");
-  // Why this one (UI playbook Phase 4): what came before it in the rotation.
+  // Why this one (UI playbook Phase 4): what came before it, in plain words
+  // (Phase 7 review: "Push → Pull → Leg" read as jargon on a first visit).
   const reason =
     lastIndex >= 0 && lastRoutine && "log" in lastRoutine
-      ? `After ${PRESET_ROUTINES[lastIndex].name} on ${formatDate(lastRoutine.log.endedAt)} (${rotation}).`
-      : `First of ${rotation}.`;
+      ? `After ${PRESET_ROUTINES[lastIndex].name} on ${formatDate(lastRoutine.log.endedAt)}.`
+      : `Day 1 of ${PRESET_ROUTINES.length}: ${PRESET_ROUTINES.map((routine) => routine.name).join(", ")}.`;
 
   return (
     <div className="rounded-card border border-border bg-surface p-4">

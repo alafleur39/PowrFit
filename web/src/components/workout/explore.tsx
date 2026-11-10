@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { EXERCISES, type Exercise } from "@/lib/strength";
 import { formatDate, formatWeight } from "@/lib/workout/format";
@@ -80,7 +80,7 @@ function ExerciseDetail({ exercise, onBack }: { exercise: Exercise; onBack: () =
         onClick={onBack}
         className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
-        <ArrowLeft className="size-4" aria-hidden />
+        <ChevronLeft className="size-5" aria-hidden />
         All exercises
       </button>
       <div className="flex flex-col gap-4 px-4 sm:px-6">

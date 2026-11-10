@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { sendPriceReport } from "@/lib/gyms/gym-repo";
 import { CURRENCIES, PRICE_LIMITS, priceReportProblems, type Currency, type Gym } from "@/lib/gyms/gyms";
+import { Select } from "@/components/ui/select";
 
 const fieldClass =
   "min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
@@ -111,18 +112,18 @@ export function AddPrice({ gym }: { gym: Gym }) {
               <label htmlFor={`${id}-currency`} className="text-footnote font-medium">
                 Currency
               </label>
-              <select
+              <Select
                 id={`${id}-currency`}
                 value={currency}
                 onChange={(event) => setCurrency(event.target.value as Currency)}
-                className={fieldClass}
+                wrapperClassName="w-full"
               >
                 {CURRENCIES.map((code) => (
                   <option key={code} value={code}>
                     {code}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
           {problems.length > 0 && (

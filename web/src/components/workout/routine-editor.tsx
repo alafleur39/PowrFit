@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronLeft, Plus, Trash2 } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import {
 import { deleteRoutine, saveRoutine } from "@/lib/workout/routine-repo";
 import { Sheet } from "@/components/ui/sheet";
 import { ExercisePicker } from "./exercise-picker";
+import { Select } from "@/components/ui/select";
 
 const EXERCISE_NAMES = new Map(EXERCISES.map((exercise) => [exercise.id, exercise.name]));
 const SET_OPTIONS = Array.from({ length: ROUTINE_LIMITS.targetSets }, (_, i) => i + 1);
@@ -80,7 +81,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
         href="/workouts"
         className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
       >
-        <ArrowLeft className="size-4" aria-hidden />
+        <ChevronLeft className="size-5" aria-hidden />
         Workouts
       </Link>
 
@@ -149,7 +150,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                 <div className="mt-2 grid grid-cols-3 gap-2">
                   <label className="flex flex-col gap-1">
                     <span className="text-caption text-muted-foreground">Sets</span>
-                    <select
+                    <Select
                       aria-label={`Sets for ${name}`}
                       value={exercise.targetSets}
                       onChange={(event) =>
@@ -157,14 +158,14 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                           updateRoutineExercise(r, index, { targetSets: Number(event.target.value) }, now)
                         )
                       }
-                      className={`${field} min-h-11`}
+                      wrapperClassName="w-full"
                     >
                       {SET_OPTIONS.map((count) => (
                         <option key={count} value={count}>
                           {count}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
                   <label className="flex flex-col gap-1">
                     <span className="text-caption text-muted-foreground">Reps</span>
@@ -183,7 +184,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                   </label>
                   <label className="flex flex-col gap-1">
                     <span className="text-caption text-muted-foreground">Rest</span>
-                    <select
+                    <Select
                       aria-label={`Rest for ${name}`}
                       value={exercise.restSec ?? ""}
                       onChange={(event) =>
@@ -196,7 +197,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                           )
                         )
                       }
-                      className={`${field} min-h-11`}
+                      wrapperClassName="w-full"
                     >
                       <option value="">Default</option>
                       {REST_OPTIONS.map((seconds) => (
@@ -204,7 +205,7 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
                           {restLabel(seconds)}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
                 </div>
               </li>

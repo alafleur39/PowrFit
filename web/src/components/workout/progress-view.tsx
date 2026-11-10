@@ -17,15 +17,13 @@ import { useActiveWorkout } from "./active-workout-provider";
 import { TrendChart, VolumeChart } from "./progress-charts";
 import { useHistoryLogs } from "./use-records";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select } from "@/components/ui/select";
 
 const RANGES: { id: ProgressRange; label: string; period: string; per: string }[] = [
   { id: "week", label: "Week", period: "this week", per: "day" },
   { id: "month", label: "Month", period: "this month", per: "week" },
   { id: "year", label: "Year", period: "this year", per: "month" },
 ];
-
-const field =
-  "min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
 function Loading() {
   return (
@@ -144,18 +142,18 @@ function TrendPanel({ logs, unit }: { logs: WorkoutLog[]; unit: WeightUnit }) {
             <label htmlFor="trend-exercise" className="text-footnote font-medium">
               Exercise
             </label>
-            <select
+            <Select
               id="trend-exercise"
               value={current.exerciseId}
               onChange={(event) => setPicked(event.target.value)}
-              className={field}
+              wrapperClassName="w-full"
             >
               {exercises.map((exercise) => (
                 <option key={exercise.exerciseId} value={exercise.exerciseId}>
                   {exercise.exerciseName}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <ChartContainer
             className="mt-4"

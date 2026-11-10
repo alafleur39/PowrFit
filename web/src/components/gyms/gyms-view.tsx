@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { AddPrice } from "./add-price";
+import { Select } from "@/components/ui/select";
 
 type Found = GymSearchResult & {
   /** Where distances are measured from: your position, or the place's centre. */
@@ -236,11 +237,11 @@ export function GymsView() {
               <label className="sr-only" htmlFor={`${resultsId}-budget`}>
                 Budget
               </label>
-              <select
+              <Select
                 id={`${resultsId}-budget`}
                 value={budget ?? ""}
                 onChange={(event) => setBudget(event.target.value ? Number(event.target.value) : undefined)}
-                className="min-h-11 rounded-input border border-input bg-background px-2 text-footnote text-foreground"
+                className="text-footnote"
               >
                 <option value="">Any price</option>
                 {BUDGETS.map((amount) => (
@@ -248,7 +249,7 @@ export function GymsView() {
                     Up to {formatMonthly({ monthlyPrice: amount, currency })}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
 

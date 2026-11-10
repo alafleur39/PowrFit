@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
-import { ArrowLeft, Pencil, Trophy } from "lucide-react";
+import { ChevronLeft, Pencil, Trophy } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatGrid, StatTile } from "@/components/ui/stat-tile";
@@ -34,7 +34,7 @@ export function WorkoutSummary({ logId, top, celebrate = false }: { logId: strin
       href="/workouts?tab=history"
       className="inline-flex min-h-11 items-center gap-2 px-4 text-footnote font-medium text-muted-foreground hover:text-foreground sm:px-6"
     >
-      <ArrowLeft className="size-4" aria-hidden />
+      <ChevronLeft className="size-5" aria-hidden />
       History
     </Link>
   );
