@@ -242,8 +242,8 @@ screens, headline per slide, sizes, capture steps).
   (Capacitor's template). Watch for an upload validation warning; if it
   appears, change it to `arm64`.
 - The App Store build is the web app in a WebView (Capacitor). Guideline
-  4.2 asks for app-like value; the logger offline, haptics, and native
-  location help, but the reviewer may still look closely.
+  4.2 asks for app-like value; the offline logger and haptics help, but
+  the reviewer may still look closely.
 
 Checks: typecheck, lint, 376 unit tests, full browser suite (85 passed,
 9 skipped as usual).
