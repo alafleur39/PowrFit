@@ -214,6 +214,8 @@ screens, headline per slide, sizes, capture steps).
 7. **"✓ Saved" on every workout card.** The critic calls it noise. It's
    the honest-sync badge from Phase 2 and tests rely on it. Option: show
    only "Waiting to sync" and "Sync failed", and nothing once saved.
+   **Decided Nov 10: status only.** Done in e55f085; tests check a
+   `data-sync-status` attribute instead of the word.
 
 ### Still open (should-fix, not done)
 
