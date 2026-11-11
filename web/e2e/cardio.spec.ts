@@ -39,7 +39,7 @@ test("a stair climber session is logged by time and shows as cardio minutes", as
   const row = page.getByRole("link", { name: /Push day/ });
   await expect(row).toContainText("2 sets · 1,080 lb · 20 min cardio");
   // Saved means the server has it.
-  await expect(row).toContainText("Saved");
+  await expect(row).toHaveAttribute("data-sync-status", "synced");
 
   const [log] = await listWorkoutLogs();
   const json = JSON.stringify(log.fields);

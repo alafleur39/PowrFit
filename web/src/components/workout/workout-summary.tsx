@@ -108,7 +108,7 @@ export function WorkoutSummary({ logId, top, celebrate = false }: { logId: strin
   return (
     <div className="pb-10">
       {back}
-      <header className="px-4 pb-4 sm:px-6">
+      <header className="px-4 pb-4 sm:px-6" data-sync-status={item.status}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-footnote text-muted-foreground">{formatDate(log.endedAt)}</p>
@@ -123,9 +123,11 @@ export function WorkoutSummary({ logId, top, celebrate = false }: { logId: strin
             Edit
           </button>
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <SyncBadge status={item.status} />
-        </div>
+        {item.status !== "synced" && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <SyncBadge status={item.status} />
+          </div>
+        )}
       </header>
 
       {item.status === "failed" && (

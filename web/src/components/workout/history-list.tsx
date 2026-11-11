@@ -73,6 +73,7 @@ export function HistoryList() {
             <li key={item.id} className="rounded-card border border-border bg-surface">
               <Link
                 href={workoutLogHref(item.id)}
+                data-sync-status={item.status}
                 className="flex items-center gap-3 p-4"
               >
                 <div className="min-w-0 flex-1">
@@ -82,10 +83,12 @@ export function HistoryList() {
                     {plural(totals.sets, "set")} · <span className="tabular-nums">{formatWeight(totals.volume, unit)}</span>
                     {formatCardioSuffix(totals.cardioSec)}
                   </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <SyncBadge status={item.status} />
-                    {prs > 0 && <PrBadge label={`${prs} ${prs === 1 ? "PR" : "PRs"}`} />}
-                  </div>
+                  {(item.status !== "synced" || prs > 0) && (
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <SyncBadge status={item.status} />
+                      {prs > 0 && <PrBadge label={`${prs} ${prs === 1 ? "PR" : "PRs"}`} />}
+                    </div>
+                  )}
                 </div>
                 <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
               </Link>

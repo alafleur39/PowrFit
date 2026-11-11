@@ -222,6 +222,7 @@ function LastWorkout() {
       </div>
       <Link
         href={workoutLogHref(last.id)}
+        data-sync-status={last.status}
         className="flex items-center gap-3 rounded-card border border-border bg-surface p-4"
       >
         <span className="min-w-0 flex-1">

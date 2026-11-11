@@ -31,7 +31,7 @@ async function finish(page: Page) {
 
 async function expectSummary(page: Page) {
   await expect(page.getByRole("heading", { name: "Push day", level: 1 })).toBeVisible();
-  await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+  await expect(page.locator('[data-sync-status="synced"]')).toBeVisible();
   const stats = page.locator("dl").first();
   await expect(stats.getByText("2,515 lb")).toBeVisible();
   await expect(stats.getByText("24", { exact: true })).toBeVisible();
@@ -53,7 +53,8 @@ test("a workout can be started, logged, finished and reopened with matching tota
   await page.goto("/workouts?tab=history");
   const row = page.getByRole("link", { name: /Push day/ });
   await expect(row).toContainText("3 sets · 2,515 lb");
-  await expect(row).toContainText("Saved");
+  await expect(row).toHaveAttribute("data-sync-status", "synced");
+  await expect(row).not.toContainText("Waiting to sync");
   await row.click();
   await expect(page).toHaveURL(/\/workouts\/history\/view\?id=[0-9a-f-]{36}$/);
   await expectSummary(page);

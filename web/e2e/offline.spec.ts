@@ -24,15 +24,15 @@ test("a workout finished offline syncs once when the connection returns", async 
 
   await expect(page.getByText("Workout saved")).toBeVisible();
   await expect(page.getByText("Waiting to sync")).toBeVisible();
-  await expect(page.getByText("Saved", { exact: true })).toHaveCount(0);
+  await expect(page.locator('[data-sync-status="synced"]')).toHaveCount(0);
   expect(await listWorkoutLogs()).toHaveLength(0);
 
   await context.setOffline(false);
-  await expect(page.getByText("Saved", { exact: true })).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-sync-status="synced"]')).toBeVisible({ timeout: 45_000 });
   await expect.poll(async () => (await listWorkoutLogs()).length).toBe(1);
 
   // A reload (which resends any unconfirmed receipt) still leaves one copy.
   await page.goto("/workouts?tab=history");
-  await expect(page.getByRole("link", { name: /Push day/ })).toContainText("Saved");
+  await expect(page.getByRole("link", { name: /Push day/ })).toHaveAttribute("data-sync-status", "synced");
   expect(await listWorkoutLogs()).toHaveLength(1);
 });
