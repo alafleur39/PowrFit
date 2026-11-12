@@ -131,7 +131,7 @@ export default function LoginPage() {
 
   return (
     <main className="w-screen flex-1 overflow-x-hidden bg-background lg:grid lg:grid-cols-[1fr_0.95fr]">
-      <section className="flex w-screen min-w-0 items-center justify-center px-4 py-10 lg:w-auto">
+      <section className="flex w-screen min-w-0 items-center justify-center px-4 pt-[calc(--spacing(10)+env(safe-area-inset-top))] pb-10 lg:w-auto">
       <Card
         className="rounded-card border"
         style={{ width: "calc(100vw - 2rem)", maxWidth: "22rem" }}
