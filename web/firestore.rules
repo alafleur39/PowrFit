@@ -108,10 +108,25 @@ service cloud.firestore {
     // Users' price reports (P6-04, D42): signed-in users can send one;
     // nobody can read, change or delete them through the app. Anonymous:
     // no user id is stored. Mirrors priceReportProblems in src/lib/gyms.
-    match /gymPriceReports/{reportId} {
-      allow create: if request.auth != null
-        && request.resource.data.keys().hasOnly(['placeId', 'gymName', 'plan', 'monthlyPrice', 'currency', 'createdAt'])
-        && request.resource.data.keys().hasAll(['placeId', 'gymName', 'plan', 'monthlyPrice', 'currency', 'createdAt'])
+    // Price reports record who sent them (replaces D42's anonymous reports,
+    // Nov 2026) so spam can be traced and its sender banned. Only the admin
+    // can read them. One report per user per gym, id "<uid>_<placeId>", which
+    // its sender may correct; and at most one report every 30 seconds, through
+    // reportLimits below, written in the same batch.
+    function isNotBanned() {
+      return !exists(/databases/$(database)/documents/bannedUsers/$(request.auth.uid));
+    }
+    function touchedReportLimit() {
+      return getAfter(/databases/$(database)/documents/reportLimits/$(request.auth.uid)).data.lastAt
+        == request.time;
+    }
+    function isValidPriceReport(reportId) {
+      return request.resource.data.uid == request.auth.uid
+        && reportId == request.auth.uid + '_' + request.resource.data.placeId
+        && isNotBanned()
+        && touchedReportLimit()
+        && request.resource.data.keys().hasOnly(['uid', 'placeId', 'gymName', 'plan', 'monthlyPrice', 'currency', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'placeId', 'gymName', 'plan', 'monthlyPrice', 'currency', 'createdAt'])
         && request.resource.data.placeId is string
         && request.resource.data.placeId.matches('osm-(node|way|relation)-[0-9]{1,20}')
         && request.resource.data.gymName is string && request.resource.data.gymName.size() <= 100
@@ -121,7 +136,30 @@ service cloud.firestore {
         && request.resource.data.monthlyPrice > 0 && request.resource.data.monthlyPrice <= 1000
         && request.resource.data.currency in ['USD', 'CAD', 'GBP', 'EUR', 'AUD']
         && request.resource.data.createdAt is string && request.resource.data.createdAt.size() <= 40;
-      allow read, update, delete: if false;
+    }
+    match /gymPriceReports/{reportId} {
+      allow create: if request.auth != null && isValidPriceReport(reportId);
+      // Correcting your own report: the id already ties it to you.
+      allow update: if request.auth != null && resource.data.uid == request.auth.uid
+        && isValidPriceReport(reportId);
+      allow read, delete: if false;
+    }
+    // When this user last sent a price report; server time, so it can't be faked.
+    match /reportLimits/{userId} {
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['lastAt'])
+        && request.resource.data.lastAt == request.time;
+      allow update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['lastAt'])
+        && request.resource.data.lastAt == request.time
+        && request.time > resource.data.lastAt + duration.value(30, 's');
+      // No delete: deleting and re-creating would skip the wait. Account
+      // deletion (Phase 8) removes it on the server.
+      allow read, delete: if false;
+    }
+    // Added by the admin in the Firebase console; no app access.
+    match /bannedUsers/{userId} {
+      allow read, write: if false;
     }
 
     // Phase 0 mock data, retired in P2-15: owners can still read it and

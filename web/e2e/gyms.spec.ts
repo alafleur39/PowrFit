@@ -85,7 +85,7 @@ test("finds gyms, cheapest first, with a budget and price reports", async ({ pag
   await expectNoSidewaysScroll(page, "Gyms");
   await expectLabelledControls(page, "Gyms");
 
-  // Add a price: checked, then sent anonymously.
+  // Add a price: checked, then sent with its sender (only the admin can read it).
   await page.getByRole("button", { name: "Add a price for Corner Gym" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("button", { name: "Send price" }).click();
@@ -97,7 +97,7 @@ test("finds gyms, cheapest first, with a budget and price reports", async ({ pag
 
   await expect.poll(async () => (await listDocuments("gymPriceReports")).length).toBe(1);
   const [report] = await listDocuments("gymPriceReports");
-  expect(Object.keys(report.fields).sort()).toEqual(["createdAt", "currency", "gymName", "monthlyPrice", "placeId", "plan"]);
+  expect(Object.keys(report.fields).sort()).toEqual(["createdAt", "currency", "gymName", "monthlyPrice", "placeId", "plan", "uid"]);
   expect(report.fields.placeId).toEqual({ stringValue: "osm-way-9003" });
 
   // Coming back shows the last search without asking again.

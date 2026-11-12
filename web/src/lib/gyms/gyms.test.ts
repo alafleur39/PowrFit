@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cheapestPlan, decodeGymPrices, encodePriceReport, isPlaceId, priceReportProblems } from "./gyms";
+import { cheapestPlan, decodeGymPrices, encodePriceReport, isPlaceId, priceReportId, priceReportProblems } from "./gyms";
 
 const report = { placeId: "osm-node-42", gymName: "Iron Den", plan: "Basic", monthlyPrice: 24.999, currency: "USD" as const };
 
@@ -20,8 +20,10 @@ describe("gyms", () => {
     ]);
   });
 
-  it("encodes a report without anything about the reporter", () => {
-    expect(encodePriceReport({ ...report, createdAt: "2026-10-19T00:00:00.000Z" })).toEqual({
+  it("encodes a report with its sender, one per user per gym", () => {
+    expect(priceReportId("alice", "osm-node-42")).toBe("alice_osm-node-42");
+    expect(encodePriceReport("alice", { ...report, createdAt: "2026-10-19T00:00:00.000Z" })).toEqual({
+      uid: "alice",
       placeId: "osm-node-42",
       gymName: "Iron Den",
       plan: "Basic",

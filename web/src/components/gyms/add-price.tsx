@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { Plus } from "lucide-react";
 
+import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { sendPriceReport } from "@/lib/gyms/gym-repo";
@@ -12,8 +13,8 @@ import { Select } from "@/components/ui/select";
 const fieldClass =
   "min-h-11 w-full rounded-input border border-input bg-background px-3 text-body text-foreground focus-visible:border-ring focus-visible:outline-none";
 
-// "Add a price" (P6-06, D36, D42): a member says what they pay. The report
-// is anonymous and only shows once it's checked (P6-07). Offline, Firestore
+// "Add a price" (P6-06, D36): a member says what they pay. Only the admin
+// sees who sent it, and it only shows once it's checked (P6-07). Offline, Firestore
 // queues it and sends it when the connection returns.
 export function AddPrice({ gym }: { gym: Gym }) {
   const id = useId();
@@ -23,6 +24,7 @@ export function AddPrice({ gym }: { gym: Gym }) {
   const [currency, setCurrency] = useState<Currency>("USD");
   const [problems, setProblems] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
+  const { user } = useAuth();
 
   const close = () => {
     setOpen(false);
@@ -38,8 +40,9 @@ export function AddPrice({ gym }: { gym: Gym }) {
       setProblems(found);
       return;
     }
+    if (!user) return;
     // Not awaited: it resolves only once the server has it, which offline is later.
-    sendPriceReport({ ...report, createdAt: new Date().toISOString() }).catch((err) =>
+    sendPriceReport(user.uid, { ...report, createdAt: new Date().toISOString() }).catch((err) =>
       console.error("Sending a price report failed", err)
     );
     setSent(true);

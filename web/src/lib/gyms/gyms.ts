@@ -37,9 +37,9 @@ export type GymPrices = {
 };
 
 /**
- * gymPriceReports/{id}: "I pay $25 a month here". Anonymous on purpose
- * (D42): no user id is stored, so there's nothing to delete with an account
- * and nothing that ties a person to a gym.
+ * gymPriceReports/{uid}_{placeId}: "I pay $25 a month here". Records its
+ * sender (Nov 2026, replacing D42's anonymous reports) so spam can be traced
+ * and banned; only the admin can read reports. One per user per gym.
  */
 export type PriceReport = {
   placeId: PlaceId;
@@ -69,8 +69,14 @@ export function priceReportProblems(report: Omit<PriceReport, "createdAt">): str
   return problems;
 }
 
-export function encodePriceReport(report: PriceReport): Record<string, unknown> {
+/** The report's id: one per user per gym, so sending again corrects it. */
+export function priceReportId(uid: string, placeId: PlaceId): string {
+  return `${uid}_${placeId}`;
+}
+
+export function encodePriceReport(uid: string, report: PriceReport): Record<string, unknown> {
   return {
+    uid,
     placeId: report.placeId,
     gymName: report.gymName.trim().slice(0, PRICE_LIMITS.gymName),
     plan: report.plan.trim(),
