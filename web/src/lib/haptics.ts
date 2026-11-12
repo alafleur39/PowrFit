@@ -3,10 +3,10 @@ import { Capacitor, registerPlugin } from "@capacitor/core";
 // Haptics (UI playbook Phase 5): light for selection, success for a
 // completed set or a new PR, warning for destructive actions.
 //
-// The native side comes from @capacitor/haptics, which isn't installed yet
-// (it needs the owner's OK). Until it is, isPluginAvailable is false and
-// every call does nothing; once it's installed and synced, these start
-// working with no changes here. Websites never vibrate.
+// The native side is @capacitor/haptics (P7-04), registered by name so the
+// website bundle carries none of its code. If the plugin is missing,
+// isPluginAvailable is false and every call does nothing. Websites never
+// vibrate through here.
 export type HapticKind = "selection" | "success" | "warning";
 
 type HapticsPlugin = {

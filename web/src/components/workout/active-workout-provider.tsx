@@ -51,6 +51,7 @@ import {
 } from "@/lib/workout/receipts";
 import { classifyError, errorCode } from "@/lib/workout/sync-status";
 import { deleteWorkoutLog, saveWorkoutLog } from "@/lib/workout/workout-repo";
+import { syncRestNotification } from "@/lib/rest-notification";
 
 type DraftChange = (draft: WorkoutDraft, now: string) => WorkoutDraft;
 
@@ -214,6 +215,17 @@ export function ActiveWorkoutProvider({ children }: PropsWithChildren) {
     if (!uid) return;
     return subscribeWeightUnit(uid, setUnitState);
   }, [uid]);
+
+  // Keep the iOS app's "Rest over" notification on the rest's end time
+  // (P7-03): a new rest, +15/−15, Skip, finishing or discarding all land here.
+  const restEndsAt = draft?.rest?.endsAt;
+  const restDuration = draft?.rest?.durationSec;
+  useEffect(() => {
+    if (loadedUid !== uid) return;
+    void syncRestNotification(
+      restEndsAt && restDuration ? { endsAt: restEndsAt, durationSec: restDuration } : undefined
+    );
+  }, [loadedUid, uid, restEndsAt, restDuration]);
 
   const start = useCallback(
     (routine?: Routine) => {

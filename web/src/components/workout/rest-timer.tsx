@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Timer } from "lucide-react";
 
+import { haptic } from "@/lib/haptics";
 import { adjustRest, skipRest, type DraftRest } from "@/lib/strength";
 import { useActiveWorkout } from "./active-workout-provider";
 import { useNow } from "./use-now";
@@ -20,9 +21,10 @@ const control =
   "flex min-h-11 min-w-11 items-center justify-center rounded-full border border-border px-3 text-footnote font-semibold text-foreground hover:bg-surface-raised";
 
 // Rest timer (P4-04, D23). Runs from the end time saved in the draft, so it
-// keeps counting through a reload or a locked phone. In-app only: iOS
-// limits notifications from home-screen apps. Vibrates once at the end
-// where the device allows it.
+// keeps counting through a reload or a locked phone. The iOS app also rings
+// on a locked phone through a scheduled notification (P7-03,
+// rest-notification.ts). Buzzes once at the end: a haptic in the app,
+// a vibration where the browser allows it.
 export function RestTimer({ rest }: { rest: DraftRest }) {
   const { update } = useActiveWorkout();
   const now = useNow(250);
@@ -34,7 +36,10 @@ export function RestTimer({ rest }: { rest: DraftRest }) {
     if (!over || buzzed.current === rest.endsAt) return;
     buzzed.current = rest.endsAt;
     // Only buzz for a rest that just ended, not one that ended long ago.
-    if (now - Date.parse(rest.endsAt) < 5000) navigator.vibrate?.(200);
+    if (now - Date.parse(rest.endsAt) < 5000) {
+      haptic("success");
+      navigator.vibrate?.(200);
+    }
   }, [over, rest.endsAt, now]);
 
   const progress = over ? 1 : 1 - remaining / rest.durationSec;
