@@ -64,3 +64,20 @@ test("lets the iOS app call it across origins", async ({ request, isMobile }) =>
   // Refusals carry it too, so the app can read the error message.
   expect((await request.get("/api/gyms?cell=dr5ru7", { headers: { Origin: app } })).headers()["access-control-allow-origin"]).toBe(app);
 });
+
+test("limits how often one user can search", async ({ request, isMobile }) => {
+  test.skip(isMobile, "an API test; one browser is enough");
+  const mine = { Authorization: `Bearer ${await idToken()}` };
+  for (let i = 0; i < 20; i++) {
+    expect((await request.get("/api/gyms?cell=dr5ru7", { headers: mine })).status()).toBe(200);
+  }
+  const limited = await request.get("/api/gyms?cell=dr5ru7", { headers: mine });
+  expect(limited.status()).toBe(429);
+  expect(Number(limited.headers()["retry-after"])).toBeGreaterThan(0);
+  expect(limited.headers()["cache-control"]).toBe("no-store");
+  expect(((await limited.json()) as { error: string }).error).toMatch(/^That's a lot of searches\. Try again in/);
+
+  // Someone else isn't affected.
+  const theirs = { Authorization: `Bearer ${await idToken()}` };
+  expect((await request.get("/api/gyms?cell=dr5ru7", { headers: theirs })).status()).toBe(200);
+});

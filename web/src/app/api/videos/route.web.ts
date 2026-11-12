@@ -12,6 +12,7 @@
 import { isVideoTopic } from "@/lib/strength";
 import { CORS_ORIGIN, preflight } from "@/lib/server/cors";
 import { verifyIdToken } from "@/lib/server/id-token";
+import { createRateLimiter, tooManyRequests } from "@/lib/server/rate-limit";
 import { findVideos } from "@/lib/videos/find-videos";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "";
@@ -22,6 +23,10 @@ const EMULATOR = !PRODUCTION && process.env.GYMS_TRUST_EMULATOR_TOKENS === "1";
 const FAKE = !PRODUCTION && process.env.VIDEOS_PROVIDER === "fake";
 /** Netlify's functions stop at 10 seconds. */
 const REQUEST_BUDGET_MS = 8_000;
+
+// Lookups that reach this function per user (cached topics don't count), so
+// one user can't spend the day's YouTube quota by asking for every topic.
+const limiter = createRateLimiter({ max: 60, windowMs: 60 * 60_000 });
 
 type Cache = "videos" | "quota" | "none";
 
@@ -55,6 +60,8 @@ export async function GET(request: Request): Promise<Response> {
   const token = request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
   const uid = token ? await verifyIdToken(token, { projectId: PROJECT_ID, emulator: EMULATOR }) : null;
   if (!uid) return json(401, { error: "Sign in to see videos." });
+  const allowance = limiter.take(uid);
+  if (!allowance.allowed) return tooManyRequests(allowance.retryAfterSec, "Too many video lookups. Try again later.");
 
   const key = process.env.YOUTUBE_API_KEY ?? "";
   if (!key && !FAKE) {

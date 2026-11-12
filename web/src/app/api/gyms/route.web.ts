@@ -13,12 +13,18 @@ import type { Gym } from "@/lib/gyms/gyms";
 import { nominatimGymsUrl, overpassQuery, parseNominatim, parseOverpass } from "@/lib/gyms/osm";
 import { CORS_ORIGIN, preflight } from "@/lib/server/cors";
 import { verifyIdToken } from "@/lib/server/id-token";
+import { createRateLimiter, tooManyRequests, waitText } from "@/lib/server/rate-limit";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "";
 const PRODUCTION = process.env.NODE_ENV === "production";
 /** Test switches, never honoured in production. */
 const EMULATOR = !PRODUCTION && process.env.GYMS_TRUST_EMULATOR_TOKENS === "1";
 const FAKE = !PRODUCTION && process.env.GYMS_PROVIDER === "fake";
+
+// Searches that reach this function per user (cached answers don't count).
+// Plenty for real use; it keeps one user from flooding OpenStreetMap, whose
+// free geocoder allows about one request a second for everyone.
+const limiter = createRateLimiter({ max: 20, windowMs: 10 * 60_000 });
 
 // OpenStreetMap's usage policies ask apps to identify themselves.
 const USER_AGENT = "PowrFit/1.0 (https://powrfit-andylafleur.netlify.app)";
@@ -114,6 +120,11 @@ export async function GET(request: Request): Promise<Response> {
   const token = request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
   const uid = token ? await verifyIdToken(token, { projectId: PROJECT_ID, emulator: EMULATOR }) : null;
   if (!uid) return json(401, { error: "Sign in to search for gyms." });
+  const allowance = limiter.take(uid);
+  if (!allowance.allowed) {
+    const wait = waitText(allowance.retryAfterSec);
+    return tooManyRequests(allowance.retryAfterSec, `That's a lot of searches. Try again in ${wait}.`);
+  }
 
   try {
     let cell = cellParam;
