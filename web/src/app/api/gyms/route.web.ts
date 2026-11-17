@@ -10,7 +10,7 @@
 import { decodeGeohash, encodeGeohash, isCell } from "@/lib/gyms/geohash";
 import { fakeGeocode, fakeGyms } from "@/lib/gyms/fake-provider";
 import type { Gym } from "@/lib/gyms/gyms";
-import { nominatimGymsUrl, overpassQuery, parseNominatim, parseOverpass } from "@/lib/gyms/osm";
+import { nominatimGymsUrl, nominatimPlaceUrl, overpassQuery, parseNominatim, parseOverpass } from "@/lib/gyms/osm";
 import { CORS_ORIGIN, preflight } from "@/lib/server/cors";
 import { verifyIdToken } from "@/lib/server/id-token";
 import { createRateLimiter, tooManyRequests, waitText } from "@/lib/server/rate-limit";
@@ -51,8 +51,7 @@ export const OPTIONS = preflight;
 
 async function geocode(place: string, deadline: number): Promise<{ lat: number; lon: number } | null> {
   if (FAKE) return fakeGeocode(place);
-  const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(place)}`;
-  const response = await fetch(url, {
+  const response = await fetch(nominatimPlaceUrl(place), {
     headers: { "User-Agent": USER_AGENT },
     signal: AbortSignal.timeout(Math.max(1, Math.min(4_000, deadline - Date.now()))),
   });

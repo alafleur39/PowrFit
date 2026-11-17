@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { decodeGeohash, encodeGeohash, isCell } from "./geohash";
-import { nominatimGymsUrl, overpassQuery, parseNominatim, parseOverpass } from "./osm";
+import { nominatimGymsUrl, nominatimPlaceUrl, overpassQuery, parseNominatim, parseOverpass } from "./osm";
 
 describe("geohash", () => {
   it("encodes a known point and decodes near it", () => {
@@ -22,6 +22,22 @@ describe("geohash", () => {
 });
 
 describe("OpenStreetMap", () => {
+  it("looks up a ZIP code as a US postal code, not a number anywhere", () => {
+    for (const typed of ["11581", " 11581 ", "11581-1234"]) {
+      const url = new URL(nominatimPlaceUrl(typed));
+      expect(url.searchParams.get("postalcode")).toBe("11581");
+      expect(url.searchParams.get("countrycodes")).toBe("us");
+      expect(url.searchParams.has("q")).toBe(false);
+    }
+  });
+
+  it("searches anything else as typed, anywhere", () => {
+    const url = new URL(nominatimPlaceUrl("Valley Stream, NY"));
+    expect(url.searchParams.get("q")).toBe("Valley Stream, NY");
+    expect(url.searchParams.has("countrycodes")).toBe(false);
+    expect(new URL(nominatimPlaceUrl("1158")).searchParams.get("q")).toBe("1158");
+  });
+
   it("asks for gyms around a point", () => {
     const query = overpassQuery(40.758, -73.9855);
     expect(query).toContain('nwr["leisure"="fitness_centre"](around:5000,40.75800,-73.98550)');

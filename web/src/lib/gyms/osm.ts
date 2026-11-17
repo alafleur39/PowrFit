@@ -63,6 +63,21 @@ export function nominatimGymsUrl(lat: number, lon: number, radiusM = SEARCH_RADI
   return `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&bounded=1&limit=${MAX_GYMS}&viewbox=${box}&q=${q}`;
 }
 
+/** A US ZIP code, with or without the +4 part. */
+const US_ZIP = /^(\d{5})(?:-\d{4})?$/;
+
+/**
+ * Nominatim's URL for the place a user typed. A bare number like 11581 is
+ * also a postal code in other countries (Cairo, for one), so ZIP codes are
+ * looked up as US postal codes; anything else is searched as typed.
+ */
+export function nominatimPlaceUrl(place: string): string {
+  const base = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1";
+  const zip = US_ZIP.exec(place.trim());
+  if (zip) return `${base}&countrycodes=us&postalcode=${zip[1]}`;
+  return `${base}&q=${encodeURIComponent(place)}`;
+}
+
 type Place = {
   osm_type?: unknown;
   osm_id?: unknown;
