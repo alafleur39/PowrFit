@@ -113,3 +113,15 @@ test("an unknown place says so", async ({ page }) => {
   await page.getByRole("button", { name: "Search" }).click();
   await expect(page.getByRole("alert").filter({ hasText: /\w/ })).toHaveText("Couldn't find that place.");
 });
+
+test("with no prices yet, sorting and the budget are hidden", async ({ page }) => {
+  await resetEmulators(); // drop the prices beforeEach approved
+  await signUp(page, testEmail("gyms-noprice"));
+  await page.goto("/gyms");
+  await page.getByRole("searchbox", { name: "City or zip code" }).fill("Testville");
+  await page.getByRole("button", { name: "Search" }).click();
+  await expect(page.getByRole("heading", { name: "Gyms near Testville" })).toBeVisible();
+  await expect(page.getByText("No prices here yet.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Cheapest" })).toHaveCount(0);
+  await expect(page.getByRole("combobox", { name: "Budget" })).toHaveCount(0);
+});

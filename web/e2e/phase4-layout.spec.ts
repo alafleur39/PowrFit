@@ -46,7 +46,7 @@ test("every Phase 4 screen fits and is usable", async ({ page }) => {
   // Routines tab and editor (P4-02).
   await page.goto("/workouts");
   await expect(page.getByRole("region", { name: "Presets" })).toBeVisible();
-  await check(page, "Routines tab", ["Start Push day", "Copy Push day to my routines"]);
+  await check(page, "Routines tab", ["Start Push day", "Copy and edit Push day"]);
   await page.getByRole("link", { name: "New routine" }).click();
   await page.getByLabel("Routine name").fill("Layout check");
   await check(page, "Routine editor", ["Save routine", "Add exercises"]);

@@ -44,7 +44,7 @@ test("deleting an account removes its data and login", async ({ page, isMobile }
 
   // Something in every collection: a workout, a routine and a setting.
   await page.goto("/workouts");
-  await page.getByRole("button", { name: "Copy Push day to my routines" }).click();
+  await page.getByRole("button", { name: "Copy and edit Push day" }).click();
   await page.getByRole("button", { name: "Save routine" }).click();
   await page.getByRole("button", { name: "Start Push day" }).first().click();
   await logSet(page, "Barbell bench press", 0, "135", "5");

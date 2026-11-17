@@ -8,8 +8,9 @@ export function workoutLogHref(logId: string): string {
 }
 
 /** "new" opens an empty routine. */
-export function routineHref(routineId: string): string {
-  return `/workouts/routines/edit?id=${encodeURIComponent(routineId)}`;
+export function routineHref(routineId: string, options: { copied?: boolean } = {}): string {
+  const copied = options.copied ? "&copied=1" : "";
+  return `/workouts/routines/edit?id=${encodeURIComponent(routineId)}${copied}`;
 }
 
 export const NEW_ROUTINE_HREF = routineHref("new");

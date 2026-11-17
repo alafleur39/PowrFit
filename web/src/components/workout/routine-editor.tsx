@@ -46,7 +46,16 @@ function restLabel(seconds: number) {
 // Routine editor (P4-02, D21). Edits a local copy; nothing is written until
 // Save. Saving isn't awaited: offline, the write waits in Firestore's cache
 // and the routine shows as "Not synced yet" until it's confirmed.
-export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boolean }) {
+export function RoutineEditor({
+  initial,
+  isNew,
+  copied = false,
+}: {
+  initial: Routine;
+  isNew: boolean;
+  /** Just copied from a preset: say so, since the copy opens here. */
+  copied?: boolean;
+}) {
   const router = useRouter();
   const { user } = useAuth();
   const [routine, setRoutine] = useState(initial);
@@ -87,6 +96,11 @@ export function RoutineEditor({ initial, isNew }: { initial: Routine; isNew: boo
 
       <div className="mx-auto flex max-w-2xl flex-col gap-4 px-4 sm:px-6">
         <h1 className="text-title2 font-bold">{isNew ? "New routine" : "Edit routine"}</h1>
+        {copied && (
+          <p role="status" className="-mt-2 text-footnote text-muted-foreground">
+            Copied to My routines. Rename it and change anything you like.
+          </p>
+        )}
 
         <label className="flex flex-col gap-1.5">
           <span className="text-footnote font-medium">Routine name</span>

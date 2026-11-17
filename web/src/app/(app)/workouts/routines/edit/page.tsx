@@ -19,7 +19,9 @@ export default function RoutineEditorPage() {
 }
 
 function RoutineEditorForId() {
-  const routineId = useSearchParams().get("id") ?? "";
+  const params = useSearchParams();
+  const routineId = params.get("id") ?? "";
+  const copied = params.get("copied") === "1";
   const { routines, loading } = useRoutines();
   const [fresh] = useState(() =>
     newRoutine({ id: crypto.randomUUID(), now: new Date().toISOString() })
@@ -28,7 +30,7 @@ function RoutineEditorForId() {
   if (routineId === "new") return <RoutineEditor initial={fresh} isNew />;
 
   const entry = routines.find((candidate) => candidate.routine.id === routineId);
-  if (entry) return <RoutineEditor key={entry.routine.id} initial={entry.routine} isNew={false} />;
+  if (entry) return <RoutineEditor key={entry.routine.id} initial={entry.routine} isNew={false} copied={copied} />;
 
   return (
     <div className="px-4 py-4 text-center text-footnote text-muted-foreground">

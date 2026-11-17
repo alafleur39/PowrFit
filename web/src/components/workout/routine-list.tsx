@@ -81,7 +81,7 @@ export function RoutineList() {
     setCopyError(false);
     // Not awaited: offline, the write waits in the cache until it syncs.
     saveRoutine(user.uid, routine).catch(() => setCopyError(true));
-    router.push(routineHref(routine.id));
+    router.push(routineHref(routine.id, { copied: true }));
   };
 
   return (
@@ -158,15 +158,15 @@ export function RoutineList() {
               routine={routine}
               actions={
                 <>
-                  {/* Copies into My routines and opens it to edit. */}
+                  {/* Copies into My routines and opens the copy to edit. */}
                   <Button
                     variant="ghost"
-                    aria-label={`Copy ${routine.name} to my routines`}
+                    aria-label={`Copy and edit ${routine.name}`}
                     onClick={() => copy(routine)}
                     className="px-3 text-muted-foreground"
                   >
                     <Copy aria-hidden />
-                    Copy
+                    Copy &amp; edit
                   </Button>
                   <StartButton routine={routine} disabled={busy} />
                 </>

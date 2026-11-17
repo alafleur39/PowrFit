@@ -41,7 +41,7 @@ export default function PrivacyPage() {
           <h2 className="text-headline font-bold">Gyms near you</h2>
           <p className="mt-2 text-muted-foreground">
             Location is only asked for when you tap Near me. Your phone sends PowrFit a rough area of
-            about 1 km, never your exact spot, and nothing about where you searched is saved to your
+            about 1 km (0.6 mi), never your exact spot, and nothing about where you searched is saved to your
             account. Gyms are found on OpenStreetMap; a typed city or zip code is sent to
             OpenStreetMap&apos;s place search. A price you report is stored without your name or
             account, and shows to everyone once it&apos;s checked.

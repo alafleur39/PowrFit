@@ -4,6 +4,8 @@ import {
   PRESET_ROUTINES,
   addRoutineExercise,
   cleanRoutine,
+  ROUTINE_LIMITS,
+  copyName,
   copyRoutine,
   isPresetRoutine,
   moveRoutineExercise,
@@ -77,10 +79,16 @@ describe("routines", () => {
   it("copies a preset under a new id without sharing arrays", () => {
     const copy = copyRoutine(PRESET_ROUTINES[0], { id: "r3", now: T1 });
     expect(copy.id).toBe("r3");
-    expect(copy.name).toBe("Push day");
+    expect(copy.name).toBe("Push day (copy)");
     expect(copy.exercises).toEqual(PRESET_ROUTINES[0].exercises);
     expect(copy.exercises[0]).not.toBe(PRESET_ROUTINES[0].exercises[0]);
     expect(isPresetRoutine(copy)).toBe(false);
+  });
+
+  it("keeps a copy's name within the limit", () => {
+    const name = copyName("x".repeat(ROUTINE_LIMITS.name));
+    expect(name).toHaveLength(ROUTINE_LIMITS.name);
+    expect(name.endsWith(" (copy)")).toBe(true);
   });
 
   it("edits exercises without mutating the input", () => {

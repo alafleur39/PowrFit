@@ -33,13 +33,21 @@ export function newRoutine(options: { id: string; now: string }): Routine {
 }
 
 /** An editable copy of a preset (or any routine) under a new id. */
+const COPY_SUFFIX = " (copy)";
+
+/** The preset's name plus " (copy)", within the name limit. */
+export function copyName(name: string): string {
+  return name.slice(0, ROUTINE_LIMITS.name - COPY_SUFFIX.length).trimEnd() + COPY_SUFFIX;
+}
+
 export function copyRoutine(
   routine: Routine,
   options: { id: string; now: string }
 ): Routine {
   return {
     id: options.id,
-    name: routine.name,
+    // "(copy)" tells it apart from the preset in the list (beta feedback).
+    name: copyName(routine.name),
     ...(routine.notes !== undefined && { notes: routine.notes }),
     exercises: routine.exercises.map((exercise) => ({ ...exercise })),
     createdAt: options.now,

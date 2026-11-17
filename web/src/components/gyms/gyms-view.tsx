@@ -1,13 +1,14 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { ArrowDownWideNarrow, Loader2, LocateFixed, Map as MapIcon, MapPin, Navigation, Search, Users } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { searchGyms, GymSearchError, type GymSearch, type GymSearchResult } from "@/lib/gyms/gym-api";
 import { loadGymPrices } from "@/lib/gyms/gym-repo";
-import type { GymPrices } from "@/lib/gyms/gyms";
+import { locate } from "@/lib/gyms/locate";
+import { cheapestPlan, type GymPrices } from "@/lib/gyms/gyms";
 import { formatDistance, formatMonthly, rankGyms, type GymSort, type RankedGym } from "@/lib/gyms/rank";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
@@ -22,35 +23,23 @@ type Found = GymSearchResult & {
   prices: Map<string, GymPrices>;
 };
 
-// The last search, kept for this session only (like D39's lastSeen): coming
-// back to the screen shows it again without asking for location. Never
-// written to storage, so no position is left on the device.
-let lastFound: Found | null = null;
+// The last search, kept in memory only (like D39's lastSeen): coming back to
+// the screen shows it again without asking for location. Never written to
+// storage, so no position is left on the device. It expires after
+// RESULTS_TTL_MS: the iPhone app can stay open in the background for days,
+// and old results with an empty search box looked stale (beta feedback).
+let lastFound: { found: Found; at: number } | null = null;
+
+export const RESULTS_TTL_MS = 30 * 60_000;
+
+function freshLastFound(nowMs = Date.now()): Found | null {
+  if (lastFound && nowMs - lastFound.at > RESULTS_TTL_MS) lastFound = null;
+  return lastFound?.found ?? null;
+}
 
 const LOCATION_EXPLAINED = "powrfit:location-explained";
 
 const BUDGETS = [25, 50, 75, 100] as const;
-
-function locate(): Promise<{ lat: number; lon: number }> {
-  return new Promise((resolve, reject) => {
-    if (!("geolocation" in navigator)) {
-      reject(new GymSearchError("This browser can't share your location. Search a city or zip code instead."));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => resolve({ lat: position.coords.latitude, lon: position.coords.longitude }),
-      (error) =>
-        reject(
-          new GymSearchError(
-            error.code === error.PERMISSION_DENIED
-              ? "Location is off for PowrFit. Search a city or zip code instead."
-              : "Couldn't find your location. Search a city or zip code instead."
-          )
-        ),
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 5 * 60_000 }
-    );
-  });
-}
 
 // Gyms near you (P6-06, D35, D36): gyms from OpenStreetMap around you or a
 // place you type, cheapest known price first. Prices are ones members
@@ -58,7 +47,7 @@ function locate(): Promise<{ lat: number; lon: number }> {
 export function GymsView() {
   const { user } = useAuth();
   const { unit } = useActiveWorkout();
-  const [found, setFound] = useState<Found | null>(lastFound);
+  const [found, setFound] = useState<Found | null>(() => freshLastFound());
   const [place, setPlace] = useState("");
   const [busy, setBusy] = useState<"near" | "place" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +74,7 @@ export function GymsView() {
         label: here ? "near you" : `near ${place.trim()}`,
         prices,
       };
-      lastFound = next;
+      lastFound = { found: next, at: Date.now() };
       setFound(next);
     } catch (err) {
       if (!(err instanceof GymSearchError)) console.error("Gym search failed", err);
@@ -103,11 +92,23 @@ export function GymsView() {
     setExplainOpen(true);
   };
 
+  // Coming back to an app left open in the background clears expired results.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && !freshLastFound()) setFound(null);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
   const ranked = useMemo(
     () => (found ? rankGyms(found.gyms, found.prices, found.origin, { sort, maxMonthly: budget }) : []),
     [found, sort, budget]
   );
   const hidden = found ? found.gyms.length - ranked.length : 0;
+  // Without any price, Cheapest and Nearest give the same list and the budget
+  // filters nothing, so neither is shown (beta feedback).
+  const anyPrice = found ? found.gyms.some((gym) => cheapestPlan(found.prices.get(gym.placeId))) : false;
   const currency = ranked.find((item) => item.cheapest)?.cheapest?.currency ?? "USD";
 
   return (
@@ -153,7 +154,7 @@ export function GymsView() {
           </button>
         </form>
         <p className="text-caption text-muted-foreground">
-          Near me sends only your rough area (about 1 km), never your exact spot.
+          Near me sends only your rough area (about 1 km, or 0.6 mi), never your exact spot.
         </p>
         {error && (
           <p role="alert" className="text-footnote text-danger">
@@ -168,7 +169,7 @@ export function GymsView() {
           <ul className="mt-2 flex flex-col gap-2 text-footnote text-muted-foreground">
             <li className="flex gap-2">
               <ArrowDownWideNarrow className="mt-0.5 size-4 shrink-0" aria-hidden />
-              Gyms within 5 km, cheapest monthly price first. Gyms without a price come after.
+              Gyms within 5 km (3 mi), cheapest monthly price first. Gyms without a price come after.
             </li>
             <li className="flex gap-2">
               <Users className="mt-0.5 size-4 shrink-0" aria-hidden />
@@ -206,7 +207,7 @@ export function GymsView() {
       >
         <p className="text-footnote text-muted-foreground">
           Next, your phone asks to share your location. PowrFit uses it once, rounds it to an area about 1 km
-          wide, and sends only that to find gyms. It&apos;s never stored. You can search by city or zip code
+          (0.6 mi) wide, and sends only that to find gyms. It&apos;s never stored. You can search by city or zip code
           instead.
         </p>
       </Sheet>
@@ -217,45 +218,52 @@ export function GymsView() {
             <h2 id={resultsId} className="text-footnote font-bold">
               {found.gyms.length === 0 ? "No gyms found" : `Gyms ${found.label}`}
             </h2>
-            <div className="flex items-center gap-2">
-              <div role="group" aria-label="Sort" className="flex rounded-full border border-border p-0.5">
-                {(["price", "distance"] as const).map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    aria-pressed={sort === option}
-                    onClick={() => setSort(option)}
-                    className={cn(
-                      "min-h-11 rounded-full px-3 text-footnote font-semibold",
-                      sort === option ? "bg-surface-raised text-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    {option === "price" ? "Cheapest" : "Nearest"}
-                  </button>
-                ))}
+            {anyPrice && (
+              <div className="flex items-center gap-2">
+                <div role="group" aria-label="Sort" className="flex rounded-full border border-border p-0.5">
+                  {(["price", "distance"] as const).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      aria-pressed={sort === option}
+                      onClick={() => setSort(option)}
+                      className={cn(
+                        "min-h-11 rounded-full px-3 text-footnote font-semibold",
+                        sort === option ? "bg-surface-raised text-foreground" : "text-muted-foreground"
+                      )}
+                    >
+                      {option === "price" ? "Cheapest" : "Nearest"}
+                    </button>
+                  ))}
+                </div>
+                <label className="sr-only" htmlFor={`${resultsId}-budget`}>
+                  Budget
+                </label>
+                <Select
+                  id={`${resultsId}-budget`}
+                  value={budget ?? ""}
+                  onChange={(event) => setBudget(event.target.value ? Number(event.target.value) : undefined)}
+                  className="text-footnote"
+                >
+                  <option value="">Any price</option>
+                  {BUDGETS.map((amount) => (
+                    <option key={amount} value={amount}>
+                      Up to {formatMonthly({ monthlyPrice: amount, currency })}
+                    </option>
+                  ))}
+                </Select>
               </div>
-              <label className="sr-only" htmlFor={`${resultsId}-budget`}>
-                Budget
-              </label>
-              <Select
-                id={`${resultsId}-budget`}
-                value={budget ?? ""}
-                onChange={(event) => setBudget(event.target.value ? Number(event.target.value) : undefined)}
-                className="text-footnote"
-              >
-                <option value="">Any price</option>
-                {BUDGETS.map((amount) => (
-                  <option key={amount} value={amount}>
-                    Up to {formatMonthly({ monthlyPrice: amount, currency })}
-                  </option>
-                ))}
-              </Select>
-            </div>
+            )}
           </div>
+          {found.gyms.length > 0 && !anyPrice && (
+            <p className="text-footnote text-muted-foreground">
+              No prices here yet. Know what a gym costs? Add a price to help others.
+            </p>
+          )}
 
           {found.gyms.length === 0 ? (
             <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-footnote text-muted-foreground">
-              The map has no gyms within 5 km. Try a nearby town or zip code.
+              The map has no gyms within 5 km (3 mi). Try a nearby town or zip code.
             </p>
           ) : (
             <ul className="flex flex-col gap-2">

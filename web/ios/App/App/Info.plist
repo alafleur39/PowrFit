@@ -46,7 +46,7 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>PowrFit uses your location once to find cheap gyms near you. It rounds it to an area about 1 km wide and never stores your exact spot.</string>
+	<string>PowrFit uses your location once to find cheap gyms near you. It rounds it to an area about 1 km (0.6 mi) wide and never stores your exact spot.</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
 	<key>UILaunchStoryboardName</key>

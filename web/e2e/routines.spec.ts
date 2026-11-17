@@ -89,8 +89,10 @@ test("create, start, edit and delete a routine", async ({ page }) => {
 test("copy a preset into my routines and edit the copy", async ({ page }) => {
   await signUp(page, testEmail("copy"));
   await page.goto("/workouts");
-  await page.getByRole("button", { name: "Copy Leg day to my routines" }).click();
+  await page.getByRole("button", { name: "Copy and edit Leg day" }).click();
   await expect(page.getByRole("heading", { name: "Edit routine" })).toBeVisible();
+  await expect(page.getByText("Copied to My routines.")).toBeVisible();
+  await expect(page.getByLabel("Routine name")).toHaveValue("Leg day (copy)");
   await page.getByLabel("Routine name").fill("My legs");
   await page.getByRole("button", { name: "Save routine" }).click();
   await expect(myRoutines(page).getByRole("heading", { name: "My legs" })).toBeVisible();
