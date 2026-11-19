@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { Capacitor } from "@capacitor/core";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { connectAuthEmulator, getAuth, indexedDBLocalPersistence, initializeAuth, type Auth } from "firebase/auth";
 import {
   connectFirestoreEmulator,
@@ -10,6 +11,8 @@ import {
   persistentMultipleTabManager,
   type Firestore,
 } from "firebase/firestore";
+
+import { appCheckSiteKey } from "./app-check-options";
 
 const requiredEnv = (key: string, value: string | undefined) => {
   if (!value) {
@@ -49,6 +52,24 @@ const firebaseConfig = {
 };
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+// App Check (Phase 8) starts before Auth and Firestore so their first
+// requests already carry a token. See app-check-options.ts for when it runs.
+const appCheckKey = appCheckSiteKey({
+  siteKey: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+  native: typeof window !== "undefined" && Capacitor.isNativePlatform(),
+  emulators: process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true",
+  browser: typeof window !== "undefined",
+});
+if (appCheckKey && !(globalThis as { __powrfitAppCheck?: boolean }).__powrfitAppCheck) {
+  try {
+    initializeAppCheck(app, { provider: new ReCaptchaV3Provider(appCheckKey), isTokenAutoRefreshEnabled: true });
+    (globalThis as { __powrfitAppCheck?: boolean }).__powrfitAppCheck = true;
+  } catch (error) {
+    // App Check must never stop the app from starting.
+    console.warn("App Check didn't start", error);
+  }
+}
 
 // In the iOS app (P7-02) getAuth's popup and redirect helper tries to load
 // Google's sign-in iframe, which a capacitor:// page can't, and sign-in never

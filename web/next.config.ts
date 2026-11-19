@@ -8,20 +8,23 @@ const EMULATORS = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true";
 // site and to Firebase Auth and Firestore; the gyms map lookups happen on the
 // server, and Unsplash photos come through /_next/image. "For you" videos
 // (V-03) show YouTube thumbnails and play in YouTube's privacy-enhanced
-// player. Next needs inline
+// player. App Check (Phase 8) loads reCAPTCHA v3 from Google, which runs in
+// a hidden Google frame, and swaps its result for a Firebase token. Next needs inline
 // scripts to start the page (and eval in dev). Pages can't be framed.
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${DEV ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${DEV ? " 'unsafe-eval'" : ""} https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://i.ytimg.com",
-  "frame-src https://www.youtube-nocookie.com",
+  "frame-src https://www.youtube-nocookie.com https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/",
   "font-src 'self'",
   [
     "connect-src 'self'",
     "https://identitytoolkit.googleapis.com",
     "https://securetoken.googleapis.com",
     "https://firestore.googleapis.com",
+    "https://content-firebaseappcheck.googleapis.com",
+    "https://www.google.com/recaptcha/",
     // Crash and error reports (Phase 8).
     "https://*.ingest.us.sentry.io",
     ...(EMULATORS ? ["http://127.0.0.1:9099", "http://127.0.0.1:8080"] : []),
