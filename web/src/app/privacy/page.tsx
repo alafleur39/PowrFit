@@ -49,6 +49,15 @@ export default function PrivacyPage() {
           </p>
         </section>
         <section>
+          <h2 className="text-headline font-bold">Crash reports</h2>
+          <p className="mt-2 text-muted-foreground">
+            When something breaks, PowrFit sends a report to Sentry, the service we use to find and fix bugs: what
+            went wrong, the screen and the steps just before it, how long things took, and your device and app
+            version. Reports carry your account id so we can tell how many people a bug affects, never your email,
+            and never your workout data.
+          </p>
+        </section>
+        <section>
           <h2 className="text-headline font-bold">Video suggestions</h2>
           <p className="mt-2 text-muted-foreground">
             Suggestions are worked out on your phone from your workouts. To find videos, PowrFit&apos;s

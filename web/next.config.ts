@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import type { NextConfig } from "next";
 
 const DEV = process.env.NODE_ENV !== "production";
@@ -21,6 +22,8 @@ const CSP = [
     "https://identitytoolkit.googleapis.com",
     "https://securetoken.googleapis.com",
     "https://firestore.googleapis.com",
+    // Crash and error reports (Phase 8).
+    "https://*.ingest.us.sentry.io",
     ...(EMULATORS ? ["http://127.0.0.1:9099", "http://127.0.0.1:8080"] : []),
     ...(DEV ? ["ws://localhost:*"] : []),
   ].join(" "),
@@ -47,7 +50,21 @@ const SECURITY_HEADERS = [
 // as-is, and can't send headers.
 const STATIC_EXPORT = process.env.NEXT_OUTPUT === "export";
 
+// The release Sentry files errors under: the commit being built. Netlify
+// sets COMMIT_REF; local and iOS builds ask git.
+function release(): string {
+  const commit = process.env.COMMIT_REF ?? (() => {
+    try {
+      return execSync("git rev-parse HEAD", { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+    } catch {
+      return "";
+    }
+  })();
+  return commit ? `powrfit@${commit.slice(0, 12)}` : "";
+}
+
 const nextConfig: NextConfig = {
+  env: { NEXT_PUBLIC_SENTRY_RELEASE: release() },
   // No dev-mode badge: it sits over the Home tab, catching taps in tests and
   // showing in screenshots. Build and runtime errors still show.
   devIndicators: false,

@@ -18,6 +18,8 @@ import {
   type User,
 } from "firebase/auth";
 
+import * as Sentry from "@sentry/react";
+
 import { auth } from "@/lib/firebase";
 
 // Port of the Expo app's src/auth/AuthProvider.tsx — same context shape so the
@@ -41,6 +43,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     // Keep listening for account changes so we always know who is signed in.
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+      // Errors in Sentry show which account hit them: the id only, never the email.
+      Sentry.setUser(nextUser ? { id: nextUser.uid } : null);
       setUser(nextUser);
       setLoading(false);
     });
