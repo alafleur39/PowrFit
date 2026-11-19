@@ -97,12 +97,34 @@ service cloud.firestore {
         && request.resource.data.weightUnit in ['kg', 'lb'];
     }
 
+    // The admin (Phase 8): users with an admins/{uid} document, which only
+    // the Firebase console can create. You can check whether you are one.
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    match /admins/{userId} {
+      allow get: if isOwner(userId);
+      allow list, write: if false;
+    }
+
     // Gym prices you approved (P6-04, D36): shared, read-only for signed-in
-    // users. Only you write them, by hand in the Firebase console, which
-    // bypasses these rules. No listing: the app reads gyms by id.
+    // users. The admin writes them from the price review screen (Phase 8) or
+    // the Firebase console. No listing: the app reads gyms by id.
+    function isValidGymPrices() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['name', 'plans', 'source', 'checkedAt'])
+        && data.keys().hasAll(['name', 'plans', 'source', 'checkedAt'])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 100
+        && data.plans is list && data.plans.size() >= 1 && data.plans.size() <= 10
+        && data.source is string && data.source.size() <= 60
+        && data.checkedAt is string && data.checkedAt.size() <= 40;
+    }
     match /gyms/{placeId} {
       allow get: if request.auth != null;
-      allow list, write: if false;
+      allow create, update: if isAdmin() && isValidGymPrices();
+      allow delete: if isAdmin();
+      allow list: if false;
     }
 
     // Users' price reports (P6-04, D42): signed-in users can send one;
@@ -142,7 +164,10 @@ service cloud.firestore {
       // Correcting your own report: the id already ties it to you.
       allow update: if request.auth != null && resource.data.uid == request.auth.uid
         && isValidPriceReport(reportId);
-      allow read, delete: if false;
+      // The admin reads them to approve, reject or ban (Phase 8). Senders can
+      // read and delete only their own, so Delete account removes them.
+      allow read, delete: if isAdmin()
+        || (request.auth != null && resource.data.uid == request.auth.uid);
     }
     // When this user last sent a price report; server time, so it can't be faked.
     match /reportLimits/{userId} {
@@ -157,9 +182,14 @@ service cloud.firestore {
       // deletion (Phase 8) removes it on the server.
       allow read, delete: if false;
     }
-    // Added by the admin in the Firebase console; no app access.
+    // Added by the admin from the price review screen (Phase 8) or the
+    // Firebase console. Unbanning happens in the console.
     match /bannedUsers/{userId} {
-      allow read, write: if false;
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['bannedAt', 'reason'])
+        && request.resource.data.bannedAt == request.time
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 100;
+      allow read, update, delete: if false;
     }
 
     // Phase 0 mock data, retired in P2-15: owners can still read it and

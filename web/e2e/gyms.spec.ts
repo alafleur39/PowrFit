@@ -125,3 +125,49 @@ test("with no prices yet, sorting and the budget are hidden", async ({ page }) =
   await expect(page.getByRole("button", { name: "Cheapest" })).toHaveCount(0);
   await expect(page.getByRole("combobox", { name: "Budget" })).toHaveCount(0);
 });
+
+test("the admin approves a member's price, and everyone sees it", async ({ page }) => {
+  await signUp(page, testEmail("gyms-admin"));
+  await page.goto("/gyms");
+  await page.getByRole("searchbox", { name: "City or zip code" }).fill("Testville");
+  await page.getByRole("button", { name: "Search" }).click();
+  await page.getByRole("button", { name: "Add a price for Corner Gym" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("textbox", { name: "Plan" }).fill("Unlimited");
+  await dialog.getByRole("textbox", { name: "Per month" }).fill("12");
+  await dialog.getByRole("button", { name: "Send price" }).click();
+  await expect(page.getByText("Thanks! It shows once it's checked.")).toBeVisible();
+
+  // Not the admin yet: no Review prices, and the screen says so.
+  await page.goto("/profile");
+  await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Review prices/ })).toHaveCount(0);
+  await page.goto("/admin/prices");
+  await expect(page.getByText("Only PowrFit's admin can review prices.")).toBeVisible();
+
+  // Made the admin in the console (here: the emulator, as its owner).
+  await expect.poll(async () => (await listDocuments("gymPriceReports")).length).toBe(1);
+  const [report] = await listDocuments("gymPriceReports");
+  const uid = (report.fields.uid as { stringValue: string }).stringValue;
+  const made = await fetch(`${FIRESTORE}/admins/${uid}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer owner" },
+    body: JSON.stringify({ fields: {} }),
+  });
+  expect(made.ok).toBe(true);
+
+  await page.goto("/profile");
+  await page.getByRole("link", { name: /Review prices/ }).click();
+  await expect(page.getByText("Corner Gym")).toBeVisible();
+  await expectLabelledControls(page, "Review prices");
+  await page.getByRole("button", { name: "Approve Unlimited at Corner Gym" }).click();
+  await expect(page.getByText("No prices to check.")).toBeVisible();
+  expect(await listDocuments("gymPriceReports")).toHaveLength(0);
+
+  // The approved price is now the cheapest in Testville.
+  await page.goto("/gyms");
+  await page.getByRole("searchbox", { name: "City or zip code" }).fill("Testville");
+  await page.getByRole("button", { name: "Search" }).click();
+  await expect.poll(() => gymNames(page)).toEqual(["Corner Gym", "Lift House", "Iron Den"]);
+  await expect(page.getByText("$12/mo")).toBeVisible();
+});

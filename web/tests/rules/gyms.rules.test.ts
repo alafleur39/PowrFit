@@ -93,7 +93,6 @@ describe("gymPriceReports", () => {
     await assertSucceeds(send(alice(), "alice", mine));
     await assertFails(send(guest(), "alice", mine));
     await assertFails(alice().doc("gymPriceReports/r1").get());
-    await assertFails(alice().doc("gymPriceReports/alice_osm-node-42").get());
     await assertFails(bob().collection("gymPriceReports").get());
     await assertFails(alice().collectionGroup("gymPriceReports").get());
     await assertFails(alice().doc("gymPriceReports/r1").set({ ...report, monthlyPrice: 1 }));
@@ -153,5 +152,58 @@ describe("gymPriceReports", () => {
     ["a missing field", { uid: "alice", placeId: "osm-node-42", plan: "Basic", monthlyPrice: 25, currency: "USD" }],
   ])("rejects %s", async (_name, data) => {
     await assertFails(send(alice(), "alice", data, "alice_osm-node-42"));
+  });
+});
+
+// Phase 8: the admin is whoever has an admins/{uid} document (console only).
+describe("the admin", () => {
+  const admin = () => env.authenticatedContext("admin").firestore();
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("admins/admin").set({});
+    });
+  });
+
+  it("can check that they're the admin; nobody can make themselves one", async () => {
+    await assertSucceeds(admin().doc("admins/admin").get());
+    await assertSucceeds(alice().doc("admins/alice").get()); // missing, so not an admin
+    await assertFails(alice().doc("admins/admin").get());
+    await assertFails(alice().collection("admins").get());
+    await assertFails(alice().doc("admins/alice").set({}));
+    await assertFails(admin().doc("admins/alice").set({}));
+  });
+
+  it("reads and deletes price reports", async () => {
+    await assertSucceeds(admin().collection("gymPriceReports").get());
+    await assertSucceeds(admin().doc("gymPriceReports/r1").delete());
+  });
+
+  it("approves prices with the right shape only", async () => {
+    await assertSucceeds(admin().doc("gyms/osm-node-7").set(prices));
+    await assertSucceeds(admin().doc("gyms/osm-node-42").set({ ...prices, source: "member report" }));
+    await assertFails(admin().doc("gyms/osm-node-8").set({ ...prices, plans: [] }));
+    await assertFails(admin().doc("gyms/osm-node-8").set({ ...prices, extra: true }));
+    await assertFails(admin().collection("gyms").get());
+    await assertSucceeds(admin().doc("gyms/osm-node-42").delete());
+  });
+
+  it("bans a sender with the server time, and nobody else can", async () => {
+    const ban = { bannedAt: firebase.firestore.FieldValue.serverTimestamp(), reason: "price report spam" };
+    await assertSucceeds(admin().doc("bannedUsers/alice").set(ban));
+    await assertFails(admin().doc("bannedUsers/bob").set({ ...ban, bannedAt: new Date(0) }));
+    await assertFails(admin().doc("bannedUsers/alice").get());
+    await assertFails(bob().doc("bannedUsers/alice").set(ban));
+  });
+});
+
+describe("your own price reports", () => {
+  it("can be read and deleted by their sender only (Delete account)", async () => {
+    await assertSucceeds(send(alice(), "alice", mine));
+    await assertSucceeds(alice().collection("gymPriceReports").where("uid", "==", "alice").get());
+    await assertSucceeds(alice().doc("gymPriceReports/alice_osm-node-42").get());
+    await assertFails(bob().doc("gymPriceReports/alice_osm-node-42").get());
+    await assertFails(bob().collection("gymPriceReports").where("uid", "==", "alice").get());
+    await assertFails(bob().doc("gymPriceReports/alice_osm-node-42").delete());
+    await assertSucceeds(alice().doc("gymPriceReports/alice_osm-node-42").delete());
   });
 });

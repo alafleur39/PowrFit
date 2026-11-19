@@ -43,7 +43,15 @@ export function parseOverpass(json: unknown): Gym[] {
     if (seen.has(placeId)) continue;
     seen.add(placeId);
     const street = [text(element.tags?.["addr:housenumber"]), text(element.tags?.["addr:street"])].filter(Boolean).join(" ");
-    gyms.push({ placeId, name: name.slice(0, 100), lat, lon, ...(street && { address: street.slice(0, 120) }) });
+    const country = text(element.tags?.["addr:country"])?.toLowerCase();
+    gyms.push({
+      placeId,
+      name: name.slice(0, 100),
+      lat,
+      lon,
+      ...(street && { address: street.slice(0, 120) }),
+      ...(country && /^[a-z]{2}$/.test(country) && { country }),
+    });
     if (gyms.length >= MAX_GYMS) break;
   }
   return gyms;
@@ -84,7 +92,7 @@ type Place = {
   lat?: unknown;
   lon?: unknown;
   name?: unknown;
-  address?: { house_number?: unknown; road?: unknown };
+  address?: { house_number?: unknown; road?: unknown; country_code?: unknown };
 };
 
 /** Nominatim JSON to gyms, with the same place ids Overpass gives. */
@@ -95,7 +103,12 @@ export function parseNominatim(json: unknown): Gym[] {
     id: place.osm_id,
     lat: typeof place.lat === "string" ? Number(place.lat) : place.lat,
     lon: typeof place.lon === "string" ? Number(place.lon) : place.lon,
-    tags: { name: place.name, "addr:housenumber": place.address?.house_number, "addr:street": place.address?.road },
+    tags: {
+      name: place.name,
+      "addr:housenumber": place.address?.house_number,
+      "addr:street": place.address?.road,
+      "addr:country": place.address?.country_code,
+    },
   }));
   return parseOverpass({ elements });
 }

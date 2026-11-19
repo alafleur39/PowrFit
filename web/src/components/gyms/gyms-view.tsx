@@ -6,6 +6,7 @@ import { ArrowDownWideNarrow, Loader2, LocateFixed, Map as MapIcon, MapPin, Navi
 import { useAuth } from "@/components/auth-provider";
 import { useActiveWorkout } from "@/components/workout/active-workout-provider";
 import { searchGyms, GymSearchError, type GymSearch, type GymSearchResult } from "@/lib/gyms/gym-api";
+import { withChainPrices } from "@/lib/gyms/chains";
 import { loadGymPrices } from "@/lib/gyms/gym-repo";
 import { locate } from "@/lib/gyms/locate";
 import { cheapestPlan, type GymPrices } from "@/lib/gyms/gyms";
@@ -43,7 +44,8 @@ const BUDGETS = [25, 50, 75, 100] as const;
 
 // Gyms near you (P6-06, D35, D36): gyms from OpenStreetMap around you or a
 // place you type, cheapest known price first. Prices are ones members
-// reported and you approved; anyone can report one.
+// reported and you approved; anyone can report one. Chain gyms without one
+// show their chain's advertised starting price (lib/gyms/chains.ts).
 export function GymsView() {
   const { user } = useAuth();
   const { unit } = useActiveWorkout();
@@ -67,7 +69,8 @@ export function GymsView() {
       const here = kind === "near" ? await locate() : null;
       const search: GymSearch = here ? { kind: "near", ...here } : { kind: "place", place };
       const result = await searchGyms(user, search);
-      const prices = await loadGymPrices(result.gyms.map((gym) => gym.placeId));
+      const approved = await loadGymPrices(result.gyms.map((gym) => gym.placeId));
+      const prices = withChainPrices(result.gyms, approved);
       const next: Found = {
         ...result,
         origin: here ?? result.center,
@@ -173,7 +176,8 @@ export function GymsView() {
             </li>
             <li className="flex gap-2">
               <Users className="mt-0.5 size-4 shrink-0" aria-hidden />
-              Prices come from PowrFit members. Know one? Add it from a gym&apos;s card.
+              Prices come from PowrFit members, or from a chain&apos;s advertised price. Know one? Add it from a
+              gym&apos;s card.
             </li>
             <li className="flex gap-2">
               <MapIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
@@ -287,7 +291,8 @@ export function GymsView() {
             >
               OpenStreetMap contributors
             </a>
-            . Prices come from members and are checked before they show.
+            . Prices come from members and are checked before they show. Chain prices are the chain&apos;s
+            advertised starting price and can vary by location.
           </p>
         </section>
       )}
@@ -296,7 +301,7 @@ export function GymsView() {
 }
 
 function GymRow({ item, unit }: { item: RankedGym; unit: "kg" | "lb" }) {
-  const { gym, cheapest, distanceKm } = item;
+  const { gym, cheapest, chainPrice, distanceKm } = item;
   const directions = `https://maps.apple.com/?daddr=${gym.lat},${gym.lon}&q=${encodeURIComponent(gym.name)}`;
   return (
     <li className="rounded-card border border-border bg-surface p-4">
@@ -311,8 +316,11 @@ function GymRow({ item, unit }: { item: RankedGym; unit: "kg" | "lb" }) {
         <p className={cn("shrink-0 text-right", cheapest ? "tabular-nums font-bold text-accent" : "text-footnote text-muted-foreground")}>
           {cheapest ? (
             <>
+              {chainPrice && <span className="text-footnote font-normal text-muted-foreground">From </span>}
               {formatMonthly(cheapest)}
-              <span className="block font-sans text-caption font-normal text-muted-foreground">{cheapest.name}</span>
+              <span className="block font-sans text-caption font-normal text-muted-foreground">
+                {chainPrice ? `${cheapest.name} · chain price` : cheapest.name}
+              </span>
             </>
           ) : (
             "No price yet"

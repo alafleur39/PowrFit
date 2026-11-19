@@ -1,6 +1,7 @@
 // Orders gyms for the gyms screen (P6-06). Pure: distance is worked out on
 // the phone from its own position, which never leaves the device (D35).
 
+import { isChainPrice } from "./chains";
 import { cheapestPlan, type Gym, type GymPlan, type GymPrices } from "./gyms";
 
 export type GymSort = "price" | "distance";
@@ -11,6 +12,8 @@ export type RankedGym = {
   distanceKm: number;
   /** The cheapest approved plan, when a price is known. */
   cheapest?: GymPlan;
+  /** The price is the chain's advertised starting price, not this gym's own. */
+  chainPrice?: boolean;
 };
 
 const EARTH_RADIUS_KM = 6371;
@@ -38,8 +41,14 @@ export function rankGyms(
 ): RankedGym[] {
   const ranked = gyms
     .map((gym): RankedGym => {
-      const cheapest = cheapestPlan(prices.get(gym.placeId));
-      return { gym, distanceKm: distanceKm(origin, gym), ...(cheapest && { cheapest }) };
+      const gymPrices = prices.get(gym.placeId);
+      const cheapest = cheapestPlan(gymPrices);
+      return {
+        gym,
+        distanceKm: distanceKm(origin, gym),
+        ...(cheapest && { cheapest }),
+        ...(cheapest && isChainPrice(gymPrices) && { chainPrice: true }),
+      };
     })
     .filter((item) => maxMonthly === undefined || !item.cheapest || item.cheapest.monthlyPrice <= maxMonthly);
 

@@ -74,12 +74,12 @@ describe("OpenStreetMap", () => {
 
   it("reads Nominatim places with the same ids as Overpass", () => {
     const gyms = parseNominatim([
-      { osm_type: "node", osm_id: 1, lat: "40.7", lon: "-73.9", name: "Iron Den", address: { house_number: "12", road: "Main St" } },
+      { osm_type: "node", osm_id: 1, lat: "40.7", lon: "-73.9", name: "Iron Den", address: { house_number: "12", road: "Main St", country_code: "us" } },
       { osm_type: "way", osm_id: 2, lat: "40.71", lon: "-73.91", name: "Lift House", address: {} },
       { osm_type: "node", osm_id: 3, lat: "40.7", lon: "-73.9", name: "" },
     ]);
     expect(gyms).toEqual([
-      { placeId: "osm-node-1", name: "Iron Den", lat: 40.7, lon: -73.9, address: "12 Main St" },
+      { placeId: "osm-node-1", name: "Iron Den", lat: 40.7, lon: -73.9, address: "12 Main St", country: "us" },
       { placeId: "osm-way-2", name: "Lift House", lat: 40.71, lon: -73.91 },
     ]);
     expect(parseNominatim({ error: "x" })).toEqual([]);

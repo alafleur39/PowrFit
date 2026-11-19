@@ -10,7 +10,15 @@ import {
   reauthenticateWithCredential,
   type User,
 } from "firebase/auth";
-import { collection, doc, getDocsFromServer, writeBatch, type DocumentReference } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocsFromServer,
+  query,
+  where,
+  writeBatch,
+  type DocumentReference,
+} from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
 
@@ -30,7 +38,7 @@ export const USER_COLLECTIONS = [
 /** Firestore's limit on writes in one batch. */
 const BATCH_LIMIT = 500;
 
-/** Deletes everything stored under users/{uid}. */
+/** Deletes everything stored under users/{uid}, and the user's price reports. */
 export async function deleteUserData(uid: string): Promise<void> {
   const refs: DocumentReference[] = [];
   for (const name of USER_COLLECTIONS) {
@@ -40,6 +48,11 @@ export async function deleteUserData(uid: string): Promise<void> {
   // The rules allow the settings documents by path only (no listing).
   refs.push(doc(db, "users", uid, "settings", "preferences"));
   refs.push(doc(db, "users", uid, "settings", "profile"));
+  // Price reports record their sender (Phase 8); approved prices don't.
+  // reportLimits/{uid} stays: it holds only a time, and deleting it would let
+  // anyone skip the 30 second wait.
+  const reports = await getDocsFromServer(query(collection(db, "gymPriceReports"), where("uid", "==", uid)));
+  refs.push(...reports.docs.map((item) => item.ref));
 
   for (let start = 0; start < refs.length; start += BATCH_LIMIT) {
     const batch = writeBatch(db);

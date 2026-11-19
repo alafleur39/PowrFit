@@ -43,8 +43,9 @@ export default function PrivacyPage() {
             Location is only asked for when you tap Near me. Your phone sends PowrFit a rough area of
             about 1 km (0.6 mi), never your exact spot, and nothing about where you searched is saved to your
             account. Gyms are found on OpenStreetMap; a typed city or zip code is sent to
-            OpenStreetMap&apos;s place search. A price you report is stored without your name or
-            account, and shows to everyone once it&apos;s checked.
+            OpenStreetMap&apos;s place search. A price you report is stored with your account id so spam can
+            be traced; only PowrFit&apos;s admin can see who sent it. Once it&apos;s checked, the price shows to
+            everyone, without your name. Chain gyms may show the chain&apos;s advertised price instead.
           </p>
         </section>
         <section>

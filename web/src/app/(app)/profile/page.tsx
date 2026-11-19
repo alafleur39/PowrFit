@@ -1,6 +1,9 @@
 "use client";
 
-import { LogOut, MessageSquare, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BadgeDollarSign, LogOut, MessageSquare, Shield } from "lucide-react";
+
+import { useAuth } from "@/components/auth-provider";
 
 import { useSignOut } from "@/components/app-shell";
 
@@ -8,6 +11,7 @@ import { DeleteAccount } from "@/components/profile/delete-account";
 import { ProfileCard } from "@/components/profile/profile-card";
 import { ListGroup, ListRow } from "@/components/ui/list-row";
 import { ScreenHeader } from "@/components/ui/screen-header";
+import { isAdmin } from "@/lib/gyms/review-repo";
 
 /** The beta feedback form (D30). Unset: the button isn't shown. */
 const FEEDBACK_URL = process.env.NEXT_PUBLIC_FEEDBACK_URL?.startsWith("https://")
@@ -18,6 +22,12 @@ const FEEDBACK_URL = process.env.NEXT_PUBLIC_FEEDBACK_URL?.startsWith("https://"
 // numbers and settings, then Help and Account sections like iOS Settings.
 export default function ProfilePage() {
   const signOut = useSignOut();
+  const { user } = useAuth();
+  // Only the admin (Phase 8) sees Review prices.
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => {
+    if (user) void isAdmin(user.uid).then(setAdmin);
+  }, [user]);
   return (
     <div className="pb-10">
       <ScreenHeader title="Profile" />
@@ -35,6 +45,17 @@ export default function ProfilePage() {
           )}
           <ListRow href="/privacy" icon={<Shield />} title="Privacy" description="What PowrFit stores and why." />
         </ListGroup>
+
+        {admin && (
+          <ListGroup title="Admin">
+            <ListRow
+              href="/admin/prices"
+              icon={<BadgeDollarSign />}
+              title="Review prices"
+              description="Approve or reject prices members sent."
+            />
+          </ListGroup>
+        )}
 
         {/* Account deletion stays one tap from Profile (App Store rule), and confirms. */}
         <ListGroup title="Account">

@@ -17,6 +17,8 @@ export type Gym = {
   lon: number;
   /** "123 Main St", when the map has it. */
   address?: string;
+  /** Lowercase ISO country code, "us", when the map has it. */
+  country?: string;
 };
 
 export type GymPlan = {
@@ -122,4 +124,46 @@ export function cheapestPlan(prices: GymPrices | undefined): GymPlan | undefined
     (best, plan) => (!best || plan.monthlyPrice < best.monthlyPrice ? plan : best),
     undefined
   );
+}
+
+// Price review (Phase 8): the admin approves, rejects or bans from reports.
+
+/** A stored report, with its id and sender, as the admin reads it. */
+export type StoredPriceReport = PriceReport & { id: string; uid: string };
+
+/** A gymPriceReports document, or null when it's unreadable. */
+export function decodePriceReport(id: string, data: unknown): StoredPriceReport | null {
+  if (!isObject(data)) return null;
+  const { uid, placeId, gymName, plan, monthlyPrice, currency, createdAt } = data;
+  if (typeof uid !== "string" || !isPlaceId(placeId) || typeof gymName !== "string" || typeof plan !== "string") return null;
+  if (typeof monthlyPrice !== "number" || !Number.isFinite(monthlyPrice) || monthlyPrice <= 0) return null;
+  if (!(CURRENCIES as readonly unknown[]).includes(currency)) return null;
+  return {
+    id,
+    uid,
+    placeId,
+    gymName,
+    plan,
+    monthlyPrice,
+    currency: currency as Currency,
+    createdAt: typeof createdAt === "string" ? createdAt : "",
+  };
+}
+
+export const MEMBER_REPORT_SOURCE = "member report";
+const MAX_PLANS = 10;
+
+/**
+ * The gym's prices once this report is approved: the reported plan replaces
+ * one of the same name (any case), other plans stay, newest first.
+ */
+export function approvedPrices(existing: GymPrices | null, report: StoredPriceReport, today: string): GymPrices {
+  const plan: GymPlan = { name: report.plan.trim(), monthlyPrice: report.monthlyPrice, currency: report.currency };
+  const others = (existing?.plans ?? []).filter((old) => old.name.trim().toLowerCase() !== plan.name.toLowerCase());
+  return {
+    name: existing?.name || report.gymName.trim().slice(0, PRICE_LIMITS.gymName) || "Gym",
+    plans: [plan, ...others].slice(0, MAX_PLANS),
+    source: MEMBER_REPORT_SOURCE,
+    checkedAt: today,
+  };
 }
