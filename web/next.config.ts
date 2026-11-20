@@ -68,6 +68,9 @@ function release(): string {
 
 const nextConfig: NextConfig = {
   env: { NEXT_PUBLIC_SENTRY_RELEASE: release() },
+  // Source maps for Sentry, only when a release script asks for them
+  // (scripts/ios-release.sh uploads them, then deletes them from the bundle).
+  productionBrowserSourceMaps: process.env.SENTRY_SOURCEMAPS === "1",
   // No dev-mode badge: it sits over the Home tab, catching taps in tests and
   // showing in screenshots. Build and runtime errors still show.
   devIndicators: false,
