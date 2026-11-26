@@ -213,6 +213,10 @@ export default function LoginPage() {
             <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
               Privacy
             </Link>
+            {" · "}
+            <Link href="/support" className="underline underline-offset-2 hover:text-foreground">
+              Support
+            </Link>
           </p>
         </CardContent>
       </Card>

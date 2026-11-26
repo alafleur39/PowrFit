@@ -38,6 +38,24 @@ test("the privacy page is public and linked from login and Profile", async ({ pa
   await expect(page.getByRole("heading", { name: "Privacy", level: 1 })).toBeVisible();
 });
 
+test("the support page is public and linked from login and Profile", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByRole("link", { name: "Support" }).click();
+  await expect(page.getByRole("heading", { name: "Support", level: 1 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "contact form" })).toHaveAttribute(
+    "href",
+    "https://example.com/powrfit-feedback"
+  );
+  await expect(page.getByText("How do I delete my account?")).toBeVisible();
+  await expectNoSidewaysScroll(page, "Support");
+  await expectLabelledControls(page, "Support");
+
+  await signUp(page, testEmail("support"));
+  await page.goto("/profile");
+  await page.getByRole("link", { name: /Support/ }).click();
+  await expect(page.getByRole("heading", { name: "Support", level: 1 })).toBeVisible();
+});
+
 test("deleting an account removes its data and login", async ({ page, isMobile }) => {
   const email = testEmail("delete");
   await signUp(page, email);

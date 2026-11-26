@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BadgeDollarSign, LogOut, MessageSquare, Shield } from "lucide-react";
+import { BadgeDollarSign, CircleHelp, LogOut, MessageSquare, Shield } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 
@@ -43,6 +43,7 @@ export default function ProfilePage() {
               description="Bugs, ideas, anything confusing. Opens a short form."
             />
           )}
+          <ListRow href="/support" icon={<CircleHelp />} title="Support" description="Common questions and how to reach us." />
           <ListRow href="/privacy" icon={<Shield />} title="Privacy" description="What PowrFit stores and why." />
         </ListGroup>
 
