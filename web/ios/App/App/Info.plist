@@ -45,6 +45,10 @@
 	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<!-- Required by Apple because the geolocation plugin contains "always" code (ITMS-90683).
+	     PowrFit never asks for background location; only the When In Use prompt is shown. -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>PowrFit only uses your location while the app is open, once, to find cheap gyms near you. It never tracks you in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>PowrFit uses your location once to find cheap gyms near you. It rounds it to an area about 1 km (0.6 mi) wide and never stores your exact spot.</string>
 	<key>UIUserInterfaceStyle</key>
