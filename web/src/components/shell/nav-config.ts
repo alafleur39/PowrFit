@@ -16,8 +16,18 @@ export const DESTINATIONS: Destination[] = [
   { href: "/profile", label: "Profile", icon: User },
 ];
 
+/**
+ * Whether two paths are the same page. The iOS app's static export ends
+ * every path with "/" ("/log/"), the website doesn't ("/log"), so a plain
+ * === check silently fails in the app.
+ */
+export function isSamePath(pathname: string, href: string): boolean {
+  const strip = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") : path);
+  return strip(pathname) === strip(href);
+}
+
 // A destination is active for its own route and any nested route (e.g.
 // /workouts/[id] keeps the Workouts tab lit).
 export function isDestinationActive(href: string, pathname: string): boolean {
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return isSamePath(pathname, href) || pathname.startsWith(`${href}/`);
 }

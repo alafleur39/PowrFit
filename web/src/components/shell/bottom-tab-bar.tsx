@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
-import { DESTINATIONS, isDestinationActive } from "./nav-config";
+import { DESTINATIONS, isDestinationActive, isSamePath } from "./nav-config";
 
 // Mobile-only bottom tab bar (POWRFIT_NAV_SPEC §5). Folds away at md, where the
 // Sidebar takes over. Active destination = yellow icon + label (the iOS tint).
@@ -29,7 +29,7 @@ export function BottomTabBar() {
                 aria-current={active ? "page" : undefined}
                 onClick={(event) => {
                   if (!active) haptic("selection");
-                  if (pathname !== item.href) return;
+                  if (!isSamePath(pathname, item.href)) return;
                   event.preventDefault();
                   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
                   window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });

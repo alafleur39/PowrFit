@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Dumbbell } from "lucide-react";
 
+import { isSamePath } from "@/components/shell/nav-config";
+
 import { formatElapsed } from "@/lib/workout/format";
 import { useActiveWorkout } from "./active-workout-provider";
 import { formatRest, restRemaining } from "./rest-timer";
@@ -16,7 +18,7 @@ export function ActiveWorkoutStrip() {
   const pathname = usePathname();
   const now = useNow();
 
-  if (!draft || pathname === "/log") return null;
+  if (!draft || isSamePath(pathname, "/log")) return null;
 
   return (
     <Link
