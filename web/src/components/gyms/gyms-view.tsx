@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { AddPrice } from "./add-price";
+import { ReportPrice } from "./report-price";
 import { Select } from "@/components/ui/select";
 
 type Found = GymSearchResult & {
@@ -339,6 +340,8 @@ function GymRow({ item, unit }: { item: RankedGym; unit: "kg" | "lb" }) {
           Directions
         </a>
         <AddPrice gym={gym} />
+        {/* Members' prices can be reported; chain prices come from the chain. */}
+        {cheapest && !chainPrice && <ReportPrice gym={gym} />}
       </div>
     </li>
   );

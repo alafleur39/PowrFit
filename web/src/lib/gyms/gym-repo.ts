@@ -4,15 +4,17 @@
 // read straight from Firestore by the phone; the /api/gyms endpoint only
 // finds gyms on the map, so it never touches the database.
 
-import { doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
 import {
   decodeGymPrices,
+  encodePriceFlag,
   encodePriceReport,
   isPlaceId,
   priceReportId,
   type GymPrices,
+  type PriceFlag,
   type PriceReport,
 } from "./gyms";
 
@@ -43,4 +45,9 @@ export function sendPriceReport(uid: string, report: PriceReport): Promise<unkno
   batch.set(doc(db, "gymPriceReports", priceReportId(uid, report.placeId)), encodePriceReport(uid, report));
   batch.set(doc(db, "reportLimits", uid), { lastAt: serverTimestamp() });
   return batch.commit();
+}
+
+/** Reports a shown price as wrong or offensive; the admin checks it. Queued offline. */
+export function sendPriceFlag(uid: string, flag: PriceFlag): Promise<void> {
+  return setDoc(doc(db, "priceFlags", priceReportId(uid, flag.placeId)), encodePriceFlag(uid, flag));
 }

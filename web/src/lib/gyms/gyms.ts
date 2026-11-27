@@ -167,3 +167,28 @@ export function approvedPrices(existing: GymPrices | null, report: StoredPriceRe
     checkedAt: today,
   };
 }
+
+// Reporting a price (Phase 8, App Review guideline 1.2): any member can flag
+// a member-sent price as wrong or offensive. The flag goes to the admin's
+// review screen; nobody else can read it.
+
+/** priceFlags/{uid}_{placeId}: "this price looks wrong". One per user per gym. */
+export type PriceFlag = { placeId: PlaceId; gymName: string; createdAt: string };
+export type StoredPriceFlag = PriceFlag & { id: string; uid: string };
+
+export function encodePriceFlag(uid: string, flag: PriceFlag): Record<string, unknown> {
+  return {
+    uid,
+    placeId: flag.placeId,
+    gymName: flag.gymName.trim().slice(0, PRICE_LIMITS.gymName),
+    createdAt: flag.createdAt,
+  };
+}
+
+/** A priceFlags document, or null when it's unreadable. */
+export function decodePriceFlag(id: string, data: unknown): StoredPriceFlag | null {
+  if (!isObject(data)) return null;
+  const { uid, placeId, gymName, createdAt } = data;
+  if (typeof uid !== "string" || !isPlaceId(placeId) || typeof gymName !== "string") return null;
+  return { id, uid, placeId, gymName, createdAt: typeof createdAt === "string" ? createdAt : "" };
+}

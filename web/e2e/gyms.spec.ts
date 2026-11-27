@@ -100,6 +100,16 @@ test("finds gyms, cheapest first, with a budget and price reports", async ({ pag
   expect(Object.keys(report.fields).sort()).toEqual(["createdAt", "currency", "gymName", "monthlyPrice", "placeId", "plan", "uid"]);
   expect(report.fields.placeId).toEqual({ stringValue: "osm-way-9003" });
 
+  // Report a member's price (App Review 1.2): asks first, then only the admin can read it.
+  await expect(page.getByRole("button", { name: "Report the price at Corner Gym" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Report the price at Lift House" }).click();
+  await page.getByRole("dialog", { name: "Report this price?" }).getByRole("button", { name: "Report price" }).click();
+  await expect(page.getByText("Reported. We'll check it.")).toBeVisible();
+  await expect.poll(async () => (await listDocuments("priceFlags")).length).toBe(1);
+  const [flag] = await listDocuments("priceFlags");
+  expect(Object.keys(flag.fields).sort()).toEqual(["createdAt", "gymName", "placeId", "uid"]);
+  expect(flag.fields.placeId).toEqual({ stringValue: "osm-node-9002" });
+
   // Coming back shows the last search without asking again.
   await page.getByRole("link", { name: "Home" }).first().click();
   await page.getByRole("link", { name: /Gyms near you/ }).click();
@@ -170,4 +180,21 @@ test("the admin approves a member's price, and everyone sees it", async ({ page 
   await page.getByRole("button", { name: "Search" }).click();
   await expect.poll(() => gymNames(page)).toEqual(["Corner Gym", "Lift House", "Iron Den"]);
   await expect(page.getByText("$12/mo")).toBeVisible();
+
+  // A member reports it; the admin takes it down after confirming.
+  await page.getByRole("button", { name: "Report the price at Corner Gym" }).click();
+  await page.getByRole("dialog", { name: "Report this price?" }).getByRole("button", { name: "Report price" }).click();
+  await expect(page.getByText("Reported. We'll check it.")).toBeVisible();
+  await expect.poll(async () => (await listDocuments("priceFlags")).length).toBe(1);
+  await page.goto("/admin/prices");
+  await expect(page.getByRole("heading", { name: "Reported prices" })).toBeVisible();
+  await expectLabelledControls(page, "Reported prices");
+  await page.getByRole("button", { name: "Take down the prices at Corner Gym" }).click();
+  await page.getByRole("dialog", { name: "Take down these prices?" }).getByRole("button", { name: "Take down" }).click();
+  await expect(page.getByRole("heading", { name: "Reported prices" })).toHaveCount(0);
+  await expect.poll(async () => (await listDocuments("priceFlags")).length).toBe(0);
+  await page.goto("/gyms");
+  await page.getByRole("searchbox", { name: "City or zip code" }).fill("Testville");
+  await page.getByRole("button", { name: "Search" }).click();
+  await expect(page.getByText("$12/mo")).toHaveCount(0);
 });

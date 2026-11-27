@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         PowrFit
       </Link>
       <h1 className="mt-2 text-title1 font-bold">Privacy</h1>
-      <p className="mt-1 text-footnote text-muted-foreground">Last updated November 9, 2026.</p>
+      <p className="mt-1 text-footnote text-muted-foreground">Last updated November 27, 2026.</p>
 
       <div className="mt-6 flex flex-col gap-6 text-body leading-relaxed">
         <section>
@@ -44,7 +44,7 @@ export default function PrivacyPage() {
             about 1 km (0.6 mi), never your exact spot, and nothing about where you searched is saved to your
             account. Gyms are found on OpenStreetMap; a typed city or zip code is sent to
             OpenStreetMap&apos;s place search. A price you report is stored with your account id so spam can
-            be traced; only PowrFit&apos;s admin can see who sent it. Once it&apos;s checked, the price shows to
+            be traced; only PowrFit&apos;s admin can see who sent it. Reporting a price works the same way. Once it&apos;s checked, the price shows to
             everyone, without your name. Chain gyms may show the chain&apos;s advertised price instead.
           </p>
         </section>

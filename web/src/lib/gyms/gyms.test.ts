@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { cheapestPlan, decodeGymPrices, encodePriceReport, isPlaceId, priceReportId, priceReportProblems } from "./gyms";
+import {
+  cheapestPlan,
+  decodeGymPrices,
+  decodePriceFlag,
+  encodePriceFlag,
+  encodePriceReport,
+  isPlaceId,
+  priceReportId,
+  priceReportProblems,
+} from "./gyms";
 
 const report = { placeId: "osm-node-42", gymName: "Iron Den", plan: "Basic", monthlyPrice: 24.999, currency: "USD" as const };
 
@@ -48,5 +57,20 @@ describe("gyms", () => {
     expect(cheapestPlan(prices ?? undefined)?.name).toBe("Basic");
     expect(cheapestPlan(undefined)).toBeUndefined();
     expect(decodeGymPrices({ plans: [] })).toBeNull();
+  });
+});
+
+describe("price flags", () => {
+  it("records who reported which gym, and reads it back", () => {
+    const flag = { placeId: "osm-node-42", gymName: "  Iron Den  ", createdAt: "2026-11-27T10:00:00.000Z" };
+    const stored = encodePriceFlag("alice", flag);
+    expect(stored).toEqual({ uid: "alice", placeId: "osm-node-42", gymName: "Iron Den", createdAt: flag.createdAt });
+    expect(decodePriceFlag("alice_osm-node-42", stored)).toEqual({ id: "alice_osm-node-42", ...stored });
+  });
+
+  it("skips unreadable flags", () => {
+    expect(decodePriceFlag("x", null)).toBeNull();
+    expect(decodePriceFlag("x", { uid: "alice", placeId: "not-a-place", gymName: "Iron Den" })).toBeNull();
+    expect(decodePriceFlag("x", { placeId: "osm-node-42", gymName: "Iron Den" })).toBeNull();
   });
 });

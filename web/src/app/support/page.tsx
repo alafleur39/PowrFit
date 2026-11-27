@@ -35,6 +35,10 @@ const FAQ: { q: string; a: string }[] = [
     a: "Chain gyms show the chain's advertised price. Other prices are sent in by members and checked by PowrFit before they show. Prices can change, so confirm with the gym.",
   },
   {
+    q: "A gym price is wrong or offensive.",
+    a: "Tap Report next to the price in Gyms. PowrFit checks every report and takes the price down if it's wrong. People who send abusive prices are blocked from sending more.",
+  },
+  {
     q: "Does PowrFit work offline?",
     a: "Yes. Workouts you log offline are kept on your phone and saved to your account when you're back online.",
   },

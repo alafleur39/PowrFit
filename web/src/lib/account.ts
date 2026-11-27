@@ -53,6 +53,8 @@ export async function deleteUserData(uid: string): Promise<void> {
   // anyone skip the 30 second wait.
   const reports = await getDocsFromServer(query(collection(db, "gymPriceReports"), where("uid", "==", uid)));
   refs.push(...reports.docs.map((item) => item.ref));
+  const flags = await getDocsFromServer(query(collection(db, "priceFlags"), where("uid", "==", uid)));
+  refs.push(...flags.docs.map((item) => item.ref));
 
   for (let start = 0; start < refs.length; start += BATCH_LIMIT) {
     const batch = writeBatch(db);

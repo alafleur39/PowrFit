@@ -19,7 +19,14 @@ import {
 } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
-import { approvedPrices, decodeGymPrices, decodePriceReport, type StoredPriceReport } from "./gyms";
+import {
+  approvedPrices,
+  decodeGymPrices,
+  decodePriceFlag,
+  decodePriceReport,
+  type StoredPriceFlag,
+  type StoredPriceReport,
+} from "./gyms";
 
 /** Whether this user may review prices. Any failure means no. */
 export async function isAdmin(uid: string): Promise<boolean> {
@@ -62,4 +69,25 @@ export function banSender(report: StoredPriceReport): Promise<void> {
   batch.set(doc(db, "bannedUsers", report.uid), { bannedAt: serverTimestamp(), reason: "price report spam" });
   batch.delete(doc(db, "gymPriceReports", report.id));
   return batch.commit();
+}
+
+/** Prices members reported as wrong or offensive, oldest first. */
+export async function loadPriceFlags(): Promise<StoredPriceFlag[]> {
+  const snapshot = await getDocs(query(collection(db, "priceFlags"), orderBy("createdAt"), limit(100)));
+  return snapshot.docs
+    .map((flag) => decodePriceFlag(flag.id, flag.data()))
+    .filter((flag): flag is StoredPriceFlag => flag !== null);
+}
+
+/** Takes the gym's member prices down and clears the report, together. */
+export function removeFlaggedPrices(flag: StoredPriceFlag): Promise<void> {
+  const batch = writeBatch(db);
+  batch.delete(doc(db, "gyms", flag.placeId));
+  batch.delete(doc(db, "priceFlags", flag.id));
+  return batch.commit();
+}
+
+/** The price is fine: clears the report only. */
+export function dismissFlag(flag: StoredPriceFlag): Promise<void> {
+  return deleteDoc(doc(db, "priceFlags", flag.id));
 }

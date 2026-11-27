@@ -207,3 +207,37 @@ describe("your own price reports", () => {
     await assertSucceeds(alice().doc("gymPriceReports/alice_osm-node-42").delete());
   });
 });
+
+describe("priceFlags (reporting a price)", () => {
+  const flag = { uid: "alice", placeId: "osm-node-42", gymName: "Iron Den", createdAt: "2026-11-27T10:00:00.000Z" };
+  const admin = () => env.authenticatedContext("admin").firestore();
+
+  it("lets a signed-in user report a gym's price under their own id, with nothing else", async () => {
+    await assertSucceeds(alice().doc("priceFlags/alice_osm-node-42").set(flag));
+    await assertFails(guest().doc("priceFlags/alice_osm-node-42").set(flag));
+    await assertFails(bob().doc("priceFlags/bob_osm-node-42").set(flag)); // as alice
+    await assertFails(alice().doc("priceFlags/alice_osm-node-7").set(flag)); // id doesn't match the gym
+    await assertFails(alice().doc("priceFlags/alice_osm-node-42").set({ ...flag, note: "spam" }));
+    await assertFails(alice().doc("priceFlags/alice_bad").set({ ...flag, placeId: "bad" }));
+  });
+
+  it("refuses reports from a banned user", async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("bannedUsers/alice").set({ bannedAt: new Date(), reason: "spam" });
+    });
+    await assertFails(alice().doc("priceFlags/alice_osm-node-42").set(flag));
+  });
+
+  it("only the admin and the sender can read or delete one", async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("admins/admin").set({});
+      await ctx.firestore().doc("priceFlags/alice_osm-node-42").set(flag);
+    });
+    await assertFails(bob().doc("priceFlags/alice_osm-node-42").get());
+    await assertFails(bob().collection("priceFlags").get());
+    await assertFails(bob().doc("priceFlags/alice_osm-node-42").delete());
+    await assertSucceeds(alice().collection("priceFlags").where("uid", "==", "alice").get());
+    await assertSucceeds(admin().collection("priceFlags").get());
+    await assertSucceeds(admin().doc("priceFlags/alice_osm-node-42").delete());
+  });
+});

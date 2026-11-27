@@ -1,21 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Ban, Check, X } from "lucide-react";
+import { Ban, Check, Trash2, X } from "lucide-react";
 
 import { useAuth } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Sheet } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { StoredPriceReport } from "@/lib/gyms/gyms";
+import type { StoredPriceFlag, StoredPriceReport } from "@/lib/gyms/gyms";
 import { formatMonthly } from "@/lib/gyms/rank";
-import { approveReport, banSender, isAdmin, loadPriceReports, rejectReport } from "@/lib/gyms/review-repo";
+import {
+  approveReport,
+  banSender,
+  dismissFlag,
+  isAdmin,
+  loadPriceFlags,
+  loadPriceReports,
+  rejectReport,
+  removeFlaggedPrices,
+} from "@/lib/gyms/review-repo";
 
 type State =
   | { kind: "loading" }
   | { kind: "not-admin" }
   | { kind: "error" }
-  | { kind: "ready"; reports: StoredPriceReport[] };
+  | { kind: "ready"; reports: StoredPriceReport[]; flags: StoredPriceFlag[] };
 
 // Price review (Phase 8): members' price reports, oldest first. Approve adds
 // the price to the gym for everyone; Reject drops it; Ban also stops the
@@ -28,6 +37,7 @@ export function PriceReview() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [banning, setBanning] = useState<StoredPriceReport | null>(null);
+  const [takingDown, setTakingDown] = useState<StoredPriceFlag | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -38,7 +48,8 @@ export function PriceReview() {
     void (async () => {
       if (!(await isAdmin(user.uid))) return show({ kind: "not-admin" });
       try {
-        show({ kind: "ready", reports: await loadPriceReports() });
+        const [reports, flags] = await Promise.all([loadPriceReports(), loadPriceFlags()]);
+        show({ kind: "ready", reports, flags });
       } catch (err) {
         console.error("Loading price reports failed", err);
         show({ kind: "error" });
@@ -55,11 +66,27 @@ export function PriceReview() {
     try {
       await action(report);
       setState((current) =>
-        current.kind === "ready" ? { kind: "ready", reports: current.reports.filter((r) => r.id !== report.id) } : current
+        current.kind === "ready" ? { ...current, reports: current.reports.filter((r) => r.id !== report.id) } : current
       );
     } catch (err) {
       console.error("Price review failed", err);
       setError(`Couldn't update ${report.gymName}. Check your connection and try again.`);
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const actOnFlag = async (flag: StoredPriceFlag, action: (flag: StoredPriceFlag) => Promise<void>) => {
+    setBusyId(flag.id);
+    setError(null);
+    try {
+      await action(flag);
+      setState((current) =>
+        current.kind === "ready" ? { ...current, flags: current.flags.filter((f) => f.id !== flag.id) } : current
+      );
+    } catch (err) {
+      console.error("Price review failed", err);
+      setError(`Couldn't update ${flag.gymName}. Check your connection and try again.`);
     } finally {
       setBusyId(null);
     }
@@ -100,6 +127,45 @@ export function PriceReview() {
         <p role="alert" className="text-footnote text-danger">
           {error}
         </p>
+      )}
+      {state.flags.length > 0 && (
+        <section aria-labelledby="reported-prices" className="flex flex-col gap-2">
+          <h2 id="reported-prices" className="text-headline font-bold">
+            Reported prices
+          </h2>
+          <ul className="flex flex-col gap-2">
+            {state.flags.map((flag) => (
+              <li key={flag.id} className="rounded-card border border-border bg-surface p-4">
+                <p className="truncate font-bold">{flag.gymName}</p>
+                <p className="text-footnote text-muted-foreground">
+                  A member says this gym&apos;s price is wrong or offensive
+                  {flag.createdAt && ` · ${new Date(flag.createdAt).toLocaleDateString()}`}.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    variant="destructive"
+                    loading={busyId === flag.id}
+                    disabled={busyId !== null}
+                    aria-label={`Take down the prices at ${flag.gymName}`}
+                    onClick={() => setTakingDown(flag)}
+                  >
+                    <Trash2 aria-hidden />
+                    Take down
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    disabled={busyId !== null}
+                    aria-label={`Keep the prices at ${flag.gymName}`}
+                    onClick={() => void actOnFlag(flag, dismissFlag)}
+                  >
+                    <Check aria-hidden />
+                    Keep
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
       {state.reports.length === 0 ? (
         <Notice>No prices to check. New reports from members show up here.</Notice>
@@ -151,6 +217,36 @@ export function PriceReview() {
           ))}
         </ul>
       )}
+
+      <Sheet
+        open={takingDown !== null}
+        title="Take down these prices?"
+        onClose={() => setTakingDown(null)}
+        footer={
+          <div className="flex gap-3">
+            <Button variant="secondary" className="min-h-12 flex-1" onClick={() => setTakingDown(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="lg"
+              className="flex-1"
+              onClick={() => {
+                const flag = takingDown;
+                setTakingDown(null);
+                if (flag) void actOnFlag(flag, removeFlaggedPrices);
+              }}
+            >
+              Take down
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-footnote text-muted-foreground">
+          Every member price for {takingDown?.gymName} is removed and the gym shows No price yet. Members can send
+          new prices for you to check.
+        </p>
+      </Sheet>
 
       <Sheet
         open={banning !== null}

@@ -169,6 +169,23 @@ service cloud.firestore {
       allow read, delete: if isAdmin()
         || (request.auth != null && resource.data.uid == request.auth.uid);
     }
+    // Reports that a shown price is wrong or offensive (Phase 8, App Review
+    // guideline 1.2). One per user per gym, id "<uid>_<placeId>"; only the
+    // admin reads them. Senders can read and delete their own (Delete account).
+    match /priceFlags/{flagId} {
+      allow create, update: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && flagId == request.auth.uid + '_' + request.resource.data.placeId
+        && isNotBanned()
+        && request.resource.data.keys().hasOnly(['uid', 'placeId', 'gymName', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'placeId', 'gymName', 'createdAt'])
+        && request.resource.data.placeId is string
+        && request.resource.data.placeId.matches('osm-(node|way|relation)-[0-9]{1,20}')
+        && request.resource.data.gymName is string && request.resource.data.gymName.size() <= 100
+        && request.resource.data.createdAt is string && request.resource.data.createdAt.size() <= 40;
+      allow read, delete: if isAdmin()
+        || (request.auth != null && resource.data.uid == request.auth.uid);
+    }
     // When this user last sent a price report; server time, so it can't be faked.
     match /reportLimits/{userId} {
       allow create: if isOwner(userId)
